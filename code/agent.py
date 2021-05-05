@@ -2,6 +2,7 @@ import random
 
 import config as CFG
 import behavior as beh
+from helpers import force_within_bounds
 
 class Agent:
     count = 0
@@ -30,9 +31,11 @@ class Agent:
         self._rating_strategy = rating_strategy
 
     def make_new_claim(self):
-        ground_truth = random.randint(CFG.MIN_RATING, CFG.MAX_RATING)
-        distorted_claim = self.distort_strategy.distort_ground_truth(ground_truth)
-        claim = Claim(self.ID, ground_truth, distorted_claim)
+        ground_truth = random.uniform(CFG.MIN_RATING, CFG.MAX_RATING)
+        measurement_error = random.uniform(-1*CFG.MEASUREMENT_ERROR/2, CFG.MEASUREMENT_ERROR/2)
+        measured_claim = force_within_bounds(ground_truth + measurement_error)
+        distorted_claim = self.distort_strategy.execute(measured_claim)
+        claim = Claim(self.ID, ground_truth, round(distorted_claim))
         self.claims.append(claim)
 
     def rate_claim(self, claim):

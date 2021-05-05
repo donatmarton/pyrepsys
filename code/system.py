@@ -9,7 +9,7 @@ class System:
 
     def __init__(self, reputation_strategy):
         self.reputation_strategy = reputation_strategy
-        self.agents = [Agent(beh.RateExampleStrategy1(), beh.DistortExampleStrategy1()) for i in range(0,CFG.NUM_AGENTS)]
+        self.agents = [Agent(beh.RateHigherHalfRandom(), beh.DistortDoNothingStrategy()) for i in range(0,CFG.NUM_AGENTS)]
 
     @property
     def reputation_strategy(self):

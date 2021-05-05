@@ -1,30 +1,43 @@
 from abc import ABC, abstractmethod
+import random
+import math
 
 import config as CFG
-
+from helpers import force_within_bounds
 
 class RateStrategy(ABC):
     @abstractmethod
     def rate_claim(self, claim):
         pass
 
-class RateExampleStrategy1(RateStrategy):
+class RateRandomStrategy(RateStrategy):
     def rate_claim(self, claim):
-        return min(claim.value + 1, CFG.MAX_RATING)
+        return random.randint(CFG.MIN_RATING, CFG.MAX_RATING)
+
+class RateLowerHalfRandom(RateStrategy):
+    def rate_claim(self, claim):
+        return random.randint(CFG.MIN_RATING, CFG.MAX_RATING//2)
+
+class RateHigherHalfRandom(RateStrategy):
+    def rate_claim(self, claim):
+        return random.randint(CFG.MAX_RATING//2, CFG.MAX_RATING)
+
+
+
 
 class DistortStrategy(ABC):
     @abstractmethod
-    def distort_ground_truth(self, ground_truth):
+    def execute(self, truth):
         pass
 
-class DistortExampleStrategy1(DistortStrategy):
-    def distort_ground_truth(self, ground_truth):
-        return min(ground_truth + 1, CFG.MAX_RATING)
+class DistortDoNothingStrategy(DistortStrategy):
+    def execute(self, truth):
+        return truth
 
-"""
-def rating_function_1(claim):
-    return min(claim.value + 1, CFG.MAX_RATING)
+class DistortRoundUpStrategy(DistortStrategy):
+    def execute(self, truth):
+        return force_within_bounds( math.ceil(truth) )
 
-def distortion_fun_1(claim_value):
-    return min(claim_value + 1, CFG.MAX_RATING)
-"""
+class DistortUpWithinMeasurementError(DistortStrategy):
+    def execute(self, truth):
+        return force_within_bounds( round(truth + random.uniform(0, CFG.MEASUREMENT_ERROR/2)) )
