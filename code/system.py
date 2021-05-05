@@ -3,17 +3,26 @@ import random
 import config as CFG
 import agent
 from agent import Agent
-
+import behavior as beh
 
 class System:
 
-    def __init__(self):
-        self.agents = [Agent() for i in range(0,CFG.NUM_AGENTS)]
+    def __init__(self, reputation_strategy):
+        self.reputation_strategy = reputation_strategy
+        self.agents = [Agent(beh.RateExampleStrategy1(), beh.DistortExampleStrategy1()) for i in range(0,CFG.NUM_AGENTS)]
+
+    @property
+    def reputation_strategy(self):
+        return self._reputation_strategy
+
+    @reputation_strategy.setter
+    def reputation_strategy(self, reputation_strategy):
+        self._reputation_strategy = reputation_strategy
 
     def simulate(self):
         for _ in range(0,CFG.SIM_ROUND_MAX):
             self.make_claims_and_rate()
-            # recalculate reputations
+            self.calculate_global_reputations()
             # apply improvement methods
 
             # what is ideal division of tasks to functions
@@ -37,6 +46,13 @@ class System:
     def show(self):
         print("there are " + str(len(self.agents)) + " agents")
         for agent in self.agents:
-            agent.print_claims_ratings()
+            print("Agent #" + str(agent.ID), end = ": ")
+            print("Rep: " + str(agent.global_reputation))
+            if agent.claims:
+                for claim in agent.claims:
+                    print(claim)
 
-    #def calculate_global_reputations(self,):
+    def calculate_global_reputations(self):
+        for agent in self.agents:
+            agent.global_reputation = self.reputation_strategy.calculate_reputation(agent)
+

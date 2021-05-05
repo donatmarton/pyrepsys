@@ -1,49 +1,45 @@
 import random
 
 import config as CFG
+import behavior as beh
 
 class Agent:
     count = 0
-    def __init__(self):
+    def __init__(self, rating_strategy, distort_strategy):
         self.ID = Agent.count
         Agent.count += 1
-        self.global_reputation = 5 # TODO: add default reputation
+        self.global_reputation = CFG.INITIAL_REPUTATION
         self.claims = []
-        self.rating_function = rating_function_1
-        self.distort_function = distortion_fun_1
+        self.rating_strategy = rating_strategy
+        self.distort_strategy = distort_strategy
+
+    @property
+    def distort_strategy(self):
+        return self._distort_strategy
+
+    @distort_strategy.setter
+    def distort_strategy(self, distort_strategy):
+        self._distort_strategy = distort_strategy
+
+    @property
+    def rating_strategy(self):
+        return self._rating_strategy
+
+    @rating_strategy.setter
+    def rating_strategy(self, rating_strategy):
+        self._rating_strategy = rating_strategy
 
     def make_new_claim(self):
         ground_truth = random.randint(CFG.MIN_RATING, CFG.MAX_RATING)
-        distorted_claim = self.__distort_ground_truth(ground_truth)
+        distorted_claim = self.distort_strategy.distort_ground_truth(ground_truth)
         claim = Claim(self.ID, ground_truth, distorted_claim)
         self.claims.append(claim)
 
     def rate_claim(self, claim):
-        rating_value = self.rating_function(claim)
+        rating_value = self.rating_strategy.rate_claim(claim)
         rating = Rating(self.ID, rating_value)
         claim.add_rating(rating)
-
-    def __distort_ground_truth(self, true_value):
-        return self.distort_function(true_value)
-
-    def print_claims_ratings(self):
-        print("Agent #" + str(self.ID), end = ": ")
-        if not self.claims:
-            print("-")
-        else:
-            for claim in self.claims:
-                print(claim)
-    
-        #return "c{}-{}".format(self.value, "".join([str(x) for x in self.ratings]))
-        #"N-{} ({},{})".format(self.myid, str(self.myengagement), str(self.myatt))
-
-
-def rating_function_1(claim):
-    return min(claim.value + 1, CFG.MAX_RATING)
-
-def distortion_fun_1(claim_value):
-    return min(claim_value + 1, CFG.MAX_RATING)
-
+   
 class Claim:
     count = 0
     def __init__(self, author_ID, ground_truth, claim_value, stake=0):
