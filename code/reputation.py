@@ -11,8 +11,8 @@ class ReputationAverageStrategy(ReputationStrategy):
     def calculate_reputation(self, agent):
         scores = []
         for claim in agent.claims:
-            for rating in claim.ratings:
-                scores.append(rating.value)
+            for review in claim.reviews:
+                scores.append(review.value)
         if scores: 
             reputation = sum(scores) / len(scores)
         else: 

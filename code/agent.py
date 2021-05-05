@@ -11,6 +11,7 @@ class Agent:
         Agent.count += 1
         self.global_reputation = CFG.INITIAL_REPUTATION
         self.claims = []
+        self.reviews = []
         self.rating_strategy = rating_strategy
         self.distort_strategy = distort_strategy
 
@@ -40,8 +41,9 @@ class Agent:
 
     def rate_claim(self, claim):
         rating_value = self.rating_strategy.rate_claim(claim)
-        rating = Rating(self.ID, rating_value)
-        claim.add_rating(rating)
+        review = Review(self.ID, rating_value)
+        claim.add_review(review)
+        self.reviews.append(review)
    
 class Claim:
     count = 0
@@ -52,15 +54,15 @@ class Claim:
         self.ground_truth = ground_truth # TODO should be private or limited access something
         self.value = claim_value
         self.stake = stake
-        self.ratings = []
+        self.reviews = []
 
-    def add_rating(self,rating):
-        self.ratings.append(rating)
+    def add_review(self,review):
+        self.reviews.append(review)
 
     def __str__(self):
-        return "c{}-{}".format(self.value, "".join([str(x) for x in self.ratings]))
+        return "c{}-{}".format(self.value, "".join([str(r) for r in self.reviews]))
 
-class Rating:
+class Review:
     def __init__(self, author_ID, rating_value):
         self.author_ID = author_ID
         self.value = rating_value
