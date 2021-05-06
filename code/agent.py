@@ -2,7 +2,8 @@ import random
 
 import config as CFG
 import behavior as beh
-from helpers import force_within_bounds
+import helpers
+
 
 class Agent:
     count = 0
@@ -14,6 +15,7 @@ class Agent:
         self.reviews = []
         self.rating_strategy = rating_strategy
         self.distort_strategy = distort_strategy
+        self.weight = 1 #TODO unused, for weighted reputation calculation
 
     @property
     def distort_strategy(self):
@@ -34,7 +36,7 @@ class Agent:
     def make_new_claim(self):
         ground_truth = random.uniform(CFG.MIN_RATING, CFG.MAX_RATING)
         measurement_error = random.uniform(-1*CFG.MEASUREMENT_ERROR/2, CFG.MEASUREMENT_ERROR/2)
-        measured_claim = force_within_bounds(ground_truth + measurement_error)
+        measured_claim = helpers.force_within_bounds(ground_truth + measurement_error)
         distorted_claim = self.distort_strategy.execute(measured_claim)
         claim = Claim(self.ID, ground_truth, round(distorted_claim))
         self.claims.append(claim)
@@ -55,12 +57,13 @@ class Claim:
         self.value = claim_value
         self.stake = stake
         self.reviews = []
+        self.round_timestamp = helpers.current_sim_round
 
     def add_review(self,review):
         self.reviews.append(review)
 
     def __str__(self):
-        return "c{}-{}".format(self.value, "".join([str(r) for r in self.reviews]))
+        return "c{}a{}-{}".format(self.value, self.round_timestamp, "".join([str(r) for r in self.reviews]))
 
 class Review:
     def __init__(self, author_ID, rating_value):

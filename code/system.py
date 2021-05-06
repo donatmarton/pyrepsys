@@ -1,15 +1,18 @@
 import random
+import copy
 
 import config as CFG
 import agent
 from agent import Agent
 import behavior as beh
+import helpers
 
 class System:
 
     def __init__(self, reputation_strategy):
         self.reputation_strategy = reputation_strategy
         self.agents = [Agent(beh.RateHigherHalfRandom(), beh.DistortDoNothingStrategy()) for i in range(0,CFG.NUM_AGENTS)]
+        self.improvement_handler = None
 
     @property
     def reputation_strategy(self):
@@ -20,10 +23,10 @@ class System:
         self._reputation_strategy = reputation_strategy
 
     def simulate(self):
-        for _ in range(0,CFG.SIM_ROUND_MAX):
+        for sim_round in range(0,CFG.SIM_ROUND_MAX):
+            helpers.current_sim_round = sim_round
             self.make_claims_and_rate()
-            self.calculate_global_reputations()
-            # apply improvement methods
+            self.apply_improvements_and_reputation()
 
             # what is ideal division of tasks to functions
 
@@ -44,15 +47,18 @@ class System:
             rater.rate_claim(claim)
 
     def show(self):
-        print("there are " + str(len(self.agents)) + " agents")
+        print("Round #{} of 0..{}".format(helpers.current_sim_round, CFG.SIM_ROUND_MAX-1))
+        print("There are " + str(len(self.agents)) + " agents")
         for agent in self.agents:
-            print("Agent #" + str(agent.ID), end = ": ")
-            print("Rep: " + str(agent.global_reputation))
+            print("Agent #{:>2}".format(agent.ID), end = ": ")
+            print("Rep: {}".format(round(agent.global_reputation,2)))
             if agent.claims:
                 for claim in agent.claims:
+                    print("           ", end = "")
                     print(claim)
 
-    def calculate_global_reputations(self):
+    def apply_improvements_and_reputation(self):
+        #agents_copy = copy.deepcopy(self.agents)
+        self.improvement_handler.handle(self.agents)
         for agent in self.agents:
             agent.global_reputation = self.reputation_strategy.calculate_reputation(agent)
-
