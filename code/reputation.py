@@ -20,7 +20,6 @@ class ReputationAverageStrategy(ReputationStrategy):
         else: 
             reputation = CFG.INITIAL_REPUTATION
         return reputation
-        #return helpers.force_within_bounds( agent.weight * reputation )
 
 
 

@@ -1,5 +1,4 @@
 import random
-import copy
 
 import config as CFG
 import agent
@@ -58,7 +57,6 @@ class System:
                     print(claim)
 
     def apply_improvements_and_reputation(self):
-        #agents_copy = copy.deepcopy(self.agents)
         self.improvement_handler.handle(self.agents)
         for agent in self.agents:
             agent.global_reputation = self.reputation_strategy.calculate_reputation(agent)
