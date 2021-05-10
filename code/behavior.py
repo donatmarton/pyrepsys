@@ -3,7 +3,7 @@ import random
 import math
 
 from config import DefaultConfig as CFG
-from helpers import force_within_bounds
+from helpers import force_agent_exposed_bounds
 
 class RateStrategy(ABC):
     @abstractmethod
@@ -34,10 +34,10 @@ class DistortDoNothingStrategy(DistortStrategy):
     def execute(self, truth):
         return truth
 
-class DistortRoundUpStrategy(DistortStrategy):
+class DistortUpByOneAlways(DistortStrategy):
     def execute(self, truth):
-        return force_within_bounds( math.ceil(truth) )
+        return force_agent_exposed_bounds( truth + 1 )
 
-class DistortUpWithinMeasurementError(DistortStrategy):
+class DistortUpByOneRandom(DistortStrategy):
     def execute(self, truth):
-        return force_within_bounds( round(truth + random.uniform(0, CFG.MEASUREMENT_ERROR/2)) )
+        return force_agent_exposed_bounds( truth + random.randint(0,1) )

@@ -34,28 +34,28 @@ class Agent:
         self._rating_strategy = rating_strategy
 
     def make_new_claim(self):
-        ground_truth = random.uniform(CFG.MIN_RATING, CFG.MAX_RATING)
+        ground_truth = random.random()
         measurement_error = random.uniform(-1*CFG.MEASUREMENT_ERROR/2, CFG.MEASUREMENT_ERROR/2)
-        measured_claim = helpers.force_within_bounds(ground_truth + measurement_error)
-        distorted_claim = self.distort_strategy.execute(measured_claim)
-        claim = Claim(self.ID, ground_truth, round(distorted_claim))
+        measured_claim = helpers.force_internal_bounds(ground_truth + measurement_error)
+        distorted_claim = helpers.a2i(self.distort_strategy.execute(helpers.i2a(measured_claim)))
+        claim = Claim(self.ID, ground_truth, distorted_claim)
         self.claims.append(claim)
         return claim
 
     def rate_claim(self, claim):
-        rating_value = self.rating_strategy.rate_claim(claim)
-        review = Review(self.ID, rating_value)
+        review_score_ae = self.rating_strategy.rate_claim(claim)
+        review = Review(self.ID, helpers.a2i(review_score_ae))
         claim.add_review(review)
         self.reviews.append(review)
    
 class Claim:
     count = 0
-    def __init__(self, author_ID, ground_truth, claim_value, stake=0):
+    def __init__(self, author_ID, ground_truth_i, claim_score_i, stake=0):
         self.ID = Claim.count
         Claim.count += 1
         self.author_ID = author_ID
-        self.ground_truth = ground_truth # TODO should be private or limited access something
-        self.value = claim_value
+        self.ground_truth = ground_truth_i # TODO should be private or limited access something
+        self._score_i = claim_score_i
         self.stake = stake
         self.reviews = []
         self.round_timestamp = helpers.current_sim_round
@@ -63,13 +63,29 @@ class Claim:
     def add_review(self,review):
         self.reviews.append(review)
 
+    @property
+    def value(self):
+        return helpers.i2a(self._score_i)
+
+    @value.setter
+    def value(self, score_ae):
+        self._score_i = helpers.a2i(score_ae)
+
     def __str__(self):
-        return "c{}a{}-{}".format(self.value, self.round_timestamp, "".join([str(r) for r in self.reviews]))
+        return "c{}a{}-{}".format(self.value, self.round_timestamp, " ".join([str(r) for r in self.reviews]))
 
 class Review:
-    def __init__(self, author_ID, rating_value):
+    def __init__(self, author_ID, rating_score_i):
         self.author_ID = author_ID
-        self.value = rating_value
+        self._score_i = rating_score_i
+
+    @property
+    def value(self):
+        return helpers.i2a(self._score_i)
+
+    @value.setter
+    def value(self, score_ae):
+        self._score_i = helpers.a2i(score_ae)
 
     def __str__(self):
         return "{}".format(self.value)
