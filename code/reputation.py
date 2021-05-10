@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import copy
 
-import config as CFG
+from config import DefaultConfig as CFG
 import helpers
 
 class ReputationStrategy(ABC):

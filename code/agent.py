@@ -1,6 +1,6 @@
 import random
 
-import config as CFG
+from config import DefaultConfig as CFG
 import behavior as beh
 import helpers
 

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import random
 import math
 
-import config as CFG
+from config import DefaultConfig as CFG
 from helpers import force_within_bounds
 
 class RateStrategy(ABC):

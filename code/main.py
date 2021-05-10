@@ -7,16 +7,20 @@ import behavior as beh
 # TODO how to link to type of variable, e.g. in system make claims to agent class, so I can ctrl-jump to definition
 # TODO find a way to specify&control agent behavior from here, I dont want to "import behavior as beh" in system.py
 
-sys = system.System(rep.ReputationAverageStrategy())
+def simulate():
+    sys = system.System(rep.ReputationAverageStrategy())
 
-aging = rep.Aging()
-weights = rep.WeightedReputation()
-stakes = rep.StakeBasedReputation()
-aging.set_next(weights).set_next(stakes)
+    aging = rep.Aging()
+    weights = rep.WeightedReputation()
+    stakes = rep.StakeBasedReputation()
+    aging.set_next(weights).set_next(stakes)
 
-sys.improvement_handler = aging
+    sys.improvement_handler = aging
 
 
-sys.simulate()
-sys.show()
+    sys.simulate()
+    sys.show()
 
+
+if __name__ == "__main__":
+    simulate()

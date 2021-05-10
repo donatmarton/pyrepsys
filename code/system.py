@@ -1,6 +1,6 @@
 import random
 
-import config as CFG
+from config import DefaultConfig as CFG
 import agent
 from agent import Agent
 import behavior as beh
