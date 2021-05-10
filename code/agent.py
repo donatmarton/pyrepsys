@@ -40,6 +40,7 @@ class Agent:
         distorted_claim = self.distort_strategy.execute(measured_claim)
         claim = Claim(self.ID, ground_truth, round(distorted_claim))
         self.claims.append(claim)
+        return claim
 
     def rate_claim(self, claim):
         rating_value = self.rating_strategy.rate_claim(claim)

@@ -24,19 +24,26 @@ class System:
     def simulate(self):
         for sim_round in range(0,CFG.SIM_ROUND_MAX):
             helpers.current_sim_round = sim_round
-            self.make_claims_and_rate()
-            self.apply_improvements_and_reputation()
+            new_claims = self.make_claims()
+            self.rate_claims(new_claims)
+            self.apply_improvements()
+            self.calculate_reputations()
 
-            # what is ideal division of tasks to functions
-
-    def make_claims_and_rate(self):
+    def make_claims(self):
         # select agents that will claim
-        num_claimers = random.randint(0,len(self.agents))
+        num_claimers = random.randint(0,len(self.agents)) # TODO make this configurable
         claimers = random.sample(self.agents, num_claimers)
+        all_new_claims = []
         for claimer in claimers:
-            claimer.make_new_claim()
-            self.__rate_claim(claimer.claims[-1]) # -1 gets last claim from agent
-            # TODO: restricted access to claims ?
+            new_claim = claimer.make_new_claim()
+            all_new_claims.append(new_claim)
+        return all_new_claims
+            
+
+    def rate_claims(self, claims):
+        for claim in claims:
+            self.__rate_claim(claim)
+        # TODO: restricted access to claims ?
 
     def __rate_claim(self, claim):
         # select agents that will rate
@@ -56,7 +63,9 @@ class System:
                     print("           ", end = "")
                     print(claim)
 
-    def apply_improvements_and_reputation(self):
+    def apply_improvements(self):
         self.improvement_handler.handle(self.agents)
+
+    def calculate_reputations(self):
         for agent in self.agents:
             agent.global_reputation = self.reputation_strategy.calculate_reputation(agent)
