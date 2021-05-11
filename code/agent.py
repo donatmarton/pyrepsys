@@ -1,3 +1,5 @@
+import weakref
+
 from config import DefaultConfig as CFG
 import behavior as beh
 import helpers
@@ -36,22 +38,22 @@ class Agent:
         measurement_error = rng.uniform(-1*CFG.MEASUREMENT_ERROR/2, CFG.MEASUREMENT_ERROR/2)
         measured_claim = helpers.force_internal_bounds(ground_truth + measurement_error)
         distorted_claim = helpers.a2i(self.distort_strategy.execute(helpers.i2a(measured_claim)))
-        claim = Claim(self.ID, ground_truth, distorted_claim)
+        claim = Claim(weakref.ref(self), ground_truth, distorted_claim)
         self.claims.append(claim)
         return claim
 
     def rate_claim(self, claim):
         review_score_ae = self.rating_strategy.rate_claim(claim)
-        review = Review(self.ID, helpers.a2i(review_score_ae))
+        review = Review(weakref.ref(self), helpers.a2i(review_score_ae))
         claim.add_review(review)
         self.reviews.append(review)
    
 class Claim:
     count = 0
-    def __init__(self, author_ID, ground_truth_i, claim_score_i, stake=0):
+    def __init__(self, author, ground_truth_i, claim_score_i, stake=0):
         self.ID = Claim.count
         Claim.count += 1
-        self.author_ID = author_ID
+        self.author = author
         self.ground_truth = ground_truth_i # TODO should be private or limited access something
         self._score_i = claim_score_i
         self.stake = stake
@@ -73,8 +75,8 @@ class Claim:
         return "c{}a{}-{}".format(self.value, self.round_timestamp, " ".join([str(r) for r in self.reviews]))
 
 class Review:
-    def __init__(self, author_ID, rating_score_i):
-        self.author_ID = author_ID
+    def __init__(self, author, rating_score_i):
+        self.author = author
         self._score_i = rating_score_i
 
     @property
