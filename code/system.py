@@ -12,6 +12,7 @@ class System:
         self.reputation_strategy = reputation_strategy
         self.agents = [Agent(beh.RateHigherHalfRandom(), beh.DistortDoNothingStrategy()) for i in range(0,CFG.NUM_AGENTS)]
         self.improvement_handler = None
+        self.rng = random.Random()
 
     @property
     def reputation_strategy(self):
@@ -21,7 +22,8 @@ class System:
     def reputation_strategy(self, reputation_strategy):
         self._reputation_strategy = reputation_strategy
 
-    def simulate(self):
+    def simulate(self, seed=None):
+        self.rng.seed(seed)
         for sim_round in range(0,CFG.SIM_ROUND_MAX):
             helpers.current_sim_round = sim_round
             new_claims = self.make_claims()
@@ -31,11 +33,11 @@ class System:
 
     def make_claims(self):
         # select agents that will claim
-        num_claimers = random.randint(0,len(self.agents)) # TODO make this configurable
-        claimers = random.sample(self.agents, num_claimers)
+        num_claimers = self.rng.randint(0,len(self.agents)) # TODO make this configurable
+        claimers = self.rng.sample(self.agents, num_claimers)
         all_new_claims = []
         for claimer in claimers:
-            new_claim = claimer.make_new_claim()
+            new_claim = claimer.make_new_claim(self.rng)
             all_new_claims.append(new_claim)
         return all_new_claims
             
@@ -47,8 +49,8 @@ class System:
 
     def __rate_claim(self, claim):
         # select agents that will rate
-        num_raters = random.randint(0,CFG.NUM_MAX_RATERS)
-        raters = random.sample(self.agents, num_raters)
+        num_raters = self.rng.randint(0,CFG.NUM_MAX_RATERS)
+        raters = self.rng.sample(self.agents, num_raters)
         for rater in raters:
             rater.rate_claim(claim)
 

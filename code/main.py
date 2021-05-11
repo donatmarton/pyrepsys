@@ -1,3 +1,5 @@
+import random
+
 import system
 import reputation as rep
 import behavior as beh
@@ -17,8 +19,8 @@ def simulate():
 
     sys.improvement_handler = aging
 
-
-    sys.simulate()
+    seed = random.random()
+    sys.simulate(seed)
     sys.show()
 
 

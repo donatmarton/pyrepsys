@@ -1,5 +1,3 @@
-import random
-
 from config import DefaultConfig as CFG
 import behavior as beh
 import helpers
@@ -33,9 +31,9 @@ class Agent:
     def rating_strategy(self, rating_strategy):
         self._rating_strategy = rating_strategy
 
-    def make_new_claim(self):
-        ground_truth = random.random()
-        measurement_error = random.uniform(-1*CFG.MEASUREMENT_ERROR/2, CFG.MEASUREMENT_ERROR/2)
+    def make_new_claim(self, rng):
+        ground_truth = rng.random()
+        measurement_error = rng.uniform(-1*CFG.MEASUREMENT_ERROR/2, CFG.MEASUREMENT_ERROR/2)
         measured_claim = helpers.force_internal_bounds(ground_truth + measurement_error)
         distorted_claim = helpers.a2i(self.distort_strategy.execute(helpers.i2a(measured_claim)))
         claim = Claim(self.ID, ground_truth, distorted_claim)
