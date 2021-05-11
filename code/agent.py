@@ -15,7 +15,7 @@ class Agent:
         self.reviews = []
         self.rating_strategy = rating_strategy
         self.distort_strategy = distort_strategy
-        self.weight = 1 #TODO unused, for weighted reputation calculation
+        self.weight = 1
 
     @property
     def distort_strategy(self):
@@ -72,7 +72,10 @@ class Claim:
         self._score_i = helpers.a2i(score_ae)
 
     def __str__(self):
-        return "c{}a{}-{}".format(self.value, self.round_timestamp, " ".join([str(r) for r in self.reviews]))
+        #return "c{}a{}-{}".format(self.value, self.round_timestamp, " ".join([str(r) for r in self.reviews]))
+        return "c{}a{}-{}".format(self.value, self.round_timestamp, 
+            " ".join([str(r)+"w"+str(round(r.author().weight,2)) for r in self.reviews]))
+            
 
 class Review:
     def __init__(self, author, rating_score_i):

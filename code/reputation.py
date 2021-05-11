@@ -21,6 +21,25 @@ class ReputationAverageStrategy(ReputationStrategy):
             reputation = CFG.INITIAL_REPUTATION
         return reputation
 
+class ReputationWeightedAverage(ReputationStrategy):
+    def calculate_reputation(self, agent):
+        scores = []
+        weights = []
+        for claim in agent.claims:
+            for review in claim.reviews:
+                scores.append(review.value)
+                review_author = review.author()
+                assert review_author is not None
+                weights.append(review_author.weight)
+        if scores: 
+            weighted_sum = 0
+            for s, w in zip(scores,weights):
+                weighted_sum += s*w
+            reputation = weighted_sum/sum(weights)
+        else: 
+            reputation = CFG.INITIAL_REPUTATION
+        return reputation
+
 
 
 
@@ -58,13 +77,13 @@ class Aging(AbstractHandler):
         return super().handle(agents)
 
 
-class WeightedReputation(AbstractHandler):
+class Weights(AbstractHandler):
     """
     the better an agent's reputation, the more weight his reviews have
     """
     def handle(self, agents):
         for agent in agents:
-            agent.weight *= (agent.global_reputation - CFG.MIN_RATING) / (CFG.MAX_RATING - CFG.MIN_RATING)
+            agent.weight = (agent.global_reputation - CFG.MIN_RATING) / (CFG.MAX_RATING - CFG.MIN_RATING)
         return super().handle(agents)
 
 

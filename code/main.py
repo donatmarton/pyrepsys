@@ -10,10 +10,14 @@ import behavior as beh
 # TODO find a way to specify&control agent behavior from here, I dont want to "import behavior as beh" in system.py
 
 def simulate():
-    sys = system.System(rep.ReputationAverageStrategy())
+
+    reputation_strategy = rep.ReputationWeightedAverage()
+    #reputation_strategy = rep.ReputationAverageStrategy()
+
+    sys = system.System( reputation_strategy )
 
     aging = rep.Aging()
-    weights = rep.WeightedReputation()
+    weights = rep.Weights()
     stakes = rep.StakeBasedReputation()
     aging.set_next(weights).set_next(stakes)
 
