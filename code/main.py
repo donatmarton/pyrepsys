@@ -1,5 +1,6 @@
 import random
 import os
+import logging
 from datetime import datetime
 
 import system
@@ -48,9 +49,24 @@ def prepare_for_artifacts():
             pass
         os.symlink(simulation_dir_path, symlink, target_is_directory=True)
 
+        return simulation_dir_path
+
+def setup_logging(logfile_dir):
+        logfile_path = os.path.join( logfile_dir, "simulation.log" )
+
+        file_handler = logging.FileHandler(logfile_path)
+        stream_handler = logging.StreamHandler()
+
+        logging.basicConfig(
+            handlers=[file_handler, stream_handler], 
+            datefmt="%H:%M:%S",
+            format="%(asctime)s,%(msecs)03d %(levelname)s: [%(filename)s > %(funcName)s()] %(message)s",
+            level=logging.DEBUG)            
+
 
 
 
 if __name__ == "__main__":
-    prepare_for_artifacts()
+    simulation_dir_path = prepare_for_artifacts()
+    setup_logging(simulation_dir_path)
     simulate()
