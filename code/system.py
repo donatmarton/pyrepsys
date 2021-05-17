@@ -52,7 +52,7 @@ class System:
         num_raters = self.rng.randint(0,CFG.NUM_MAX_RATERS)
         raters = self.rng.sample(self.agents, num_raters)
         for rater in raters:
-            rater.rate_claim(claim)
+            rater.rate_claim(claim, self.rng)
 
     def show(self):
         print("Round #{} of 0..{}".format(helpers.current_sim_round, CFG.SIM_ROUND_MAX-1))

@@ -37,13 +37,15 @@ class Agent:
         ground_truth = rng.random()
         measurement_error = rng.uniform(-1*CFG.MEASUREMENT_ERROR/2, CFG.MEASUREMENT_ERROR/2)
         measured_claim = helpers.force_internal_bounds(ground_truth + measurement_error)
-        distorted_claim = helpers.a2i(self.distort_strategy.execute(helpers.i2a(measured_claim)))
+        distorted_claim = helpers.a2i(self.distort_strategy.execute(
+            helpers.i2a(measured_claim),
+            rng.random()))
         claim = Claim(weakref.ref(self), ground_truth, distorted_claim)
         self.claims.append(claim)
         return claim
 
-    def rate_claim(self, claim):
-        review_score_ae = self.rating_strategy.rate_claim(claim)
+    def rate_claim(self, claim, rng):
+        review_score_ae = self.rating_strategy.rate_claim(claim, rng.random())
         review = Review(weakref.ref(self), helpers.a2i(review_score_ae))
         claim.add_review(review)
         self.reviews.append(review)

@@ -26,7 +26,7 @@ def simulate():
 
     sys.improvement_handler = aging
 
-    seed = random.random()
+    seed = 10#random.random()
     sys.simulate(seed)
     sys.show()
 
