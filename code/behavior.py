@@ -1,13 +1,18 @@
 from abc import ABC, abstractmethod
 import random
-import math
 
 from config import DefaultConfig as CFG
 from helpers import force_agent_exposed_bounds
+from agent import Claim
 
-class RateStrategy(ABC):
+
+
+
+# ABSTRACT CLASSES:
+
+class BehaviorStrategy(ABC):
     @abstractmethod
-    def rate_claim(self, claim, random_seed=None):
+    def execute(self, data, random_seed=None):
         pass
 
     def rng(self, seed=None):
@@ -15,6 +20,33 @@ class RateStrategy(ABC):
             return random.Random(seed)
         else:
             return random
+
+class RateStrategy(BehaviorStrategy):
+    def execute(self, data, random_seed=None):
+        if isinstance(data, Claim):
+            return self.rate_claim(data, random_seed)
+        else:
+            raise TypeError
+
+    @abstractmethod
+    def rate_claim(self, claim, random_seed=None):
+        pass
+
+class DistortStrategy(BehaviorStrategy):
+    def execute(self, data, random_seed=None):
+        if isinstance(data, int) or isinstance(data, float):
+            return self.distort(data, random_seed)
+        else:
+            raise TypeError
+
+    @abstractmethod
+    def distort(self, truth, random_seed=None):
+        pass
+
+
+
+
+# CONCRETE RATE STRATEGIES:
 
 class RateRandomStrategy(RateStrategy):
     def rate_claim(self, claim, random_seed=None):
@@ -31,20 +63,16 @@ class RateHigherHalfRandom(RateStrategy):
 
 
 
-class DistortStrategy(ABC):
-    @abstractmethod
-    def execute(self, truth, random_seed=None):
-        pass
+# CONCRETE DISTORT STRATEGIES:
 
 class DistortDoNothingStrategy(DistortStrategy):
-    def execute(self, truth, random_seed=None):
+    def distort(self, truth, random_seed=None):
         return truth
 
 class DistortUpByOneAlways(DistortStrategy):
-    def execute(self, truth, random_seed=None):
+    def distort(self, truth, random_seed=None):
         return force_agent_exposed_bounds( truth + 1 )
 
 class DistortUpByOneRandom(DistortStrategy):
-    def execute(self, truth, random_seed=None):
-        #TODO use given seed
-        return force_agent_exposed_bounds( truth + random.randint(0,1) )
+    def distort(self, truth, random_seed=None):
+        return force_agent_exposed_bounds( truth + self.rng(random_seed).randint(0,1) )

@@ -1,7 +1,6 @@
 import weakref
 
 from config import DefaultConfig as CFG
-import behavior as beh
 import helpers
 
 
@@ -45,7 +44,7 @@ class Agent:
         return claim
 
     def rate_claim(self, claim, rng):
-        review_score_ae = self.rating_strategy.rate_claim(claim, rng.random())
+        review_score_ae = self.rating_strategy.execute(claim, rng.random())
         review = Review(weakref.ref(self), helpers.a2i(review_score_ae))
         claim.add_review(review)
         self.reviews.append(review)
