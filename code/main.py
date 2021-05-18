@@ -3,6 +3,8 @@ import os
 import logging
 from datetime import datetime
 
+import yaml
+
 import system
 import reputation as rep
 import behavior as beh
@@ -10,7 +12,11 @@ import behavior as beh
 
 
 
-def simulate():
+code_files_path = os.path.dirname( os.path.abspath(__file__) )
+project_root_path = os.path.join( code_files_path, os.pardir )
+simulation_artifacts_path = os.path.join( project_root_path, "simulation_artifacts" )
+
+def simulate(config_file):
 
     reputation_strategy = rep.ReputationWeightedAverage()
     #reputation_strategy = rep.ReputationAverageStrategy()
@@ -24,15 +30,24 @@ def simulate():
 
     sys.improvement_handler = aging
 
+    with open(config_file, 'r') as file:
+        config_full = yaml.safe_load(file)    
+
+    agents = config_full["agents"]
+    for agent in agents:
+        amount = agent["amount"]
+        assert type(amount) is int
+        rate_strategy = agent["rate_strategy"]
+        distort_strategy = agent["distort_strategy"]
+        ds = getattr(beh,distort_strategy)()
+        rs = getattr(beh,rate_strategy)()
+        sys.create_agents(rs, ds, amount)
+
     seed = 10#random.random()
     sys.simulate(seed)
-    sys.show()
+    #sys.show()
 
 def prepare_for_artifacts():
-        code_files_path = os.path.dirname( os.path.abspath(__file__) )
-        project_root_path = os.path.join( code_files_path, os.pardir )
-        simulation_artifacts_path = os.path.join( project_root_path, "simulation_artifacts" )
-
         now = datetime.now()
         # create sim dir name: run_YYYY-MM-DD_HH:MM:SS
         simulation_dir_name = now.strftime( "run_%Y-%m-%d_%H:%M:%S" )
@@ -67,4 +82,6 @@ def setup_logging(logfile_dir):
 if __name__ == "__main__":
     simulation_dir_path = prepare_for_artifacts()
     setup_logging(simulation_dir_path)
-    simulate()
+
+    config_file = os.path.join(code_files_path, "config.yaml")
+    simulate(config_file)

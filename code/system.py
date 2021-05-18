@@ -10,7 +10,7 @@ class System:
 
     def __init__(self, reputation_strategy):
         self.reputation_strategy = reputation_strategy
-        self.agents = [Agent(beh.RateHigherHalfRandom(), beh.DistortDoNothingStrategy()) for i in range(0,CFG.NUM_AGENTS)]
+        self.agents = []
         self.improvement_handler = None
         self.rng = random.Random()
 
@@ -21,6 +21,12 @@ class System:
     @reputation_strategy.setter
     def reputation_strategy(self, reputation_strategy):
         self._reputation_strategy = reputation_strategy
+
+    def create_agents(self, rate_strategy, distort_strategy, amount=1):
+        for _ in range(0,amount):
+            new_agent = Agent(rate_strategy, distort_strategy)
+            self.agents.append(new_agent)
+            logging.debug("Created: " + str(new_agent))
 
     def simulate(self, seed=None):
         self.log_state()
