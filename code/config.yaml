@@ -1,3 +1,4 @@
+reputation_strategy: "ReputationWeightedAverage"
 agents:
     - amount: 10
       distort_strategy: "DistortDoNothingStrategy"

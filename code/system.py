@@ -8,8 +8,8 @@ import helpers
 
 class System:
 
-    def __init__(self, reputation_strategy):
-        self.reputation_strategy = reputation_strategy
+    def __init__(self, reputation_strategy=None):
+        self._reputation_strategy = reputation_strategy
         self.agents = []
         self.improvement_handler = None
         self.rng = random.Random()
@@ -21,6 +21,7 @@ class System:
     @reputation_strategy.setter
     def reputation_strategy(self, reputation_strategy):
         self._reputation_strategy = reputation_strategy
+        logging.info("Reputation strategy set to '{}'".format(reputation_strategy))
 
     def create_agents(self, rate_strategy, distort_strategy, amount=1):
         for _ in range(0,amount):
@@ -29,6 +30,7 @@ class System:
             logging.debug("Created: " + str(new_agent))
 
     def simulate(self, seed=None):
+        assert self.reputation_strategy is not None
         self.log_state()
         self.rng.seed(seed)
         logging.debug("RNG seeded with '{}'".format(seed))

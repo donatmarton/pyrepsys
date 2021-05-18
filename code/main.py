@@ -17,12 +17,8 @@ project_root_path = os.path.join( code_files_path, os.pardir )
 simulation_artifacts_path = os.path.join( project_root_path, "simulation_artifacts" )
 
 def simulate(config_file):
-
-    reputation_strategy = rep.ReputationWeightedAverage()
-    #reputation_strategy = rep.ReputationAverageStrategy()
-
-    sys = system.System( reputation_strategy )
-
+    sys = system.System()
+    
     aging = rep.Aging()
     weights = rep.Weights()
     stakes = rep.StakeBasedReputation()
@@ -33,14 +29,18 @@ def simulate(config_file):
     with open(config_file, 'r') as file:
         config_full = yaml.safe_load(file)    
 
+    cfg_reputation_strategy = config_full["reputation_strategy"]
+    reputation_strategy = getattr(rep,cfg_reputation_strategy)()
+    sys.reputation_strategy = reputation_strategy
+
     agents = config_full["agents"]
     for agent in agents:
         amount = agent["amount"]
         assert type(amount) is int
-        rate_strategy = agent["rate_strategy"]
-        distort_strategy = agent["distort_strategy"]
-        ds = getattr(beh,distort_strategy)()
-        rs = getattr(beh,rate_strategy)()
+        cfg_rate_strategy = agent["rate_strategy"]
+        cfg_distort_strategy = agent["distort_strategy"]
+        ds = getattr(beh,cfg_distort_strategy)()
+        rs = getattr(beh,cfg_rate_strategy)()
         sys.create_agents(rs, ds, amount)
 
     seed = 10#random.random()
