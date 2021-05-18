@@ -80,9 +80,4 @@ class System:
         logging.info("There are " + str(len(self.agents)) + " agents")
         logging.info("{:^9} {:^30} {:^30}".format("#","DISTORT STRATEGY", "RATING STRATEGY"))
         for agent in self.agents:
-            message = "Agent {:>2}: {:<30} {:<30}".format(
-                agent.ID,
-                type(agent._distort_strategy).__name__,
-                type(agent._rating_strategy).__name__
-            )
-            logging.info(message)
+            logging.info(str(agent))

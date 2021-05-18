@@ -48,6 +48,13 @@ class Agent:
         review = Review(weakref.ref(self), helpers.a2i(review_score_ae))
         claim.add_review(review)
         self.reviews.append(review)
+
+    def __str__(self):
+        return "Agent {:>2}: {:<30} {:<30}".format(
+                self.ID,
+                type(self._distort_strategy).__name__,
+                type(self._rating_strategy).__name__
+        )
    
 class Claim:
     count = 0
