@@ -11,7 +11,7 @@ class System:
     def __init__(self, reputation_strategy=None):
         self._reputation_strategy = reputation_strategy
         self.agents = []
-        self.improvement_handler = None
+        self._improvement_handler = None
         self.rng = random.Random()
 
     @property
@@ -22,6 +22,15 @@ class System:
     def reputation_strategy(self, reputation_strategy):
         self._reputation_strategy = reputation_strategy
         logging.info("Reputation strategy set to '{}'".format(reputation_strategy))
+
+    @property
+    def improvement_handler(self):
+        return self._improvement_handler
+
+    @improvement_handler.setter
+    def improvement_handler(self, improvement_handler):
+        self._improvement_handler = improvement_handler
+        logging.info("Improvement handler entry set to '{}'".format(improvement_handler))
 
     def create_agents(self, rate_strategy, distort_strategy, amount=1):
         for _ in range(0,amount):

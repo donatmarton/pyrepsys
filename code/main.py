@@ -19,19 +19,23 @@ simulation_artifacts_path = os.path.join( project_root_path, "simulation_artifac
 def simulate(config_file):
     sys = system.System()
     
-    aging = rep.Aging()
-    weights = rep.Weights()
-    stakes = rep.StakeBasedReputation()
-    aging.set_next(weights).set_next(stakes)
-
-    sys.improvement_handler = aging
-
     with open(config_file, 'r') as file:
         config_full = yaml.safe_load(file)    
 
     cfg_reputation_strategy = config_full["reputation_strategy"]
     reputation_strategy = getattr(rep,cfg_reputation_strategy)()
     sys.reputation_strategy = reputation_strategy
+
+    cfg_improvement_handlers = config_full["improvement_handlers"]
+    assert len(cfg_improvement_handlers) > 0
+    improvement_handlers = []
+    for cfg_handler in cfg_improvement_handlers:
+        handler = getattr(rep, cfg_handler)()
+        improvement_handlers.append(handler)
+    for i, handler in enumerate(improvement_handlers):
+        if i < len(improvement_handlers)-1:
+            handler.set_next(improvement_handlers[i+1])
+    sys.improvement_handler = improvement_handlers[0]
 
     agents = config_full["agents"]
     for agent in agents:
