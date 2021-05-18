@@ -73,7 +73,7 @@ class Aging(AbstractHandler):
             for claim in copy.copy( agent.claims ):
                 if helpers.current_sim_round - claim.round_timestamp > CFG.AGING_LIMIT:
                     agent.claims.remove(claim)
-                    # also remove from an agent's own reviews list
+                    
         return super().handle(agents)
 
 

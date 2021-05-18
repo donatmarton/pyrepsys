@@ -55,7 +55,7 @@ class Claim:
         self.ID = Claim.count
         Claim.count += 1
         self.author = author
-        self.ground_truth = ground_truth_i # TODO should be private or limited access something
+        self.ground_truth = ground_truth_i
         self._score_i = claim_score_i
         self.stake = stake
         self.reviews = []
@@ -73,7 +73,6 @@ class Claim:
         self._score_i = helpers.a2i(score_ae)
 
     def __str__(self):
-        #return "c{}a{}-{}".format(self.value, self.round_timestamp, " ".join([str(r) for r in self.reviews]))
         return "c{}a{}-{}".format(self.value, self.round_timestamp, 
             " ".join([str(r)+"w"+str(round(r.author().weight,2)) for r in self.reviews]))
             

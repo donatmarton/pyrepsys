@@ -1,5 +1,3 @@
-#TODO: refactor handling config so 1) its easy to switch out 2) included into system at a single point 
-
 class DefaultConfig:
     NUM_AGENTS=100
     NUM_MAX_RATERS=10

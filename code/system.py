@@ -1,7 +1,6 @@
 import random
 
 from config import DefaultConfig as CFG
-import agent
 from agent import Agent
 import behavior as beh
 import helpers
@@ -33,7 +32,7 @@ class System:
 
     def make_claims(self):
         # select agents that will claim
-        num_claimers = self.rng.randint(0,len(self.agents)) # TODO make this configurable
+        num_claimers = self.rng.randint(0,len(self.agents))
         claimers = self.rng.sample(self.agents, num_claimers)
         all_new_claims = []
         for claimer in claimers:
@@ -45,7 +44,6 @@ class System:
     def rate_claims(self, claims):
         for claim in claims:
             self.__rate_claim(claim)
-        # TODO: restricted access to claims ?
 
     def __rate_claim(self, claim):
         # select agents that will rate
