@@ -1,4 +1,5 @@
 import random
+import logging
 
 from config import DefaultConfig as CFG
 from agent import Agent
@@ -22,9 +23,12 @@ class System:
         self._reputation_strategy = reputation_strategy
 
     def simulate(self, seed=None):
+        self.log_state()
         self.rng.seed(seed)
+        logging.debug("RNG seeded with '{}'".format(seed))
         for sim_round in range(0,CFG.SIM_ROUND_MAX):
             helpers.current_sim_round = sim_round
+            logging.debug("Beginning round #{}".format(sim_round))
             new_claims = self.make_claims()
             self.rate_claims(new_claims)
             self.apply_improvements()
@@ -69,3 +73,16 @@ class System:
     def calculate_reputations(self):
         for agent in self.agents:
             agent.global_reputation = self.reputation_strategy.calculate_reputation(agent)
+
+    def log_state(self):
+        logging.info("Reputation strategy: '{}'".format(type(self.reputation_strategy).__name__))
+        logging.info("Improvement handler chain entry point: '{}'".format(type(self.improvement_handler).__name__))
+        logging.info("There are " + str(len(self.agents)) + " agents")
+        logging.info("{:^9} {:^30} {:^30}".format("#","DISTORT STRATEGY", "RATING STRATEGY"))
+        for agent in self.agents:
+            message = "Agent {:>2}: {:<30} {:<30}".format(
+                agent.ID,
+                type(agent._distort_strategy).__name__,
+                type(agent._rating_strategy).__name__
+            )
+            logging.info(message)
