@@ -47,7 +47,8 @@ def simulate(config_file):
         rs = getattr(beh,cfg_rate_strategy)()
         sys.create_agents(rs, ds, amount)
 
-    seed = 10#random.random()
+    seed = config_full["seed"]
+
     sys.simulate(seed)
     #sys.show()
 

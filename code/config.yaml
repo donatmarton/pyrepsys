@@ -5,6 +5,7 @@ improvement_handlers:
   - "Aging"
   - "Weights"
   - "StakeBasedReputation"
+seed: 10 #leave empty for random
 agents:
   - amount: 10
     distort_strategy: "DistortDoNothingStrategy"
