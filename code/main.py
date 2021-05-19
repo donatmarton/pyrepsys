@@ -15,42 +15,49 @@ import behavior as beh
 code_files_path = os.path.dirname( os.path.abspath(__file__) )
 project_root_path = os.path.join( code_files_path, os.pardir )
 simulation_artifacts_path = os.path.join( project_root_path, "simulation_artifacts" )
+config_files_path = os.path.join(code_files_path, "configs")
 
-def simulate(config_file):
-    sys = system.System()
+def simulate(scenarios):
     
-    with open(config_file, 'r') as file:
-        config_full = yaml.safe_load(file)    
+    sys = system.System()
 
-    cfg_reputation_strategy = config_full["reputation_strategy"]
-    reputation_strategy = getattr(rep,cfg_reputation_strategy)()
-    sys.reputation_strategy = reputation_strategy
+    for scenario in scenarios:
+        logging.info("Beginning new scenario from '{}'".format(scenario))
 
-    cfg_improvement_handlers = config_full["improvement_handlers"]
-    assert len(cfg_improvement_handlers) > 0
-    improvement_handlers = []
-    for cfg_handler in cfg_improvement_handlers:
-        handler = getattr(rep, cfg_handler)()
-        improvement_handlers.append(handler)
-    for i, handler in enumerate(improvement_handlers):
-        if i < len(improvement_handlers)-1:
-            handler.set_next(improvement_handlers[i+1])
-    sys.improvement_handler = improvement_handlers[0]
+        with open(scenario, 'r') as file:
+            config_full = yaml.safe_load(file)    
 
-    agents = config_full["agents"]
-    for agent in agents:
-        amount = agent["amount"]
-        assert type(amount) is int
-        cfg_rate_strategy = agent["rate_strategy"]
-        cfg_distort_strategy = agent["distort_strategy"]
-        ds = getattr(beh,cfg_distort_strategy)()
-        rs = getattr(beh,cfg_rate_strategy)()
-        sys.create_agents(rs, ds, amount)
+        cfg_reputation_strategy = config_full["reputation_strategy"]
+        reputation_strategy = getattr(rep,cfg_reputation_strategy)()
+        sys.reputation_strategy = reputation_strategy
 
-    seed = config_full["seed"]
+        cfg_improvement_handlers = config_full["improvement_handlers"]
+        assert len(cfg_improvement_handlers) > 0
+        improvement_handlers = []
+        for cfg_handler in cfg_improvement_handlers:
+            handler = getattr(rep, cfg_handler)()
+            improvement_handlers.append(handler)
+        for i, handler in enumerate(improvement_handlers):
+            if i < len(improvement_handlers)-1:
+                handler.set_next(improvement_handlers[i+1])
+        sys.improvement_handler = improvement_handlers[0]
 
-    sys.simulate(seed)
-    #sys.show()
+        agents = config_full["agents"]
+        for agent in agents:
+            amount = agent["amount"]
+            assert type(amount) is int
+            cfg_rate_strategy = agent["rate_strategy"]
+            cfg_distort_strategy = agent["distort_strategy"]
+            ds = getattr(beh,cfg_distort_strategy)()
+            rs = getattr(beh,cfg_rate_strategy)()
+            sys.create_agents(rs, ds, amount)
+
+        seed = config_full["seed"]
+
+        sys.simulate(seed)
+        #sys.show()
+
+        sys.reset_system()
 
 def prepare_for_artifacts():
         now = datetime.now()
@@ -88,5 +95,7 @@ if __name__ == "__main__":
     simulation_dir_path = prepare_for_artifacts()
     setup_logging(simulation_dir_path)
 
-    config_file = os.path.join(code_files_path, "config.yaml")
-    simulate(config_file)
+    config_file_1 = os.path.join(config_files_path, "config.yaml")
+    config_file_2 = os.path.join(config_files_path, "alt_config.yaml")
+    scenarios = [config_file_1, config_file_2]
+    simulate(scenarios)
