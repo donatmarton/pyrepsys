@@ -9,7 +9,7 @@ class Agent:
     def __init__(self, rating_strategy, distort_strategy):
         self.ID = Agent.count
         Agent.count += 1
-        self.global_reputation = config.DefaultConfig.INITIAL_REPUTATION
+        self.global_reputation = config.get("INITIAL_REPUTATION")
         self.claims = []
         self.reviews = []
         self.rating_strategy = rating_strategy
@@ -37,7 +37,8 @@ class Agent:
 
     def make_new_claim(self, rng):
         ground_truth = rng.random()
-        measurement_error = rng.uniform(-1*config.DefaultConfig.MEASUREMENT_ERROR/2, config.DefaultConfig.MEASUREMENT_ERROR/2)
+        cfg_MEASUREMENT_ERROR = config.get("MEASUREMENT_ERROR")
+        measurement_error = rng.uniform(-1*cfg_MEASUREMENT_ERROR/2, cfg_MEASUREMENT_ERROR/2)
         measured_claim = helpers.force_internal_bounds(ground_truth + measurement_error)
         distorted_claim = helpers.a2i(self.distort_strategy.execute(
             helpers.i2a(measured_claim),

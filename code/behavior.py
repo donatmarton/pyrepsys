@@ -50,15 +50,20 @@ class DistortStrategy(BehaviorStrategy):
 
 class RateRandomStrategy(RateStrategy):
     def rate_claim(self, claim, random_seed=None):
-        return self.rng(random_seed).randint(config.DefaultConfig.MIN_RATING, config.DefaultConfig.MAX_RATING)
+        min_rating = config.get("MIN_RATING")
+        max_rating = config.get("MAX_RATING")
+        return self.rng(random_seed).randint(min_rating, max_rating)
 
 class RateLowerHalfRandom(RateStrategy):
     def rate_claim(self, claim, random_seed=None):
-        return self.rng(random_seed).randint(config.DefaultConfig.MIN_RATING, config.DefaultConfig.MAX_RATING//2)
+        min_rating = config.get("MIN_RATING")
+        max_rating = config.get("MAX_RATING")
+        return self.rng(random_seed).randint(min_rating, max_rating//2)
 
 class RateHigherHalfRandom(RateStrategy):
     def rate_claim(self, claim, random_seed=None):
-        return self.rng(random_seed).randint(config.DefaultConfig.MAX_RATING//2, config.DefaultConfig.MAX_RATING)
+        max_rating = config.get("MAX_RATING")
+        return self.rng(random_seed).randint(max_rating//2, max_rating)
 
 
 

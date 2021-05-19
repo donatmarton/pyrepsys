@@ -18,7 +18,7 @@ class ReputationAverageStrategy(ReputationStrategy):
         if scores: 
             reputation = sum(scores) / len(scores)
         else: 
-            reputation = config.DefaultConfig.INITIAL_REPUTATION
+            reputation = config.get("INITIAL_REPUTATION")
         return reputation
 
 class ReputationWeightedAverage(ReputationStrategy):
@@ -37,7 +37,7 @@ class ReputationWeightedAverage(ReputationStrategy):
                 weighted_sum += s*w
             reputation = weighted_sum/sum(weights)
         else: 
-            reputation = config.DefaultConfig.INITIAL_REPUTATION
+            reputation = config.get("INITIAL_REPUTATION")
         return reputation
 
 
@@ -69,9 +69,10 @@ class AbstractHandler(Handler):
 
 class Aging(AbstractHandler):
     def handle(self, agents):
+        aging_limit = config.get("AGING_LIMIT")
         for agent in agents:
             for claim in copy.copy( agent.claims ):
-                if helpers.current_sim_round - claim.round_timestamp > config.DefaultConfig.AGING_LIMIT:
+                if helpers.current_sim_round - claim.round_timestamp > aging_limit:
                     agent.claims.remove(claim)
                     
         return super().handle(agents)
@@ -82,8 +83,10 @@ class Weights(AbstractHandler):
     the better an agent's reputation, the more weight his reviews have
     """
     def handle(self, agents):
+        min_rating = config.get("MIN_RATING")
+        max_rating = config.get("MAX_RATING")
         for agent in agents:
-            agent.weight = (agent.global_reputation - config.DefaultConfig.MIN_RATING) / (config.DefaultConfig.MAX_RATING - config.DefaultConfig.MIN_RATING)
+            agent.weight = (agent.global_reputation - min_rating) / (max_rating - min_rating)
         return super().handle(agents)
 
 

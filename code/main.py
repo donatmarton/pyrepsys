@@ -47,7 +47,7 @@ def prepare_for_artifacts():
 
         return simulation_dir_path
 
-def setup_logging(logfile_dir):
+def setup_logging(logfile_dir, level):
         logfile_path = os.path.join( logfile_dir, "simulation.log" )
 
         file_handler = logging.FileHandler(logfile_path)
@@ -57,14 +57,14 @@ def setup_logging(logfile_dir):
             handlers=[file_handler, stream_handler], 
             datefmt="%H:%M:%S",
             format="%(asctime)s,%(msecs)03d %(levelname)s: [%(filename)s > %(funcName)s()] %(message)s",
-            level=logging.DEBUG)            
+            level=level)
 
 
 
 
 if __name__ == "__main__":
     simulation_dir_path = prepare_for_artifacts()
-    setup_logging(simulation_dir_path)
+    setup_logging(simulation_dir_path, logging.DEBUG)
 
     default_config_name = "default_config.yaml"
     scenarios = [

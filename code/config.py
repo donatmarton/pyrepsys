@@ -12,8 +12,12 @@ class Configurator:
     def __init__(self):
         self._default_config = {}
         self._active_config = {}
+        self.was_defaulted = False
 
     def read_configuration(self, config_file_name):
+        if self.was_defaulted:
+            logging.warning("Configurator has defaulted at least one parameter since last config read-in, is this ok?")
+            self.was_defaulted = False
         self._active_config = self._config_from_file_to_memory(config_file_name)
 
     def read_default_configuration(self, default_config_file_name):
@@ -31,9 +35,10 @@ class Configurator:
         except KeyError:
             if allow_default:
                 try:
-                    logging.warning(
+                    logging.debug(
                         "'{}' not in active config, fetching from default config instead".format(config_name))
                     cfg_value = self._default_config[config_name]
+                    self.was_defaulted = True
                 except KeyError:
                     logging.error("'{}' is not part of the default config".format(config_name))
                     raise
@@ -77,22 +82,4 @@ class Configurator:
         return seed
 
 configurator = Configurator()
-
-class DefaultConfig:
-    NUM_AGENTS=100
-    NUM_MAX_RATERS=10
-
-    MIN_RATING = 1
-    MAX_RATING = 9
-    DECIMAL_PRECISION = 0 # 0 for int
-
-    INITIAL_REPUTATION = 5 # in user-facing range and precision
-
-    MEASUREMENT_ERROR = 0.1 # in internal 0..1 range
-
-    SIM_ROUND_MAX = 5
-    SIM_ROUND_MIN = 1
-
-    AGING_LIMIT = 2
-    # 0 to only allow from current round, 1 to allow from one before too ...
-
+get = configurator.get

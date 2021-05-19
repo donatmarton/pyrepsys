@@ -7,7 +7,9 @@ current_sim_round = 0
 
 
 def force_agent_exposed_bounds(score):
-    return max( min(score, config.DefaultConfig.MAX_RATING), config.DefaultConfig.MIN_RATING)
+    min_rating = config.get("MIN_RATING")
+    max_rating = config.get("MAX_RATING")
+    return max( min(score, max_rating), min_rating)
 
 def force_internal_bounds(score):
     return max( min(score, 1), 0)
@@ -16,9 +18,9 @@ def internal_to_agent(score):
     """
     Transforms an internal score from [0..1] to agent-exposed score
     """
-    min_val = config.DefaultConfig.MIN_RATING
-    max_val = config.DefaultConfig.MAX_RATING
-    num_decimals = config.DefaultConfig.DECIMAL_PRECISION
+    min_val = config.get("MIN_RATING")
+    max_val = config.get("MAX_RATING")
+    num_decimals = config.get("DECIMAL_PRECISION")
 
     value_in_range = min_val + (max_val - min_val) * score
     rounded_in_range = round(value_in_range, num_decimals)
@@ -29,8 +31,8 @@ def agent_to_internal(score):
     """
     Transforms an agent-exposed score into internal
     """
-    min_val = config.DefaultConfig.MIN_RATING
-    max_val = config.DefaultConfig.MAX_RATING
+    min_val = config.get("MIN_RATING")
+    max_val = config.get("MAX_RATING")
     
     internal_value = (score - min_val) / (max_val - min_val)
     return internal_value

@@ -2,7 +2,6 @@ import random
 import logging
 
 import config
-CFG = config.DefaultConfig
 from agent import Agent
 import behavior as beh
 import helpers
@@ -44,7 +43,7 @@ class System:
         self.log_state()
         self.rng.seed(seed)
         logging.debug("RNG seeded with '{}'".format(seed))
-        for sim_round in range(0,CFG.SIM_ROUND_MAX):
+        for sim_round in range(0,config.get("SIM_ROUND_MAX")):
             helpers.current_sim_round = sim_round
             logging.debug("Beginning round #{}".format(sim_round))
             new_claims = self.make_claims()
@@ -68,13 +67,13 @@ class System:
 
     def __rate_claim(self, claim):
         # select agents that will rate
-        num_raters = self.rng.randint(0,CFG.NUM_MAX_RATERS)
+        num_raters = self.rng.randint(0,config.get("NUM_MAX_RATERS"))
         raters = self.rng.sample(self.agents, num_raters)
         for rater in raters:
             rater.rate_claim(claim, self.rng)
 
     def show(self):
-        print("Round #{} of 0..{}".format(helpers.current_sim_round, CFG.SIM_ROUND_MAX-1))
+        print("Round #{} of 0..{}".format(helpers.current_sim_round, config.get("SIM_ROUND_MAX")-1))
         print("There are " + str(len(self.agents)) + " agents")
         for agent in self.agents:
             print("Agent #{:>2}".format(agent.ID), end = ": ")
