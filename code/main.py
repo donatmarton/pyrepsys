@@ -14,11 +14,13 @@ import helpers
 
 
 def simulate(scenarios):
+    logging.info("Simulation started")
+    logging.info("Scenarios planned: {}".format(scenarios))
     
     sys = system.System()
 
     for scenario in scenarios:
-        logging.info("Beginning new scenario: '{}'".format(scenario))
+        logging.info("Beginning scenario: '{}'".format(scenario))
 
         seed = configure_system(sys, scenario)
 
@@ -26,6 +28,8 @@ def simulate(scenarios):
         #sys.show()
 
         sys.reset_system()
+    
+    logging.info("Simulation finished")
 
 def prepare_for_artifacts():
         now = datetime.now()
