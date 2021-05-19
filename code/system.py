@@ -85,7 +85,10 @@ class System:
                     print(claim)
 
     def apply_improvements(self):
-        self.improvement_handler.handle(self.agents)
+        if self.improvement_handler is None:
+            logging.warning("Improvements NOT performed as none were given.")
+        else:
+            self.improvement_handler.handle(self.agents)
 
     def calculate_reputations(self):
         for agent in self.agents:
