@@ -21,7 +21,7 @@ class System:
     @reputation_strategy.setter
     def reputation_strategy(self, reputation_strategy):
         self._reputation_strategy = reputation_strategy
-        logging.info("Reputation strategy set to '{}'".format(reputation_strategy))
+        logging.info("Reputation strategy set to '{}'".format(type(reputation_strategy)))
 
     @property
     def improvement_handler(self):
@@ -30,7 +30,7 @@ class System:
     @improvement_handler.setter
     def improvement_handler(self, improvement_handler):
         self._improvement_handler = improvement_handler
-        logging.info("Improvement handler entry set to '{}'".format(improvement_handler))
+        logging.info("Improvement handler entry set to '{}'".format(type(improvement_handler)))
 
     def create_agents(self, rate_strategy, distort_strategy, amount=1):
         for _ in range(0,amount):
