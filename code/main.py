@@ -20,36 +20,7 @@ def simulate(scenarios):
     for scenario in scenarios:
         logging.info("Beginning new scenario: '{}'".format(scenario))
 
-        scenario_path = os.path.join(helpers.config_files_path, scenario)
-        with open(scenario_path, 'r') as file:
-            config_full = yaml.safe_load(file)    
-
-        cfg_reputation_strategy = config_full["reputation_strategy"]
-        reputation_strategy = getattr(rep,cfg_reputation_strategy)()
-        sys.reputation_strategy = reputation_strategy
-
-        cfg_improvement_handlers = config_full["improvement_handlers"]
-        assert len(cfg_improvement_handlers) > 0
-        improvement_handlers = []
-        for cfg_handler in cfg_improvement_handlers:
-            handler = getattr(rep, cfg_handler)()
-            improvement_handlers.append(handler)
-        for i, handler in enumerate(improvement_handlers):
-            if i < len(improvement_handlers)-1:
-                handler.set_next(improvement_handlers[i+1])
-        sys.improvement_handler = improvement_handlers[0]
-
-        agents = config_full["agents"]
-        for agent in agents:
-            amount = agent["amount"]
-            assert type(amount) is int
-            cfg_rate_strategy = agent["rate_strategy"]
-            cfg_distort_strategy = agent["distort_strategy"]
-            ds = getattr(beh,cfg_distort_strategy)()
-            rs = getattr(beh,cfg_rate_strategy)()
-            sys.create_agents(rs, ds, amount)
-
-        seed = config_full["seed"]
+        seed = configure_system(sys, scenario)
 
         sys.simulate(seed)
         #sys.show()
@@ -84,6 +55,41 @@ def setup_logging(logfile_dir):
             datefmt="%H:%M:%S",
             format="%(asctime)s,%(msecs)03d %(levelname)s: [%(filename)s > %(funcName)s()] %(message)s",
             level=logging.DEBUG)            
+
+def configure_system(system, config_file_name):
+    logging.info("Configuring from '{}'".format(config_file_name))
+
+    config_file_path = os.path.join(helpers.config_files_path, config_file_name)
+    with open(config_file_path, 'r') as file:
+        config_root = yaml.safe_load(file)    
+
+    cfg_reputation_strategy = config_root["reputation_strategy"]
+    reputation_strategy = getattr(rep,cfg_reputation_strategy)()
+    system.reputation_strategy = reputation_strategy
+
+    cfg_improvement_handlers = config_root["improvement_handlers"]
+    assert len(cfg_improvement_handlers) > 0
+    improvement_handlers = []
+    for cfg_handler in cfg_improvement_handlers:
+        handler = getattr(rep, cfg_handler)()
+        improvement_handlers.append(handler)
+    for i, handler in enumerate(improvement_handlers):
+        if i < len(improvement_handlers)-1:
+            handler.set_next(improvement_handlers[i+1])
+    system.improvement_handler = improvement_handlers[0]
+
+    agents = config_root["agents"]
+    for agent in agents:
+        amount = agent["amount"]
+        assert type(amount) is int
+        cfg_rate_strategy = agent["rate_strategy"]
+        cfg_distort_strategy = agent["distort_strategy"]
+        ds = getattr(beh,cfg_distort_strategy)()
+        rs = getattr(beh,cfg_rate_strategy)()
+        system.create_agents(rs, ds, amount)
+
+    seed = config_root["seed"]
+    return seed
 
 
 
