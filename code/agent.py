@@ -16,6 +16,9 @@ class Agent:
         self.distort_strategy = distort_strategy
         self.weight = 1
 
+    def __del__(self):
+        Agent.count -= 1
+
     @property
     def distort_strategy(self):
         return self._distort_strategy
@@ -67,6 +70,9 @@ class Claim:
         self.stake = stake
         self.reviews = []
         self.round_timestamp = helpers.current_sim_round
+
+    def __del__(self):
+        Claim.count -= 1
 
     def add_review(self,review):
         self.reviews.append(review)
