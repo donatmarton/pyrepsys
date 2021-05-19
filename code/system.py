@@ -1,7 +1,8 @@
 import random
 import logging
 
-from config import DefaultConfig as CFG
+import config
+CFG = config.DefaultConfig
 from agent import Agent
 import behavior as beh
 import helpers

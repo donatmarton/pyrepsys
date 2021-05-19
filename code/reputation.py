@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import copy
 
-from config import DefaultConfig as CFG
+import config
 import helpers
 
 class ReputationStrategy(ABC):
@@ -18,7 +18,7 @@ class ReputationAverageStrategy(ReputationStrategy):
         if scores: 
             reputation = sum(scores) / len(scores)
         else: 
-            reputation = CFG.INITIAL_REPUTATION
+            reputation = config.DefaultConfig.INITIAL_REPUTATION
         return reputation
 
 class ReputationWeightedAverage(ReputationStrategy):
@@ -37,7 +37,7 @@ class ReputationWeightedAverage(ReputationStrategy):
                 weighted_sum += s*w
             reputation = weighted_sum/sum(weights)
         else: 
-            reputation = CFG.INITIAL_REPUTATION
+            reputation = config.DefaultConfig.INITIAL_REPUTATION
         return reputation
 
 
@@ -71,7 +71,7 @@ class Aging(AbstractHandler):
     def handle(self, agents):
         for agent in agents:
             for claim in copy.copy( agent.claims ):
-                if helpers.current_sim_round - claim.round_timestamp > CFG.AGING_LIMIT:
+                if helpers.current_sim_round - claim.round_timestamp > config.DefaultConfig.AGING_LIMIT:
                     agent.claims.remove(claim)
                     
         return super().handle(agents)
@@ -83,7 +83,7 @@ class Weights(AbstractHandler):
     """
     def handle(self, agents):
         for agent in agents:
-            agent.weight = (agent.global_reputation - CFG.MIN_RATING) / (CFG.MAX_RATING - CFG.MIN_RATING)
+            agent.weight = (agent.global_reputation - config.DefaultConfig.MIN_RATING) / (config.DefaultConfig.MAX_RATING - config.DefaultConfig.MIN_RATING)
         return super().handle(agents)
 
 

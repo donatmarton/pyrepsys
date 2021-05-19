@@ -1,0 +1,15 @@
+reputation_strategy: "ReputationWeightedAverage"
+improvement_handlers:
+  # in order of the chain from top to bottom
+  # i.e. the topmost is the entry handler
+  - "Aging"
+  - "Weights"
+  - "StakeBasedReputation"
+seed: #leave empty for random
+agents:
+  - amount: 10
+    distort_strategy: "DistortDoNothingStrategy"
+    rate_strategy: "RateRandomStrategy"
+  - amount: 10
+    distort_strategy: "DistortUpByOneRandom"
+    rate_strategy: "RateRandomStrategy"
