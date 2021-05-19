@@ -8,23 +8,20 @@ import yaml
 import system
 import reputation as rep
 import behavior as beh
+import helpers
 
 
 
-
-code_files_path = os.path.dirname( os.path.abspath(__file__) )
-project_root_path = os.path.join( code_files_path, os.pardir )
-simulation_artifacts_path = os.path.join( project_root_path, "simulation_artifacts" )
-config_files_path = os.path.join(code_files_path, "configs")
 
 def simulate(scenarios):
     
     sys = system.System()
 
     for scenario in scenarios:
-        logging.info("Beginning new scenario from '{}'".format(scenario))
+        logging.info("Beginning new scenario: '{}'".format(scenario))
 
-        with open(scenario, 'r') as file:
+        scenario_path = os.path.join(helpers.config_files_path, scenario)
+        with open(scenario_path, 'r') as file:
             config_full = yaml.safe_load(file)    
 
         cfg_reputation_strategy = config_full["reputation_strategy"]
@@ -63,11 +60,11 @@ def prepare_for_artifacts():
         now = datetime.now()
         # create sim dir name: run_YYYY-MM-DD_HH:MM:SS
         simulation_dir_name = now.strftime( "run_%Y-%m-%d_%H:%M:%S" )
-        simulation_dir_path = os.path.join( simulation_artifacts_path, simulation_dir_name )
+        simulation_dir_path = os.path.join( helpers.simulation_artifacts_path, simulation_dir_name )
         
         os.makedirs(simulation_dir_path, exist_ok=True)
 
-        symlink = os.path.join( simulation_artifacts_path, "run_latest" )
+        symlink = os.path.join( helpers.simulation_artifacts_path, "run_latest" )
         try:
             os.remove(symlink)
         except FileNotFoundError:
@@ -95,7 +92,8 @@ if __name__ == "__main__":
     simulation_dir_path = prepare_for_artifacts()
     setup_logging(simulation_dir_path)
 
-    config_file_1 = os.path.join(config_files_path, "config.yaml")
-    config_file_2 = os.path.join(config_files_path, "alt_config.yaml")
-    scenarios = [config_file_1, config_file_2]
+    scenarios = [
+        "config.yaml",
+        "alt_config.yaml"
+    ]
     simulate(scenarios)
