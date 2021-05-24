@@ -3,7 +3,6 @@ import logging
 
 import config
 from agent import Agent
-import behavior as beh
 import helpers
 
 class System:

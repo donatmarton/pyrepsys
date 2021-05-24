@@ -1,4 +1,3 @@
-import random
 import os
 import logging
 from datetime import datetime
@@ -21,8 +20,9 @@ def simulate(default_config, scenarios):
         logging.info("Beginning scenario: '{}'".format(scenario))
 
         config.read_configuration(scenario)
-        seed = config.configure_system(sys)
+        config.configure_system(sys)
 
+        seed = config.get("seed")
         sys.simulate(seed)
         #sys.show()
 
@@ -30,7 +30,7 @@ def simulate(default_config, scenarios):
     
     logging.info("Simulation finished")
 
-def prepare_for_artifacts():
+def prepare_artifacts_directory():
         now = datetime.now()
         # create sim dir name: run_YYYY-MM-DD_HH:MM:SS
         simulation_dir_name = now.strftime( "run_%Y-%m-%d_%H:%M:%S" )
@@ -63,7 +63,7 @@ def setup_logging(logfile_dir, level):
 
 
 if __name__ == "__main__":
-    simulation_dir_path = prepare_for_artifacts()
+    simulation_dir_path = prepare_artifacts_directory()
     setup_logging(simulation_dir_path, logging.DEBUG)
 
     default_config_name = "default_config.yaml"

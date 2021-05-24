@@ -78,8 +78,5 @@ class Configurator:
             rs = getattr(beh,cfg_rate_strategy)()
             system.create_agents(rs, ds, amount)
 
-        seed = self.get("seed")
-        return seed
-
 configurator = Configurator()
 get = configurator.get
