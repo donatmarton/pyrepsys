@@ -13,6 +13,10 @@ agents:
   - amount: 10
     distort_strategy: "DistortUpByOneRandom"
     rate_strategy: "RateRandomStrategy"
+metrics:
+  - "AvgAccuracyPerRound"
+  - "AvgAccuracyPerScenario"
+  - "MetricBothRoundAndScenario"
 NUM_MAX_RATERS: 10
 MIN_RATING: 1
 MAX_RATING: 9

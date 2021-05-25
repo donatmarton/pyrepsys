@@ -4,16 +4,20 @@ from datetime import datetime
 
 from config import configurator as config
 import system
+import results_processor as reproc
 import paths
+import helpers
 
 
 
 
-def simulate(default_config, scenarios):
+def simulate(artifacts_directory, default_config, scenarios):
     logging.info("Simulation started")
     logging.info("Scenarios planned: {}".format(scenarios))
 
     sys = system.System()
+    results_processor = reproc.ResultsProcessor(artifacts_directory)
+    sys.results_processor = results_processor
     config.read_default_configuration(default_config)
 
     for scenario in scenarios:
@@ -21,10 +25,16 @@ def simulate(default_config, scenarios):
 
         config.read_configuration(scenario)
         config.configure_system(sys)
+        config.configure_results_processor(results_processor)
 
         seed = config.get("seed")
         sys.simulate(seed)
         #sys.show()
+
+        results_processor.process(
+            sys.agents,
+            helpers.SimulationEvent.END_OF_SCENARIO,
+            scenario=scenario)
 
         sys.reset_system()
     
@@ -71,4 +81,4 @@ if __name__ == "__main__":
         "config.yaml",
         "alt_config.yaml"
     ]
-    simulate(default_config_name, scenarios)
+    simulate(simulation_dir_path, default_config_name, scenarios)

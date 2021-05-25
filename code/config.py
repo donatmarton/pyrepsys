@@ -6,6 +6,7 @@ import yaml
 import paths
 import reputation as rep
 import behavior as beh
+import metrics
 
 
 class Configurator:
@@ -13,6 +14,7 @@ class Configurator:
         self._default_config = {}
         self._active_config = {}
         self.was_defaulted = False
+        self.metric_instances = {}
 
     def read_configuration(self, config_file_name):
         if self.was_defaulted:
@@ -46,6 +48,22 @@ class Configurator:
                 logging.error("'{}' not in active config and defaulting is not allowed".format(config_name))
                 raise
         return cfg_value
+
+    def configure_results_processor(self, results_processor):
+        metrics_cfg = self.get("metrics")
+        results_processor.detach_all_metrics()
+
+        for metric_cfg in metrics_cfg:
+            if metric_cfg in self.metric_instances:
+                metric = self.metric_instances[metric_cfg]
+                logging.debug("Found existing metric '{}'".format(metric))
+            else:
+                metric = getattr(metrics,metric_cfg)()
+                self.metric_instances[metric_cfg] = metric
+                logging.debug("Created metric '{}'".format(metric))
+
+            results_processor.attach_metric(metric)
+        logging.info("Metrics attached: {}".format(metrics_cfg))
 
     def configure_system(self, system):
         logging.info("Configuring system")

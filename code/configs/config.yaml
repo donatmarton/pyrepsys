@@ -13,3 +13,7 @@ agents:
   - amount: 20
     distort_strategy: "DistortUpByOneRandom"
     rate_strategy: "RateRandomStrategy"
+metrics:
+  - "AvgAccuracyPerRound"
+  - "AvgAccuracyPerScenario"
+  - "AvgAccuracyPerRound_Another"

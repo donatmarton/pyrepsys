@@ -1,10 +1,14 @@
+from enum import Enum, auto
+
 import config
-
-
 
 
 current_sim_round = 0
 
+class SimulationEvent(Enum):
+    END_OF_ROUND = auto()
+    END_OF_SCENARIO = auto()
+    END_OF_SIMULATION = auto()
 
 def force_agent_exposed_bounds(score):
     min_rating = config.get("MIN_RATING")

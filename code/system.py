@@ -5,6 +5,7 @@ import config
 from agent import Agent
 import helpers
 
+
 class System:
 
     def __init__(self, reputation_strategy=None):
@@ -12,6 +13,7 @@ class System:
         self.agents = []
         self._improvement_handler = None
         self.rng = random.Random()
+        self.results_processor = None
 
     @property
     def reputation_strategy(self):
@@ -39,6 +41,7 @@ class System:
 
     def simulate(self, seed=None):
         assert self.reputation_strategy is not None
+        assert self.results_processor is not None
         self.log_state()
         self.rng.seed(seed)
         logging.debug("RNG seeded with '{}'".format(seed))
@@ -49,6 +52,10 @@ class System:
             self.rate_claims(new_claims)
             self.apply_improvements()
             self.calculate_reputations()
+            self.results_processor.process(
+                self.agents,
+                helpers.SimulationEvent.END_OF_ROUND,
+                round_number=sim_round)
 
     def make_claims(self):
         # select agents that will claim
