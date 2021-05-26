@@ -28,6 +28,12 @@ def simulate(artifacts_directory, default_config, scenarios):
         config.configure_results_processor(results_processor)
 
         seed = config.get("seed")
+
+        results_processor.process(
+            None,
+            helpers.SimulationEvent.BEGIN_SCENARIO,
+            scenario=scenario)
+
         sys.simulate(seed)
         #sys.show()
 
