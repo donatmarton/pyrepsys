@@ -43,6 +43,8 @@ def simulate(artifacts_directory, default_config, scenarios):
 
         sys.reset_system()
     
+
+    results_processor.process(helpers.SimulationEvent.END_OF_SIMULATION)
     logging.info("Simulation finished")
 
 def prepare_artifacts_directory():

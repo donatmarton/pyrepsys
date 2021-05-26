@@ -1,22 +1,32 @@
 import logging
 
 import helpers
+import metrics
 
 
 class ResultsProcessor:
     def __init__(self, artifacts_directory):
         self.artifacts_directory = artifacts_directory
-        self.metrics_by_events = {}
+        self.metric_instances = {}
+        self.active_metrics_by_events = {}
         for event in helpers.SimulationEvent:
-            self.metrics_by_events[event] = set()
+            self.active_metrics_by_events[event] = set()
 
-    def attach_metric(self, metric):
+    def activate_metric(self, metric_classname):
+        if metric_classname in self.metric_instances:
+            metric = self.metric_instances[metric_classname]
+            logging.debug("Found existing metric '{}'".format(metric))
+        else:
+            metric = getattr(metrics,metric_classname)()
+            self.metric_instances[metric_classname] = metric
+            logging.debug("Created metric '{}'".format(metric))
+
         for event in metric.events_of_interest:
-            self.metrics_by_events[event].add(metric)
+            self.active_metrics_by_events[event].add(metric)
 
-    def detach_all_metrics(self):
-        for set in self.metrics_by_events.values():
-            set.clear()
+    def deactivate_all_metrics(self):
+        for set_of_metrics in self.active_metrics_by_events.values():
+            set_of_metrics.clear()
 
     def process(self, call_event, **event_details):
         """
@@ -29,14 +39,20 @@ class ResultsProcessor:
             logging.debug("END_OF_ROUND: {}".format(event_details["round_number"]))
         elif call_event is helpers.SimulationEvent.END_OF_SCENARIO:
             logging.debug("END_OF_SCENARIO: {}".format(event_details["scenario"]))
+        elif call_event is helpers.SimulationEvent.END_OF_SIMULATION:
+            logging.debug("END_OF_SIMULATION")
         else:
             raise NotImplementedError #TODO
 
-        for metric in self.metrics_by_events[call_event]:
+        if call_event is helpers.SimulationEvent.END_OF_SIMULATION:
+            self.draw_all_metrics()
+        else:
+            for metric in self.active_metrics_by_events[call_event]:
                 metric.notify(call_event, **event_details)
 
-    def export(self):
+    def export_all_metrics(self):
         raise NotImplementedError #TODO
 
-    def draw(self):
-        raise NotImplementedError #TODO
+    def draw_all_metrics(self):
+        for metric in self.metric_instances.values():
+            metric.draw(self.artifacts_directory)
