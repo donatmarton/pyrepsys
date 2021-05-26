@@ -5,12 +5,21 @@ import helpers
 
 
 class Metric(ABC):
-    name = "Default Metric Class"
+    @abstractmethod
+    def __init__(self):
+        self._events_of_interest = [helpers.SimulationEvent.BEGIN_SCENARIO]
+        self.name = "Default Metric Class Name"
 
     @property
-    @abstractmethod
     def events_of_interest(self):
-        pass
+        return self._events_of_interest
+
+    def add_event_of_interest(self, event):
+        self._events_of_interest.append(event)
+
+    def notify(self, event, **data):
+        self.calculate()
+        #TODO: prepare new scenario or calculate accordingly
 
     @abstractmethod
     def calculate(self):
@@ -27,9 +36,10 @@ class Metric(ABC):
 
 
 class AvgAccuracyPerRound(Metric):
-    @property
-    def events_of_interest(self):
-        return [helpers.SimulationEvent.END_OF_ROUND]
+    def __init__(self):
+        super().__init__()
+        self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
+        self.name = "Average Accuracy Per Rounds"
 
     def calculate(self):
         logging.debug("AvgAccuracyPerRound was called")
@@ -38,9 +48,10 @@ class AvgAccuracyPerRound(Metric):
         pass
 
 class AvgAccuracyPerScenario(Metric):
-    @property
-    def events_of_interest(self):
-        return [helpers.SimulationEvent.END_OF_SCENARIO]
+    def __init__(self):
+        super().__init__()
+        self.add_event_of_interest(helpers.SimulationEvent.END_OF_SCENARIO)
+        self.name = "Average Accuracy Per Scenarios"
     
     def calculate(self):
         logging.debug("AvgAccuracyPerScenario was called")
@@ -49,9 +60,9 @@ class AvgAccuracyPerScenario(Metric):
         pass
 
 class AvgAccuracyPerRound_Another(Metric):
-    @property
-    def events_of_interest(self):
-        return [helpers.SimulationEvent.END_OF_ROUND]
+    def __init__(self):
+        super().__init__()
+        self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
     
     def calculate(self):
         logging.debug("AvgAccuracyPerRound_Another was called")
@@ -60,11 +71,10 @@ class AvgAccuracyPerRound_Another(Metric):
         pass
 
 class MetricBothRoundAndScenario(Metric):
-    @property
-    def events_of_interest(self):
-        return [
-            helpers.SimulationEvent.END_OF_SCENARIO,
-            helpers.SimulationEvent.END_OF_ROUND]
+    def __init__(self):
+        super().__init__()
+        self.add_event_of_interest(helpers.SimulationEvent.END_OF_SCENARIO)
+        self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
     
     def calculate(self):
         logging.debug("MetricBothRoundAndScenario was called")

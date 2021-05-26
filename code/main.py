@@ -30,7 +30,6 @@ def simulate(artifacts_directory, default_config, scenarios):
         seed = config.get("seed")
 
         results_processor.process(
-            None,
             helpers.SimulationEvent.BEGIN_SCENARIO,
             scenario=scenario)
 
@@ -38,8 +37,8 @@ def simulate(artifacts_directory, default_config, scenarios):
         #sys.show()
 
         results_processor.process(
-            sys.agents,
             helpers.SimulationEvent.END_OF_SCENARIO,
+            agents_data=sys.agents,
             scenario=scenario)
 
         sys.reset_system()

@@ -53,8 +53,8 @@ class System:
             self.apply_improvements()
             self.calculate_reputations()
             self.results_processor.process(
-                self.agents,
                 helpers.SimulationEvent.END_OF_ROUND,
+                agents_data=self.agents,
                 round_number=sim_round)
 
     def make_claims(self):

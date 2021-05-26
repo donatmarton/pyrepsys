@@ -18,25 +18,22 @@ class ResultsProcessor:
         for set in self.metrics_by_events.values():
             set.clear()
 
-    def process(self, agents_data, call_event, **event_details):
+    def process(self, call_event, **event_details):
         """
         do the calculation for all active metrics
-        'event_details' holds additional data like 'round_number' or 'scenario'
+        'event_details' holds data for: 'agents_data' 'round_number' or 'scenario'
         """
         if call_event is helpers.SimulationEvent.BEGIN_SCENARIO:
             logging.debug("BEGIN_SCENARIO: {}".format(event_details["scenario"]))
-            for metric in self.metrics_by_events[call_event]:
-                metric.calculate()
         elif call_event is helpers.SimulationEvent.END_OF_ROUND:
             logging.debug("END_OF_ROUND: {}".format(event_details["round_number"]))
-            for metric in self.metrics_by_events[call_event]:
-                metric.calculate()
         elif call_event is helpers.SimulationEvent.END_OF_SCENARIO:
             logging.debug("END_OF_SCENARIO: {}".format(event_details["scenario"]))
-            for metric in self.metrics_by_events[call_event]:
-                metric.calculate()
         else:
             raise NotImplementedError #TODO
+
+        for metric in self.metrics_by_events[call_event]:
+                metric.notify(call_event, **event_details)
 
     def export(self):
         raise NotImplementedError #TODO
