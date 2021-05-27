@@ -43,7 +43,7 @@ def simulate(artifacts_directory, default_config, scenarios):
             scenario=scenario_display_name)
 
         sys.reset_system()
-    
+
 
     results_processor.process(helpers.SimulationEvent.END_OF_SIMULATION)
     logging.info("Simulation finished")
@@ -52,7 +52,8 @@ def prepare_artifacts_directory():
         now = datetime.now()
         # create sim dir name: run_YYYY-MM-DD_HH:MM:SS
         simulation_dir_name = now.strftime( "run_%Y-%m-%d_%H:%M:%S" )
-        simulation_dir_path = os.path.join( paths.simulation_artifacts_path, simulation_dir_name )
+        simulation_dir_path = os.path.abspath(
+            os.path.join( paths.simulation_artifacts_path, simulation_dir_name ))
         
         os.makedirs(simulation_dir_path, exist_ok=True)
 
@@ -83,6 +84,7 @@ def setup_logging(logfile_dir, level):
 if __name__ == "__main__":
     simulation_dir_path = prepare_artifacts_directory()
     setup_logging(simulation_dir_path, logging.DEBUG)
+    logging.info("Artifact directory is at '{}'".format(simulation_dir_path))
 
     default_config_name = "default_config.yaml"
     scenarios = [
