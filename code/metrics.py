@@ -10,7 +10,8 @@ import helpers
 class Metric(ABC):
     @abstractmethod
     def __init__(self):
-        self._events_of_interest = [helpers.SimulationEvent.BEGIN_SCENARIO]
+        self._events_of_interest = []
+        self.add_event_of_interest(helpers.SimulationEvent.BEGIN_SCENARIO)
         self.name = "Default Metric Class Name"
 
     @property
