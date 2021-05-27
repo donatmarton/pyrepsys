@@ -7,7 +7,7 @@ improvement_handlers:
   - "StakeBasedReputation"
 seed: 10 #leave empty for random
 agents:
-  - amount: 10
+  - amount: 100
     distort_strategy: "DistortDoNothingStrategy"
     rate_strategy: "RateHigherHalfRandom"
   - amount: 20

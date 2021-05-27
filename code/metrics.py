@@ -56,7 +56,7 @@ class AvgAccuracyPerRound(Metric):
     def __init__(self):
         super().__init__()
         self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
-        self.name = "Average Accuracy Per Rounds"
+        self.name = "Average Inaccuracy of Raters Per Rounds"
         self.scenarios_data = []
 
     def prepare_new_scenario(self, scenario):
@@ -68,7 +68,18 @@ class AvgAccuracyPerRound(Metric):
         agents_data = data["agents_data"]
         round_number = data["round_number"]
 
-        avg_accuracy = round_number
+        #avg( | estimated - claim | ) for all claims of all agents
+        agent_accuracies =  []
+        for agent in agents_data:
+            for claim in agent.claims:
+                if len(claim.reviews) > 0:
+                    review_scores = []
+                    for review in claim.reviews:
+                        review_scores.append(review.value)
+                    review_avg = sum(review_scores) / len(review_scores)
+                    accuracy = abs( claim.ground_truth - review_avg )
+                    agent_accuracies.append(accuracy)
+        avg_accuracy = sum(agent_accuracies) / len(agent_accuracies)
 
         self.scenarios_data[-1].record_round(round_number, avg_accuracy)
 
@@ -77,7 +88,7 @@ class AvgAccuracyPerRound(Metric):
         fig, ax = plt.subplots()  # Create a figure containing a single axes.
         ax.set_title(self.name)
         ax.set_xlabel("Round")
-        ax.set_ylabel("Average accuracy")
+        ax.set_ylabel("Average inaccuracy")
 
         for scenario in self.scenarios_data:
             ax.plot(
