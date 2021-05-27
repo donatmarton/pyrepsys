@@ -8,7 +8,7 @@ seed: 10 #leave empty for random
 agents:
   - amount: 10
     distort_strategy: "DistortDoNothingStrategy"
-    rate_strategy: "RateHigherHalfRandom"
+    rate_strategy: "RateNearClaimScore"
   - amount: 20
     distort_strategy: "DistortUpByOneRandom"
     rate_strategy: "RateRandomStrategy"

@@ -65,6 +65,11 @@ class RateHigherHalfRandom(RateStrategy):
         max_rating = config.get("MAX_RATING")
         return self.rng(random_seed).randint(max_rating//2, max_rating)
 
+class RateNearClaimScore(RateStrategy):
+    def rate_claim(self, claim, random_seed=None):
+        inaccuracy = self.rng(random_seed).randint(-1, 1)
+        return claim.value + inaccuracy
+
 
 
 
