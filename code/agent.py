@@ -40,9 +40,9 @@ class Agent:
         cfg_MEASUREMENT_ERROR = config.get("MEASUREMENT_ERROR")
         measurement_error = rng.uniform(-1*cfg_MEASUREMENT_ERROR/2, cfg_MEASUREMENT_ERROR/2)
         measured_claim = helpers.force_internal_bounds(ground_truth + measurement_error)
-        distorted_claim_ae = helpers.a2i(self.distort_strategy.execute(
+        distorted_claim_ae = self.distort_strategy.execute(
             helpers.i2a(measured_claim),
-            rng.random()))
+            rng.random())
         distorted_claim_ae = helpers.force_agent_exposed_bounds(distorted_claim_ae)
         claim = Claim(weakref.ref(self), ground_truth, helpers.a2i(distorted_claim_ae))
         self.claims.append(claim)
