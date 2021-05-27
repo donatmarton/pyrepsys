@@ -66,7 +66,7 @@ class Claim:
         self.ID = Claim.count
         Claim.count += 1
         self.author = author
-        self.ground_truth = ground_truth_i
+        self._ground_truth_i = ground_truth_i
         self._score_i = claim_score_i
         self.stake = stake
         self.reviews = []
@@ -82,9 +82,9 @@ class Claim:
     def value(self):
         return helpers.i2a(self._score_i)
 
-    @value.setter
-    def value(self, score_ae):
-        self._score_i = helpers.a2i(score_ae)
+    @property
+    def ground_truth(self):
+        return helpers.i2a(self._ground_truth_i)
 
     def __str__(self):
         return "c{}a{}-{}".format(self.value, self.round_timestamp, 
