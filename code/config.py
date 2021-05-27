@@ -27,6 +27,7 @@ class Configurator:
         config_file_path = os.path.join(paths.config_files_path, config_file_name)
         with open(config_file_path, 'r') as file:
             dictionary = yaml.safe_load(file)
+        dictionary["scenario_name"] = config_file_name.split(sep=".", maxsplit=1)[0]
         return dictionary
 
     def get(self, config_name, allow_default=True):
