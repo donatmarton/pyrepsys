@@ -43,7 +43,7 @@ def simulate(artifacts_directory, default_config, scenarios):
             scenario=scenario_display_name)
 
         sys.reset_system()
-
+        config.reset_active_configuration()
 
     results_processor.process(helpers.SimulationEvent.END_OF_SIMULATION)
     logging.info("Simulation finished")
@@ -78,6 +78,10 @@ def setup_logging(logfile_dir, level):
             format="%(asctime)s,%(msecs)03d %(levelname)s: [%(filename)s > %(funcName)s()] %(message)s",
             level=level)
 
+        # there is a bug where matplotlib font_manager debug logs appear regardless of global level
+        # disable these debug logs as per suggestion here:
+        # https://stackoverflow.com/questions/58320567/matplotlib-font-manager-debug-messages-in-log-file#58342614
+        logging.getLogger('matplotlib.font_manager').setLevel(logging.WARNING)
 
 
 

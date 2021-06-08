@@ -15,13 +15,19 @@ class Configurator:
         self.was_defaulted = False
 
     def read_configuration(self, config_file_name):
-        if self.was_defaulted:
-            logging.warning("Configurator has defaulted at least one parameter since last config read-in, is this ok?")
-            self.was_defaulted = False
+        if self._active_config:
+            logging.warning("Overwriting not empty active configuration, is this ok?")
         self._active_config = self._config_from_file_to_memory(config_file_name)
 
     def read_default_configuration(self, default_config_file_name):
         self._default_config = self._config_from_file_to_memory(default_config_file_name)
+
+    def reset_active_configuration(self):
+        self._active_config = {}
+        if self.was_defaulted:
+            logging.warning("Configurator has defaulted at least one parameter since last active reset, is this ok?")
+            self.was_defaulted = False
+
 
     def _config_from_file_to_memory(self, config_file_name):
         config_file_path = os.path.join(paths.config_files_path, config_file_name)
@@ -36,12 +42,10 @@ class Configurator:
         except KeyError:
             if allow_default:
                 try:
-                    logging.debug(
-                        "'{}' not in active config, fetching from default config instead".format(config_name))
                     cfg_value = self._default_config[config_name]
                     self.was_defaulted = True
                 except KeyError:
-                    logging.error("'{}' is not part of the default config".format(config_name))
+                    logging.error("'{}' is not part of the active or default config".format(config_name))
                     raise
             else:
                 logging.error("'{}' not in active config and defaulting is not allowed".format(config_name))
