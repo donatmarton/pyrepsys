@@ -1,6 +1,7 @@
 import os
 import logging
-from datetime import datetime
+import datetime
+import time
 
 from config import configurator as config
 import system
@@ -49,7 +50,7 @@ def simulate(artifacts_directory, default_config, scenarios):
     logging.info("Simulation finished")
 
 def prepare_artifacts_directory():
-        now = datetime.now()
+        now = datetime.datetime.now()
         # create sim dir name: run_YYYY-MM-DD_HH:MM:SS
         simulation_dir_name = now.strftime( "run_%Y-%m-%d_%H:%M:%S" )
         simulation_dir_path = os.path.abspath(
@@ -95,4 +96,9 @@ if __name__ == "__main__":
         "config.yaml",
         "alt_config.yaml"
     ]
+
+    starttime = time.process_time()
     simulate(simulation_dir_path, default_config_name, scenarios)
+    endtime = time.process_time()
+    d = datetime.timedelta(seconds=endtime - starttime)
+    logging.info("Simulation process time: " + str(d).split(".")[0])
