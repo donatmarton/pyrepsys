@@ -85,7 +85,8 @@ class Configurator:
             cfg_distort_strategy = agent["distort_strategy"]
             ds = getattr(beh,cfg_distort_strategy)()
             rs = getattr(beh,cfg_rate_strategy)()
-            system.create_agents(rs, ds, amount)
+            claim_probability = agent["claim_probability"]
+            system.create_agents(ds, rs, claim_probability, amount)
 
 configurator = Configurator()
 get = configurator.get

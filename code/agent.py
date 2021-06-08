@@ -1,4 +1,6 @@
 import weakref
+import random
+import logging
 
 import config
 import helpers
@@ -6,14 +8,15 @@ import helpers
 
 class Agent:
     count = 0
-    def __init__(self, rating_strategy, distort_strategy):
+    def __init__(self, distort_strategy, rating_strategy, claim_probability):
         self.ID = Agent.count
         Agent.count += 1
         self.global_reputation = config.get("INITIAL_REPUTATION")
         self.claims = []
         self.reviews = []
-        self.rating_strategy = rating_strategy
         self.distort_strategy = distort_strategy
+        self.rating_strategy = rating_strategy
+        self.claim_probability = claim_probability
         self.weight = 1
 
     def __del__(self):
@@ -35,7 +38,16 @@ class Agent:
     def rating_strategy(self, rating_strategy):
         self._rating_strategy = rating_strategy
 
-    def make_new_claim(self, rng):
+    def give_claim_opportunity(self, rng):
+        rand = rng.random()
+        random_seed = rng.random()
+        if rand <= self.claim_probability:
+            throwaway_rng = random.Random(random_seed)
+            new_claim = self.__make_new_claim(throwaway_rng)
+        else: new_claim = None
+        return new_claim
+
+    def __make_new_claim(self, rng):
         ground_truth = rng.random()
         cfg_MEASUREMENT_ERROR = config.get("MEASUREMENT_ERROR")
         measurement_error = rng.uniform(-1*cfg_MEASUREMENT_ERROR/2, cfg_MEASUREMENT_ERROR/2)
@@ -56,10 +68,11 @@ class Agent:
         self.reviews.append(review)
 
     def __str__(self):
-        return "Agent {:>2}: {:<30} {:<30}".format(
+        return "Agent {:>2}: {:<30} {:<30} {:^6.0%}".format(
                 self.ID,
                 type(self._distort_strategy).__name__,
-                type(self._rating_strategy).__name__
+                type(self._rating_strategy).__name__,
+                self.claim_probability
         )
    
 class Claim:

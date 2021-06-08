@@ -33,9 +33,9 @@ class System:
         self._improvement_handler = improvement_handler
         logging.info("Improvement handler entry set to '{}'".format(type(improvement_handler).__name__))
 
-    def create_agents(self, rate_strategy, distort_strategy, amount=1):
+    def create_agents(self, distort_strategy, rate_strategy, claim_probability, amount=1):
         for _ in range(0,amount):
-            new_agent = Agent(rate_strategy, distort_strategy)
+            new_agent = Agent(distort_strategy, rate_strategy, claim_probability)
             self.agents.append(new_agent)
             logging.debug("Created: " + str(new_agent))
 
@@ -58,13 +58,13 @@ class System:
                 round_number=sim_round)
 
     def make_claims(self):
-        # select agents that will claim
-        num_claimers = self.rng.randint(0,len(self.agents))
-        claimers = self.rng.sample(self.agents, num_claimers)
         all_new_claims = []
-        for claimer in claimers:
-            new_claim = claimer.make_new_claim(self.rng)
-            all_new_claims.append(new_claim)
+        # give all agents one opportunity to claim
+        for agent in self.agents:
+            new_claim = agent.give_claim_opportunity(self.rng)
+            if new_claim is not None:
+                all_new_claims.append(new_claim)
+
         return all_new_claims
             
     def rate_claims(self, claims):
@@ -109,6 +109,6 @@ class System:
         logging.info("Reputation strategy: '{}'".format(type(self.reputation_strategy).__name__))
         logging.info("Improvement handler chain entry point: '{}'".format(type(self.improvement_handler).__name__))
         logging.info("There are " + str(len(self.agents)) + " agents")
-        logging.info("{:^9} {:^30} {:^30}".format("#","DISTORT STRATEGY", "RATING STRATEGY"))
+        logging.info("{:^9} {:^30} {:^30} {:^6}".format("#","DISTORT STRATEGY", "RATING STRATEGY", "claim%"))
         for agent in self.agents:
             logging.info(str(agent))

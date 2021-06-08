@@ -9,6 +9,8 @@ agents:
   - amount: 100
     distort_strategy: "DistortDoNothingStrategy"
     rate_strategy: "RateNearClaimScore"
+    claim_probability: 1
   - amount: 20
     distort_strategy: "DistortUpByOneRandom"
     rate_strategy: "RateRandomStrategy"
+    claim_probability: 0.1
