@@ -1,6 +1,5 @@
 import weakref
 import random
-import logging
 
 import config
 import helpers
@@ -8,7 +7,7 @@ import helpers
 
 class Agent:
     count = 0
-    def __init__(self, distort_strategy, rating_strategy, claim_probability, rate_probability):
+    def __init__(self, distort_strategy, rating_strategy, claim_limits, claim_probability, rate_probability):
         self.ID = Agent.count
         Agent.count += 1
         self.global_reputation = config.get("INITIAL_REPUTATION")
@@ -16,6 +15,7 @@ class Agent:
         self.reviews = []
         self.distort_strategy = distort_strategy
         self.rating_strategy = rating_strategy
+        self.claim_limits = claim_limits
         self.claim_probability = claim_probability
         self.rate_probability = rate_probability
         self.weight = 1
@@ -57,9 +57,14 @@ class Agent:
             helpers.i2a(measured_claim),
             rng.random())
         distorted_claim_ae = helpers.force_agent_exposed_bounds(distorted_claim_ae)
-        claim = Claim(weakref.ref(self), ground_truth, helpers.a2i(distorted_claim_ae))
-        self.claims.append(claim)
-        return claim
+        distorted_claim_i = helpers.a2i(distorted_claim_ae)
+        if distorted_claim_i > self.claim_limits.max or distorted_claim_i < self.claim_limits.min:
+            # claim would be outside of limits, agent refuses to publish claim
+            return None
+        else:
+            claim = Claim(weakref.ref(self), ground_truth, distorted_claim_i)
+            self.claims.append(claim)
+            return claim
 
     def give_rate_opportunity(self, claim, rng):
         rand = rng.random()
@@ -76,10 +81,12 @@ class Agent:
         self.reviews.append(review)
 
     def __str__(self):
-        return "Agent {:>3}: {:<30} {:<30} {:>6.0%} {:>6.0%}".format(
+        return "Agent {:>3}: {:<30} {:<30} {:.4f} .. {:.4f} {:>6.0%} {:>6.0%}".format(
                 self.ID,
                 type(self._distort_strategy).__name__,
                 type(self._rating_strategy).__name__,
+                self.claim_limits.min,
+                self.claim_limits.max,
                 self.claim_probability,
                 self.rate_probability
         )

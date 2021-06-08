@@ -6,6 +6,7 @@ import yaml
 import paths
 import reputation as rep
 import behavior as beh
+import helpers
 
 
 class Configurator:
@@ -91,7 +92,10 @@ class Configurator:
             rs = getattr(beh,cfg_rate_strategy)()
             claim_probability = agent["claim_probability"]
             rate_probability = agent["rate_probability"]
-            system.create_agents(ds, rs, claim_probability, rate_probability, amount)
+            claim_range = agent["claim_range"]
+            assert len(claim_range) == 2
+            claim_limits = helpers.ClaimLimits(min=claim_range[0], max=claim_range[1])
+            system.create_agents(ds, rs, claim_limits, claim_probability, rate_probability, amount)
 
 configurator = Configurator()
 get = configurator.get

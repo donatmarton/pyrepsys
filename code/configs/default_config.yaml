@@ -10,11 +10,13 @@ agents:
   - amount: 10
     distort_strategy: "DistortDoNothingStrategy"
     rate_strategy: "RateRandomStrategy"
+    claim_range: [0.5, 1]
     claim_probability: 0.5
     rate_probability: 0.1
   - amount: 10
     distort_strategy: "DistortUpByOneRandom"
     rate_strategy: "RateRandomStrategy"
+    claim_range: [0, 1]
     claim_probability: 0.5
     rate_probability: 0.1
 metrics:

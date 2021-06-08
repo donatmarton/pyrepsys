@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from collections import namedtuple
 
 import config
 
@@ -10,6 +11,8 @@ class SimulationEvent(Enum):
     END_OF_ROUND = auto()
     END_OF_SCENARIO = auto()
     END_OF_SIMULATION = auto()
+
+ClaimLimits = namedtuple("ClaimLimits",["min","max"])
 
 def force_agent_exposed_bounds(score):
     min_rating = config.get("MIN_RATING")
