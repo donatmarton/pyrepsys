@@ -8,7 +8,7 @@ import helpers
 
 class Agent:
     count = 0
-    def __init__(self, distort_strategy, rating_strategy, claim_probability):
+    def __init__(self, distort_strategy, rating_strategy, claim_probability, rate_probability):
         self.ID = Agent.count
         Agent.count += 1
         self.global_reputation = config.get("INITIAL_REPUTATION")
@@ -17,6 +17,7 @@ class Agent:
         self.distort_strategy = distort_strategy
         self.rating_strategy = rating_strategy
         self.claim_probability = claim_probability
+        self.rate_probability = rate_probability
         self.weight = 1
 
     def __del__(self):
@@ -60,7 +61,14 @@ class Agent:
         self.claims.append(claim)
         return claim
 
-    def rate_claim(self, claim, rng):
+    def give_rate_opportunity(self, claim, rng):
+        rand = rng.random()
+        random_seed = rng.random()
+        if rand <= self.rate_probability:
+            throwaway_rng = random.Random(random_seed)
+            self.__rate_claim(claim, throwaway_rng)
+    
+    def __rate_claim(self, claim, rng):
         review_score_ae = self.rating_strategy.execute(claim, rng.random())
         review_score_ae = helpers.force_agent_exposed_bounds(review_score_ae)
         review = Review(weakref.ref(self), helpers.a2i(review_score_ae))
@@ -68,11 +76,12 @@ class Agent:
         self.reviews.append(review)
 
     def __str__(self):
-        return "Agent {:>2}: {:<30} {:<30} {:^6.0%}".format(
+        return "Agent {:>3}: {:<30} {:<30} {:>6.0%} {:>6.0%}".format(
                 self.ID,
                 type(self._distort_strategy).__name__,
                 type(self._rating_strategy).__name__,
-                self.claim_probability
+                self.claim_probability,
+                self.rate_probability
         )
    
 class Claim:

@@ -11,15 +11,16 @@ agents:
     distort_strategy: "DistortDoNothingStrategy"
     rate_strategy: "RateRandomStrategy"
     claim_probability: 0.5
+    rate_probability: 0.1
   - amount: 10
     distort_strategy: "DistortUpByOneRandom"
     rate_strategy: "RateRandomStrategy"
     claim_probability: 0.5
+    rate_probability: 0.1
 metrics:
   - "AvgAccuracyPerRound"
   - "AvgAccuracyPerScenario"
   - "MetricBothRoundAndScenario"
-NUM_MAX_RATERS: 10
 MIN_RATING: 1
 MAX_RATING: 9
 DECIMAL_PRECISION: 0 # 0 for int
