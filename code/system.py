@@ -72,12 +72,9 @@ class System:
             
     def rate_claims(self, claims):
         for claim in claims:
-            self.__rate_claim(claim)
-
-    def __rate_claim(self, claim):
-        # give all agents one opportunity to rate
-        for agent in self.agents:
-            agent.give_rate_opportunity(claim, self.rng)
+            # give all agents one opportunity to rate
+            for agent in self.agents:
+                agent.give_rate_opportunity(claim, self.rng)
 
     def show(self):
         logger.info("Round #{} of 0..{}".format(helpers.current_sim_round, config.get("SIM_ROUND_MAX")-1))
