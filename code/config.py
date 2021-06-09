@@ -8,6 +8,7 @@ import reputation as rep
 import behavior as beh
 import helpers
 
+logger = logging.getLogger("reputation-system." + __name__)
 
 class Configurator:
     def __init__(self):
@@ -17,7 +18,7 @@ class Configurator:
 
     def read_configuration(self, config_file_name):
         if self._active_config:
-            logging.warning("Overwriting not empty active configuration, is this ok?")
+            logger.warning("Overwriting not empty active configuration, is this ok?")
         self._active_config = self._config_from_file_to_memory(config_file_name)
 
     def read_default_configuration(self, default_config_file_name):
@@ -26,7 +27,7 @@ class Configurator:
     def reset_active_configuration(self):
         self._active_config = {}
         if self.was_defaulted:
-            logging.warning("Configurator has defaulted at least one parameter since last active reset, is this ok?")
+            logger.warning("Configurator has defaulted at least one parameter since last active reset, is this ok?")
             self.was_defaulted = False
 
 
@@ -46,10 +47,10 @@ class Configurator:
                     cfg_value = self._default_config[config_name]
                     self.was_defaulted = True
                 except KeyError:
-                    logging.error("'{}' is not part of the active or default config".format(config_name))
+                    logger.error("'{}' is not part of the active or default config".format(config_name))
                     raise
             else:
-                logging.error("'{}' not in active config and defaulting is not allowed".format(config_name))
+                logger.error("'{}' not in active config and defaulting is not allowed".format(config_name))
                 raise
         return cfg_value
 
@@ -59,10 +60,10 @@ class Configurator:
 
         for metric_cfg in metrics_cfg:
             results_processor.activate_metric(metric_cfg)
-        logging.info("Metrics activated: {}".format(metrics_cfg))
+        logger.info("Enabled metrics: {}".format(metrics_cfg))
 
     def configure_system(self, system):
-        logging.info("Configuring system")
+        logger.debug("Configuring system")
 
         cfg_reputation_strategy = self.get("reputation_strategy")
         reputation_strategy = getattr(rep,cfg_reputation_strategy)()
@@ -77,7 +78,7 @@ class Configurator:
         for i, handler in enumerate(improvement_handlers):
             if i < len(improvement_handlers)-1:
                 handler.set_next(improvement_handlers[i+1])
-        logging.info("Handler chain found: {}".format(
+        logger.info("Handler chain found: {}".format(
             "".join([h + " > " for h in cfg_improvement_handlers])
         ))
         system.improvement_handler = improvement_handlers[0]

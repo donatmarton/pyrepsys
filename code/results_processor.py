@@ -3,6 +3,7 @@ import logging
 import helpers
 import metrics
 
+logger = logging.getLogger("reputation-system." + __name__)
 
 class ResultsProcessor:
     def __init__(self, artifacts_directory):
@@ -15,11 +16,11 @@ class ResultsProcessor:
     def activate_metric(self, metric_classname):
         if metric_classname in self.metric_instances:
             metric = self.metric_instances[metric_classname]
-            logging.debug("Found existing metric '{}'".format(metric))
+            logger.debug("Found existing metric '{}'".format(metric))
         else:
             metric = getattr(metrics,metric_classname)()
             self.metric_instances[metric_classname] = metric
-            logging.debug("Created metric '{}'".format(metric))
+            logger.debug("Created metric '{}'".format(metric))
 
         for event in metric.events_of_interest:
             self.active_metrics_by_events[event].add(metric)
@@ -34,13 +35,13 @@ class ResultsProcessor:
         'event_details' holds data for: 'agents_data' 'round_number' or 'scenario'
         """
         if call_event is helpers.SimulationEvent.BEGIN_SCENARIO:
-            logging.debug("BEGIN_SCENARIO: {}".format(event_details["scenario"]))
+            logger.debug("BEGIN_SCENARIO: {}".format(event_details["scenario"]))
         elif call_event is helpers.SimulationEvent.END_OF_ROUND:
-            logging.debug("END_OF_ROUND: {}".format(event_details["round_number"]))
+            logger.debug("END_OF_ROUND: {}".format(event_details["round_number"]))
         elif call_event is helpers.SimulationEvent.END_OF_SCENARIO:
-            logging.debug("END_OF_SCENARIO: {}".format(event_details["scenario"]))
+            logger.debug("END_OF_SCENARIO: {}".format(event_details["scenario"]))
         elif call_event is helpers.SimulationEvent.END_OF_SIMULATION:
-            logging.debug("END_OF_SIMULATION")
+            logger.debug("END_OF_SIMULATION")
         else:
             raise NotImplementedError #TODO
 

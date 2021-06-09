@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 
 import helpers
 
+logger = logging.getLogger("reputation-system." + __name__)
 
 class Metric(ABC):
     @abstractmethod
@@ -61,11 +62,11 @@ class AvgAccuracyPerRound(Metric):
         self.scenarios_data = []
 
     def prepare_new_scenario(self, scenario):
-        logging.debug("AvgAccuracyPerRound scenario preparation: {}".format(scenario))
+        logger.debug("AvgAccuracyPerRound scenario preparation: {}".format(scenario))
         self.scenarios_data.append( ScenarioDataByRounds(scenario) )
 
     def calculate(self, **data):
-        logging.debug("AvgAccuracyPerRound was called")
+        logger.debug("AvgAccuracyPerRound was called")
         agents_data = data["agents_data"]
         round_number = data["round_number"]
 
@@ -85,7 +86,7 @@ class AvgAccuracyPerRound(Metric):
         self.scenarios_data[-1].record_round(round_number, avg_accuracy)
 
     def draw(self, target_dir):
-        logging.debug("AvgAccuracyPerRound draw to {}".format(target_dir))
+        logger.debug("AvgAccuracyPerRound draw to {}".format(target_dir))
         fig, ax = plt.subplots()  # Create a figure containing a single axes.
         ax.set_title(self.name)
         ax.set_xlabel("Round")
@@ -111,13 +112,13 @@ class AvgAccuracyPerScenario(Metric):
         self.name = "Average Accuracy Per Scenarios"
     
     def prepare_new_scenario(self, scenario):
-        logging.debug("AvgAccuracyPerScenario scenario preparation: {}".format(scenario))
+        logger.debug("AvgAccuracyPerScenario scenario preparation: {}".format(scenario))
 
     def calculate(self, **data):
-        logging.debug("AvgAccuracyPerScenario was called")
+        logger.debug("AvgAccuracyPerScenario was called")
 
     def draw(self, target_dir):
-        logging.debug("AvgAccuracyPerScenario draw")
+        logger.debug("AvgAccuracyPerScenario draw")
 
 class AvgAccuracyPerRound_Another(Metric):
     def __init__(self):
@@ -125,13 +126,13 @@ class AvgAccuracyPerRound_Another(Metric):
         self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
     
     def prepare_new_scenario(self, scenario):
-        logging.debug("AvgAccuracyPerRound_Another scenario preparation: {}".format(scenario))
+        logger.debug("AvgAccuracyPerRound_Another scenario preparation: {}".format(scenario))
 
     def calculate(self, **data):
-        logging.debug("AvgAccuracyPerRound_Another was called")
+        logger.debug("AvgAccuracyPerRound_Another was called")
 
     def draw(self, target_dir):
-        logging.debug("AvgAccuracyPerRound_Another draw")
+        logger.debug("AvgAccuracyPerRound_Another draw")
 
 class MetricBothRoundAndScenario(Metric):
     def __init__(self):
@@ -140,10 +141,10 @@ class MetricBothRoundAndScenario(Metric):
         self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
     
     def prepare_new_scenario(self, scenario):
-        logging.debug("MetricBothRoundAndScenario scenario preparation: {}".format(scenario))
+        logger.debug("MetricBothRoundAndScenario scenario preparation: {}".format(scenario))
 
     def calculate(self, **data):
-        logging.debug("MetricBothRoundAndScenario was called")
+        logger.debug("MetricBothRoundAndScenario was called")
 
     def draw(self, target_dir):
-        logging.debug("MetricBothRoundAndScenario draw")
+        logger.debug("MetricBothRoundAndScenario draw")

@@ -5,6 +5,7 @@ import random
 import config
 import helpers
 
+logger = logging.getLogger("reputation-system." + __name__)
 
 class Agent:
     count = 0
@@ -124,15 +125,15 @@ class Claim:
 
     def set_score_i(self, setter_agent, score_value_i):
         if self._score_i is not None:
-            logging.error("Claim {}: Agent {} tried to overwrite set score {} with {}".format(
+            logger.error("Claim {}: Agent {} tried to overwrite set score {} with {}".format(
                 self.ID, setter_agent.ID, self._score_i, score_value_i ))
             raise helpers.PermissionViolatedError
         if setter_agent is not self.author():
-            logging.error("Claim {}: Agent {} tried to set who is not the author! (author: {})".format(
+            logger.error("Claim {}: Agent {} tried to set who is not the author! (author: {})".format(
                 self.ID, setter_agent.ID, self.author().ID ))
             raise helpers.PermissionViolatedError
         if not helpers.is_within_internal_bounds(score_value_i):
-            logging.warning("Claim {}: agent {} attempted to set out-of-bound score. Was forced within.'{}'".format(
+            logger.warning("Claim {}: agent {} attempted to set out-of-bound score. Was forced within.'{}'".format(
                 self.ID, setter_agent.ID, score_value_i ))
             score_value_i = helpers.force_internal_bounds(score_value_i)
 
@@ -141,14 +142,14 @@ class Claim:
     @property
     def value(self):
         if self._score_i is None:
-            logging.error("Claim {}: score accessed but is not yet initialized!".format(self.ID))
+            logger.error("Claim {}: score accessed but is not yet initialized!".format(self.ID))
             raise helpers.UncompleteInitializationError
         else:
             return helpers.i2a(self._score_i)
 
     @property
     def ground_truth(self):
-        #logging.warning("Claim {}: agent-exposed ground truth was accessed.".format(self.ID))
+        #logger.warning("Claim {}: agent-exposed ground truth was accessed.".format(self.ID))
         return helpers.i2a(self._ground_truth_i)
 
     @property

@@ -9,12 +9,14 @@ import results_processor as reproc
 import paths
 import helpers
 
-
-
+logger = logging.getLogger("reputation-system")
 
 def simulate(artifacts_directory, default_config, scenarios):
-    logging.info("Simulation started")
-    logging.info("Scenarios planned: {}".format(scenarios))
+    starttime = time.process_time()
+
+    logger.info("Simulation started")
+    logger.info("Artifact directory is at '{}'".format(artifacts_directory))
+    logger.info("Scenarios planned: {}".format(scenarios))
 
     sys = system.System()
     results_processor = reproc.ResultsProcessor(artifacts_directory)
@@ -22,7 +24,7 @@ def simulate(artifacts_directory, default_config, scenarios):
     config.read_default_configuration(default_config)
 
     for scenario in scenarios:
-        logging.info("Beginning scenario: '{}'".format(scenario))
+        logger.info("Beginning scenario: '{}'".format(scenario))
 
         config.read_configuration(scenario)
         config.configure_system(sys)
@@ -43,11 +45,16 @@ def simulate(artifacts_directory, default_config, scenarios):
             agents_data=sys.agents,
             scenario=scenario_display_name)
 
+        logger.info("Scenario '{}' finished".format(scenario))
         sys.reset_system()
         config.reset_active_configuration()
 
     results_processor.process(helpers.SimulationEvent.END_OF_SIMULATION)
-    logging.info("Simulation finished")
+    logger.info("Simulation finished")
+
+    endtime = time.process_time()
+    d = datetime.timedelta(seconds=endtime - starttime)
+    logger.info("Simulation process time: " + str(d).split(".")[0])
 
 def prepare_artifacts_directory():
         now = datetime.datetime.now()
@@ -67,38 +74,46 @@ def prepare_artifacts_directory():
 
         return simulation_dir_path
 
-def setup_logging(logfile_dir, level):
+def setup_logging(logfile_dir, default_level, module_levels=None):
         logfile_path = os.path.join( logfile_dir, "simulation.log" )
 
         file_handler = logging.FileHandler(logfile_path)
         stream_handler = logging.StreamHandler()
 
-        logging.basicConfig(
-            handlers=[file_handler, stream_handler], 
-            datefmt="%H:%M:%S",
-            format="%(asctime)s,%(msecs)03d %(levelname)s: [%(filename)s > %(funcName)s()] %(message)s",
-            level=level)
+        logger.setLevel(default_level)
+        logger.propagate = False
 
-        # there is a bug where matplotlib font_manager debug logs appear regardless of global level
-        # disable these debug logs as per suggestion here:
-        # https://stackoverflow.com/questions/58320567/matplotlib-font-manager-debug-messages-in-log-file#58342614
-        logging.getLogger('matplotlib.font_manager').setLevel(logging.WARNING)
+        file_formatter = logging.Formatter(
+            fmt="%(asctime)s,%(msecs)03d %(levelname)s: [%(filename)s > %(funcName)s()] %(message)s",
+            datefmt="%H:%M:%S")
+        stream_formetter = logging.Formatter(
+            fmt="%(levelname)s: %(message)s",
+            datefmt="%M:%S"
+        )
+        file_handler.setFormatter(file_formatter)
+        stream_handler.setFormatter(stream_formetter)
 
+        logger.addHandler(file_handler)
+        logger.addHandler(stream_handler)
+
+        if module_levels:
+            for module_name, module_level in module_levels.items():
+                module_logger = logging.getLogger("reputation-system." + module_name)
+                module_logger.setLevel(module_level)
 
 
 if __name__ == "__main__":
-    simulation_dir_path = prepare_artifacts_directory()
-    setup_logging(simulation_dir_path, logging.DEBUG)
-    logging.info("Artifact directory is at '{}'".format(simulation_dir_path))
-
+    default_level = logging.INFO
+    module_levels = {
+        #"system": logging.DEBUG,
+        #"metrics": logging.DEBUG
+    } # a module will remain on default if not overwritten here
     default_config_name = "default_config.yaml"
     scenarios = [
         "config.yaml",
         "alt_config.yaml"
     ]
-
-    starttime = time.process_time()
+    
+    simulation_dir_path = prepare_artifacts_directory()
+    setup_logging(simulation_dir_path, default_level, module_levels)
     simulate(simulation_dir_path, default_config_name, scenarios)
-    endtime = time.process_time()
-    d = datetime.timedelta(seconds=endtime - starttime)
-    logging.info("Simulation process time: " + str(d).split(".")[0])
