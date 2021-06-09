@@ -9,17 +9,17 @@ seed: 10 #leave empty for random
 agents:
   - amount: 100
     distort_strategy: "DistortDoNothingStrategy"
-    rate_strategy: "RateHigherHalfRandom"
-    claim_range: [0, 0.1]
+    rate_strategy: "RateDoNothing"
+    claim_range: [0.5, 1]
     claim_probability: 1
     rate_probability: 0.1
     claim_truth_assessment_inaccuracy: 0.1
   - amount: 20
     distort_strategy: "DistortUpByOneRandom"
-    rate_strategy: "RateRandomStrategy"
-    claim_range: [0.5, 1]
+    rate_strategy: "RateFromOwnExperience"
+    claim_range: [0, 1]
     claim_probability: 0.1
-    rate_probability: 0.1
+    rate_probability: 0.8
     claim_truth_assessment_inaccuracy: 0.1
 metrics:
   - "AvgAccuracyPerRound"
