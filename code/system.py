@@ -33,9 +33,9 @@ class System:
         self._improvement_handler = improvement_handler
         logging.info("Improvement handler entry set to '{}'".format(type(improvement_handler).__name__))
 
-    def create_agents(self, distort_strategy, rate_strategy, claim_limits, claim_probability, rate_probability, amount=1):
+    def create_agents(self, distort_strategy, rate_strategy, claim_limits, claim_probability, rate_probability, claim_truth_assessment_inaccuracy, amount=1):
         for _ in range(0,amount):
-            new_agent = Agent(distort_strategy, rate_strategy, claim_limits, claim_probability, rate_probability)
+            new_agent = Agent(distort_strategy, rate_strategy, claim_limits, claim_probability, rate_probability, claim_truth_assessment_inaccuracy)
             self.agents.append(new_agent)
             logging.debug("Created: " + str(new_agent))
 
@@ -77,15 +77,14 @@ class System:
             agent.give_rate_opportunity(claim, self.rng)
 
     def show(self):
-        print("Round #{} of 0..{}".format(helpers.current_sim_round, config.get("SIM_ROUND_MAX")-1))
-        print("There are " + str(len(self.agents)) + " agents")
+        logging.info("Round #{} of 0..{}".format(helpers.current_sim_round, config.get("SIM_ROUND_MAX")-1))
+        logging.info("There are " + str(len(self.agents)) + " agents")
         for agent in self.agents:
-            print("Agent #{:>2}".format(agent.ID), end = ": ")
-            print("Rep: {}".format(round(agent.global_reputation,2)))
+            logging.info("Agent #{:>3}: Rep: {}".format(agent.ID, round(agent.global_reputation,2)))
             if agent.claims:
+                string = ""
                 for claim in agent.claims:
-                    print("           ", end = "")
-                    print(claim)
+                    logging.info("            " + str(claim))
 
     def apply_improvements(self):
         if self.improvement_handler is None:
@@ -107,7 +106,7 @@ class System:
         logging.info("Reputation strategy: '{}'".format(type(self.reputation_strategy).__name__))
         logging.info("Improvement handler chain entry point: '{}'".format(type(self.improvement_handler).__name__))
         logging.info("There are " + str(len(self.agents)) + " agents")
-        logging.info("{:^10} {:^30} {:^30} {:^16} {:^6} {:^6}".format(
-            "#","DISTORT STRATEGY", "RATING STRATEGY", "claim limits", "claim%", "rate%"))
+        logging.info("{:^10} {:^30} {:^30} {:^16} {:^6} {:>6} {:^6}".format(
+            "#","DISTORT STRATEGY", "RATING STRATEGY", "claim limits", "claim%", "rate%", "CTAI"))
         for agent in self.agents:
             logging.info(str(agent))

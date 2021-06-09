@@ -10,15 +10,17 @@ agents:
   - amount: 10
     distort_strategy: "DistortDoNothingStrategy"
     rate_strategy: "RateRandomStrategy"
-    claim_range: [0.5, 1]
-    claim_probability: 0.5
-    rate_probability: 0.1
+    claim_range: [0.5, 1] # [min, max], values in internal 0 .. 1 range
+    claim_probability: 0.5 # 0 .. 1
+    rate_probability: 0.1 # 0 .. 1
+    claim_truth_assessment_inaccuracy: 0.1 # error in a single direction +- (i.e. this will double) in internal 0..1 range
   - amount: 10
     distort_strategy: "DistortUpByOneRandom"
     rate_strategy: "RateRandomStrategy"
     claim_range: [0, 1]
     claim_probability: 0.5
     rate_probability: 0.1
+    claim_truth_assessment_inaccuracy: 0.1
 metrics:
   - "AvgAccuracyPerRound"
   - "AvgAccuracyPerScenario"
@@ -27,7 +29,6 @@ MIN_RATING: 1
 MAX_RATING: 9
 DECIMAL_PRECISION: 0 # 0 for int
 INITIAL_REPUTATION: 5 # in user-facing range and precision
-MEASUREMENT_ERROR: 0.1 # in internal 0..1 range
 SIM_ROUND_MAX: 50
 SIM_ROUND_MIN: 1
-AGING_LIMIT: 2
+AGING_LIMIT: 2 # 0 to only allow from current round, 1 to allow from one before too ...

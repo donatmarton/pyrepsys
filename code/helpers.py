@@ -45,3 +45,12 @@ def agent_to_internal(score):
     internal_value = (score - min_val) / (max_val - min_val)
     return internal_value
 a2i= agent_to_internal
+
+def is_within_internal_bounds(score):
+    return score <= 1 and score >= 0
+
+class PermissionViolatedError(Exception):
+    pass
+
+class UncompleteInitializationError(Exception):
+    pass

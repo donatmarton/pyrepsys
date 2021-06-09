@@ -95,7 +95,15 @@ class Configurator:
             claim_range = agent["claim_range"]
             assert len(claim_range) == 2
             claim_limits = helpers.ClaimLimits(min=claim_range[0], max=claim_range[1])
-            system.create_agents(ds, rs, claim_limits, claim_probability, rate_probability, amount)
+            claim_truth_assessment_inaccuracy = agent["claim_truth_assessment_inaccuracy"]
+            system.create_agents(
+                ds, 
+                rs, 
+                claim_limits, 
+                claim_probability, 
+                rate_probability,
+                claim_truth_assessment_inaccuracy, 
+                amount)
 
 configurator = Configurator()
 get = configurator.get

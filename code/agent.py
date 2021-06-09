@@ -1,3 +1,4 @@
+import logging
 import weakref
 import random
 
@@ -7,7 +8,7 @@ import helpers
 
 class Agent:
     count = 0
-    def __init__(self, distort_strategy, rating_strategy, claim_limits, claim_probability, rate_probability):
+    def __init__(self, distort_strategy, rating_strategy, claim_limits, claim_probability, rate_probability, claim_truth_assessment_inaccuracy):
         self.ID = Agent.count
         Agent.count += 1
         self.global_reputation = config.get("INITIAL_REPUTATION")
@@ -18,6 +19,7 @@ class Agent:
         self.claim_limits = claim_limits
         self.claim_probability = claim_probability
         self.rate_probability = rate_probability
+        self.claim_truth_assessment_inaccuracy = claim_truth_assessment_inaccuracy
         self.weight = 1
 
     def __del__(self):
@@ -49,20 +51,20 @@ class Agent:
         return new_claim
 
     def __make_new_claim(self, rng):
-        ground_truth = rng.random()
-        cfg_MEASUREMENT_ERROR = config.get("MEASUREMENT_ERROR")
-        measurement_error = rng.uniform(-1*cfg_MEASUREMENT_ERROR/2, cfg_MEASUREMENT_ERROR/2)
-        measured_claim = helpers.force_internal_bounds(ground_truth + measurement_error)
+        claim = Claim(weakref.ref(self), rng)
+        measured_claim_score_i = self.measure_claim(claim, rng)
+
         distorted_claim_ae = self.distort_strategy.execute(
-            helpers.i2a(measured_claim),
+            helpers.i2a(measured_claim_score_i),
             rng.random())
         distorted_claim_ae = helpers.force_agent_exposed_bounds(distorted_claim_ae)
         distorted_claim_i = helpers.a2i(distorted_claim_ae)
+
         if distorted_claim_i > self.claim_limits.max or distorted_claim_i < self.claim_limits.min:
             # claim would be outside of limits, agent refuses to publish claim
             return None
         else:
-            claim = Claim(weakref.ref(self), ground_truth, distorted_claim_i)
+            claim.set_score_i(self, distorted_claim_i)
             self.claims.append(claim)
             return claim
 
@@ -80,24 +82,31 @@ class Agent:
         claim.add_review(review)
         self.reviews.append(review)
 
+    def measure_claim(self, claim, rng):
+        max_error_i = self.claim_truth_assessment_inaccuracy
+        measurement_error_i = rng.uniform(-1*max_error_i, max_error_i)
+        measured_score_i = helpers.force_internal_bounds(claim.ground_truth_i + measurement_error_i)
+        return measured_score_i
+    
     def __str__(self):
-        return "Agent {:>3}: {:<30} {:<30} {:.4f} .. {:.4f} {:>6.0%} {:>6.0%}".format(
+        return "Agent {:>3}: {:<30} {:<30} {:.4f} .. {:.4f} {:>6.0%} {:>6.0%} {:>6.4f}".format(
                 self.ID,
                 type(self._distort_strategy).__name__,
                 type(self._rating_strategy).__name__,
                 self.claim_limits.min,
                 self.claim_limits.max,
                 self.claim_probability,
-                self.rate_probability
+                self.rate_probability,
+                self.claim_truth_assessment_inaccuracy
         )
    
 class Claim:
     count = 0
-    def __init__(self, author, ground_truth_i, claim_score_i, stake=0):
+    def __init__(self, author, rng, claim_score_i=None, stake=None):
         self.ID = Claim.count
         Claim.count += 1
         self.author = author
-        self._ground_truth_i = ground_truth_i
+        self._ground_truth_i = rng.random()
         self._score_i = claim_score_i
         self.stake = stake
         self.reviews = []
@@ -109,13 +118,38 @@ class Claim:
     def add_review(self,review):
         self.reviews.append(review)
 
+    def set_score_i(self, setter_agent, score_value_i):
+        if self._score_i is not None:
+            logging.error("Claim {}: Agent {} tried to overwrite set score {} with {}".format(
+                self.ID, setter_agent.ID, self._score_i, score_value_i ))
+            raise helpers.PermissionViolatedError
+        if setter_agent is not self.author():
+            logging.error("Claim {}: Agent {} tried to set who is not the author! (author: {})".format(
+                self.ID, setter_agent.ID, self.author().ID ))
+            raise helpers.PermissionViolatedError
+        if not helpers.is_within_internal_bounds(score_value_i):
+            logging.warning("Claim {}: agent {} attempted to set out-of-bound score. Was forced within.'{}'".format(
+                self.ID, setter_agent.ID, score_value_i ))
+            score_value_i = helpers.force_internal_bounds(score_value_i)
+
+        self._score_i = score_value_i
+
     @property
     def value(self):
-        return helpers.i2a(self._score_i)
+        if self._score_i is None:
+            logging.error("Claim {}: score accessed but is not yet initialized!".format(self.ID))
+            raise helpers.UncompleteInitializationError
+        else:
+            return helpers.i2a(self._score_i)
 
     @property
     def ground_truth(self):
+        #logging.warning("Claim {}: agent-exposed ground truth was accessed.".format(self.ID))
         return helpers.i2a(self._ground_truth_i)
+
+    @property
+    def ground_truth_i(self):
+        return self._ground_truth_i
 
     def __str__(self):
         return "c{}a{}-{}".format(self.value, self.round_timestamp, 
