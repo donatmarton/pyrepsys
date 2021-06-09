@@ -93,8 +93,7 @@ class System:
             self.improvement_handler.handle(self.agents)
 
     def calculate_reputations(self):
-        for agent in self.agents:
-            agent.global_reputation = self.reputation_strategy.calculate_reputation(agent)
+        self.reputation_strategy.calculate_reputations(self.agents)
 
     def reset_system(self):
         logger.debug("Resetting system")

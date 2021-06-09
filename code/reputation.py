@@ -6,39 +6,41 @@ import helpers
 
 class ReputationStrategy(ABC):
     @abstractmethod
-    def calculate_reputation(self, agent):
+    def calculate_reputations(self, agents):
         pass
 
 class ReputationAverageStrategy(ReputationStrategy):
-    def calculate_reputation(self, agent):
-        scores = []
-        for claim in agent.claims:
-            for review in claim.reviews:
-                scores.append(review.value)
-        if scores: 
-            reputation = sum(scores) / len(scores)
-        else: 
-            reputation = config.get("INITIAL_REPUTATION")
-        return reputation
+    def calculate_reputations(self, agents):
+        for agent in agents:
+            scores = []
+            for claim in agent.claims:
+                for review in claim.reviews:
+                    scores.append(review.value)
+            if scores: 
+                reputation = sum(scores) / len(scores)
+            else: 
+                reputation = config.get("INITIAL_REPUTATION")
+            agent.global_reputation = reputation
 
 class ReputationWeightedAverage(ReputationStrategy):
-    def calculate_reputation(self, agent):
-        scores = []
-        weights = []
-        for claim in agent.claims:
-            for review in claim.reviews:
-                scores.append(review.value)
-                review_author = review.author()
-                assert review_author is not None
-                weights.append(review_author.weight)
-        if scores: 
-            weighted_sum = 0
-            for s, w in zip(scores,weights):
-                weighted_sum += s*w
-            reputation = weighted_sum/sum(weights)
-        else: 
-            reputation = config.get("INITIAL_REPUTATION")
-        return reputation
+    def calculate_reputations(self, agents):
+        for agent in agents:
+            scores = []
+            weights = []
+            for claim in agent.claims:
+                for review in claim.reviews:
+                    scores.append(review.value)
+                    review_author = review.author()
+                    assert review_author is not None
+                    weights.append(review_author.weight)
+            if scores: 
+                weighted_sum = 0
+                for s, w in zip(scores,weights):
+                    weighted_sum += s*w
+                reputation = weighted_sum/sum(weights)
+            else: 
+                reputation = config.get("INITIAL_REPUTATION")
+            agent.global_reputation = reputation
 
 
 
