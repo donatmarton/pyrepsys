@@ -42,6 +42,38 @@ class ReputationWeightedAverage(ReputationStrategy):
                 reputation = config.get("INITIAL_REPUTATION")
             agent.global_reputation = reputation
 
+class BasedOnAvgDifferenceOfClaimsAndReviews(ReputationStrategy):
+    def calculate_reputations(self, agents):
+        min_rating = config.get("MIN_RATING")
+        max_rating = config.get("MAX_RATING")
+        min_reputation = min_rating
+        max_reputation = max_rating
+        max_difference = max_rating - min_rating
+
+        for agent in agents:
+            differences = []
+
+            for claim in agent.claims:
+                reviews = []
+                for review in claim.reviews:
+                    reviews.append(review.value)
+                if reviews:
+                    avg_review_for_claim = sum(reviews) / len(reviews)
+                    diff = abs(avg_review_for_claim - claim.value)
+                    # for review and claim value to be "compatible" / directly comparable, 
+                    # must note that review score means:
+                    # that "this claim should have been an x"
+                    # and not "this claim quality is x out of 9"
+                    differences.append(diff)
+
+            if differences:
+                avg_diff = sum(differences) / len(differences)
+                diff_percent = (max_difference - avg_diff) / max_difference
+                reputation = min_reputation + (max_reputation - min_reputation) * diff_percent
+            else:
+                reputation = config.get("INITIAL_REPUTATION")
+            agent.global_reputation = reputation
+
 
 
 
