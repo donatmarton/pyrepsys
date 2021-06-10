@@ -80,14 +80,14 @@ class System:
                     agent.give_rate_opportunity(claim, self.rng)
 
     def show(self):
-        logger.info("Round #{} of 0..{}".format(helpers.current_sim_round, config.get("SIM_ROUND_MAX")-1))
-        logger.info("There are " + str(len(self.agents)) + " agents")
+        logger.debug("Round #{} of 0..{}".format(helpers.current_sim_round, config.get("SIM_ROUND_MAX")-1))
+        logger.debug("There are " + str(len(self.agents)) + " agents")
         for agent in self.agents:
-            logger.info("Agent #{:>3}: Rep: {}".format(agent.ID, round(agent.global_reputation,2)))
+            logger.debug("Agent #{:>3}: Rep: {}".format(agent.ID, round(agent.global_reputation,2)))
             if agent.claims:
                 string = ""
                 for claim in agent.claims:
-                    logger.info("            " + str(claim))
+                    logger.debug("            " + str(claim))
 
     def apply_improvements(self):
         if self.improvement_handler is None:
