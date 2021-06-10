@@ -74,8 +74,10 @@ class System:
     def rate_claims(self, claims):
         for claim in claims:
             # give all agents one opportunity to rate
+            # only if they are not the claimer
             for agent in self.agents:
-                agent.give_rate_opportunity(claim, self.rng)
+                if agent is not claim.author():
+                    agent.give_rate_opportunity(claim, self.rng)
 
     def show(self):
         logger.info("Round #{} of 0..{}".format(helpers.current_sim_round, config.get("SIM_ROUND_MAX")-1))
