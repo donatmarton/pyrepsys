@@ -8,7 +8,7 @@ import reputation as rep
 import behavior as beh
 import helpers
 
-logger = logging.getLogger("reputation-system." + __name__)
+logger = logging.getLogger(helpers.APP_NAME + "." + __name__)
 
 class Configurator:
     def __init__(self):

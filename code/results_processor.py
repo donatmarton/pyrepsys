@@ -3,7 +3,7 @@ import logging
 import helpers
 import metrics
 
-logger = logging.getLogger("reputation-system." + __name__)
+logger = logging.getLogger(helpers.APP_NAME + "." + __name__)
 
 class ResultsProcessor:
     def __init__(self, artifacts_directory):

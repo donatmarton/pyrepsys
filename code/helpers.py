@@ -3,6 +3,7 @@ from collections import namedtuple
 
 import config
 
+APP_NAME = "repsys"
 
 current_sim_round = 0
 

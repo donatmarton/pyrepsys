@@ -9,7 +9,7 @@ import results_processor as reproc
 import paths
 import helpers
 
-logger = logging.getLogger("reputation-system")
+logger = logging.getLogger(helpers.APP_NAME)
 
 def simulate(artifacts_directory, default_config, scenarios):
     starttime = time.process_time()
@@ -77,28 +77,29 @@ def prepare_artifacts_directory():
 def setup_logging(logfile_dir, default_level, module_levels=None):
         logfile_path = os.path.join( logfile_dir, "simulation.log" )
 
-        file_handler = logging.FileHandler(logfile_path)
-        stream_handler = logging.StreamHandler()
-
-        logger.setLevel(default_level)
-        logger.propagate = False
-
         file_formatter = logging.Formatter(
-            fmt="%(asctime)s,%(msecs)03d %(levelname)s: [%(filename)s > %(funcName)s()] %(message)s",
+            fmt="%(asctime)s,%(msecs)03d %(levelname)s: [%(name)s > %(funcName)s()] %(message)s",
             datefmt="%H:%M:%S")
-        stream_formetter = logging.Formatter(
+        stream_formatter = logging.Formatter(
             fmt="%(levelname)s: %(message)s",
             datefmt="%M:%S"
         )
-        file_handler.setFormatter(file_formatter)
-        stream_handler.setFormatter(stream_formetter)
 
-        logger.addHandler(file_handler)
-        logger.addHandler(stream_handler)
+        file_handler = logging.FileHandler(logfile_path)
+        file_handler.setFormatter(file_formatter)
+
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(stream_formatter)
+        
+        root_logger = logging.getLogger()
+        root_logger.addHandler(stream_handler)
+        root_logger.addHandler(file_handler)
+
+        logger.setLevel(default_level)
 
         if module_levels:
             for module_name, module_level in module_levels.items():
-                module_logger = logging.getLogger("reputation-system." + module_name)
+                module_logger = logging.getLogger(helpers.APP_NAME + "." + module_name)
                 module_logger.setLevel(module_level)
 
 

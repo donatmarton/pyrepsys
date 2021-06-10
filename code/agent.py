@@ -5,7 +5,7 @@ import random
 import config
 import helpers
 
-logger = logging.getLogger("reputation-system." + __name__)
+logger = logging.getLogger(helpers.APP_NAME + "." + __name__)
 
 class Agent:
     count = 0
