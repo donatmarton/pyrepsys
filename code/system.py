@@ -44,9 +44,10 @@ class System:
         assert self.reputation_strategy is not None
         assert self.results_processor is not None
         self.log_state()
-        logger.info("Simulation started")
         self.rng.seed(seed)
-        logger.debug("RNG seeded with '{}'".format(seed))
+        if seed: logger.info("RNG seeded with '{}'".format(seed))
+        else: logger.info("RNG seeded with a random seed")
+        logger.info("Simulation started")
         for sim_round in range(0,config.get("SIM_ROUND_MAX")):
             helpers.current_sim_round = sim_round
             logger.debug("Beginning round #{}".format(sim_round))
