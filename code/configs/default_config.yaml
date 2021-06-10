@@ -13,14 +13,14 @@ agents:
     claim_range: [0.5, 1] # [min, max], values in internal 0 .. 1 range
     claim_probability: 0.5 # 0 .. 1
     rate_probability: 0.1 # 0 .. 1
-    claim_truth_assessment_inaccuracy: 0.1 # error in a single direction +- (i.e. this will double) in internal 0..1 range
+    claim_truth_assessment_inaccuracy: 0.125 # error in a single direction +- (i.e. this will double) in internal 0..1 range
   - amount: 10
     distort_strategy: "DistortUpByOneRandom"
     rate_strategy: "RateRandomStrategy"
     claim_range: [0, 1]
     claim_probability: 0.5
     rate_probability: 0.1
-    claim_truth_assessment_inaccuracy: 0.1
+    claim_truth_assessment_inaccuracy: 0.125
 metrics:
   - "AvgAccuracyPerRound"
   - "AvgAccuracyPerScenario"
