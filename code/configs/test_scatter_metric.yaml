@@ -1,0 +1,36 @@
+reputation_strategy: "BasedOnAvgDifferenceOfClaimsAndReviews"
+improvement_handlers:
+  # in order of the chain from top to bottom
+  # i.e. the topmost is the entry handler
+#  - "Aging"
+  - "Weights"
+  - "StakeBasedReputation"
+seed: #leave empty for random
+agents:
+  - amount: 10 # the honest & 1-off claimer
+    distort_strategy: "DistortDoNothingStrategy"
+    rate_strategy: "RateDoNothing"
+    claim_range: [0, 1]
+    claim_probability: 1
+    rate_probability: 0
+    claim_truth_assessment_inaccuracy: 0.125
+  - amount: 30 # the dishonest , 1-off accurate claimer
+    distort_strategy: "DistortHugeUpRandom"
+    rate_strategy: "RateFromOwnExperience"
+    claim_range: [0, 1]
+    claim_probability: 1
+    rate_probability: 0
+    claim_truth_assessment_inaccuracy: 0
+  - amount: 100 # the honest, half-off accurate rater
+    distort_strategy: "DistortDoNothingStrategy"
+    rate_strategy: "RateFromOwnExperience"
+    claim_range: [0, 1]
+    claim_probability: 0
+    rate_probability: 1
+    claim_truth_assessment_inaccuracy: 0.0625
+metrics:
+  - "AvgTotClaimInaccuracyAndReputationScatter"
+DECIMAL_PRECISION: 0
+SIM_ROUND_MAX: 20
+AGING_LIMIT: 20
+INITIAL_REPUTATION: 1

@@ -54,7 +54,7 @@ def simulate(artifacts_directory, default_config, scenarios):
 
     endtime = time.process_time()
     d = datetime.timedelta(seconds=endtime - starttime)
-    logger.info("Simulation process time: " + str(d).split(".")[0])
+    logger.info("Total simulation process time: " + str(d).split(".")[0])
 
 def prepare_artifacts_directory():
         now = datetime.datetime.now()
@@ -112,7 +112,8 @@ if __name__ == "__main__":
     default_config_name = "default_config.yaml"
     scenarios = [
         "config.yaml",
-        "alt_config.yaml"
+        "alt_config.yaml",
+        "test_scatter_metric.yaml"
     ]
     
     simulation_dir_path = prepare_artifacts_directory()

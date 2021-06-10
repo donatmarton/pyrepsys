@@ -25,3 +25,4 @@ metrics:
   - "AvgAccuracyPerRound"
   - "AvgAccuracyPerScenario"
   - "AvgAccuracyPerRound_Another"
+  - "AvgTotClaimInaccuracyAndReputationScatter"

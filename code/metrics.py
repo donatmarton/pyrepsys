@@ -5,6 +5,7 @@ import os
 from matplotlib import pyplot as plt
 
 import helpers
+import config
 
 logger = logging.getLogger(helpers.APP_NAME + "." + __name__)
 
@@ -43,6 +44,32 @@ class Metric(ABC):
     def draw(self, target_dir):
         pass
 
+"""
+# Example stub metric to help creating new ones
+
+class MetricNameHere(Metric):
+    def __init__(self):
+        super().__init__()
+        # TODO: add events of interest
+        self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
+        self.add_event_of_interest(helpers.SimulationEvent.END_OF_SCENARIO)
+        # TODO: change name of metric
+        self.name = "Average Accuracy Per Scenarios"
+    
+    def prepare_new_scenario(self, scenario):
+        # TODO: implement method, called before simulating a scenario
+        logger.debug("MetricNameHere scenario preparation: {}".format(scenario))
+
+    def calculate(self, **data):
+        # TODO: implement method called on added events of interest
+        logger.debug("MetricNameHere was called")
+
+    def draw(self, target_dir):
+        # TODO: implement method to draw and saves the metric
+        logger.debug("MetricNameHere draw")
+
+"""
+
 
 class ScenarioDataByRounds:
     def __init__(self, scenario_name):
@@ -70,7 +97,7 @@ class AvgAccuracyPerRound(Metric):
         agents_data = data["agents_data"]
         round_number = data["round_number"]
 
-        #avg( | estimated - claim | ) for all claims of all agents
+        #avg( | estimated - claim ground truth | ) for all claims of all agents
         agent_accuracies =  []
         for agent in agents_data:
             for claim in agent.claims:
@@ -87,7 +114,7 @@ class AvgAccuracyPerRound(Metric):
 
     def draw(self, target_dir):
         logger.debug("AvgAccuracyPerRound draw to {}".format(target_dir))
-        fig, ax = plt.subplots()  # Create a figure containing a single axes.
+        fig, ax = plt.subplots()
         ax.set_title(self.name)
         ax.set_xlabel("Round")
         ax.set_ylabel("Average inaccuracy")
@@ -119,6 +146,74 @@ class AvgAccuracyPerScenario(Metric):
 
     def draw(self, target_dir):
         logger.debug("AvgAccuracyPerScenario draw")
+
+class ScenarioDataPoints:
+    def __init__(self, scenario_name):
+        self.name = scenario_name
+        self.x = []
+        self.y = []
+
+    def record_data_point(self, x, y):
+        self.x.append( x )
+        self.y.append( y )
+
+class AvgTotClaimInaccuracyAndReputationScatter(Metric):
+    def __init__(self):
+        super().__init__()
+        self.add_event_of_interest(helpers.SimulationEvent.END_OF_SCENARIO)
+        self.name = "Reputation vs Average Total Claiming Inaccuracy"
+        self.scenarios_data = []
+
+    def prepare_new_scenario(self, scenario):
+        self.scenarios_data.append( ScenarioDataPoints(scenario) )
+
+    def calculate(self, **data):
+        agents_data = data["agents_data"]
+        
+        # reputation and total claiming honesty (= |gr.truth - claim value| )
+        # idea is to show how good the reputation is in approximating "honesty"
+
+        for agent in agents_data:
+            # include agents with published claims only
+            if len(agent.claims) > 0:
+                tot_claim_honesties = []
+                for claim in agent.claims:
+                    tot_claim_honesties.append(abs( claim.ground_truth - claim.value ))
+                avg_tot_claim_hon = sum(tot_claim_honesties) / len(tot_claim_honesties)
+
+                rep = agent.global_reputation
+
+                self.scenarios_data[-1].record_data_point(avg_tot_claim_hon, rep)
+
+    def draw(self, target_dir):
+        fig, ax = plt.subplots()
+        
+        min_rating = config.get("MIN_RATING")
+        max_rating = config.get("MAX_RATING")
+        min_reputation = min_rating
+        max_reputation = max_rating
+        
+        for scenario in self.scenarios_data:
+            ax.set_title("Scenario: " + scenario.name)
+            
+            ax.set_xlabel("Average Total Claiming Inaccuracy")
+            ax.set_ylabel("Reputation")
+            
+            ax.set_xlim(0, max_rating - min_rating)
+            ax.set_ylim(min_reputation, max_reputation)
+            ax.grid()
+
+            ax.scatter(scenario.x, scenario.y)
+        
+            figfile = os.path.join(target_dir, type(self).__name__ + "_" + scenario.name)
+            fig.savefig(figfile)
+            
+            ax.clear()
+
+
+
+
+# these are example metrics used for testing, debugging:
 
 class AvgAccuracyPerRound_Another(Metric):
     def __init__(self):
