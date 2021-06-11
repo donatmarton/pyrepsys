@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 import pyrepsys.helpers as helpers
 import pyrepsys.config as config
 
-logger = logging.getLogger(helpers.APP_NAME + "." + __name__)
+logger = logging.getLogger(__name__)
 
 class Metric(ABC):
     @abstractmethod

@@ -3,8 +3,6 @@ from collections import namedtuple
 
 import pyrepsys.config as config
 
-APP_NAME = "repsys"
-
 current_sim_round = 0
 
 class SimulationEvent(Enum):

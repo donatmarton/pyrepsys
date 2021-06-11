@@ -9,7 +9,7 @@ import pyrepsys.results_processor as reproc
 import pyrepsys.paths as paths
 import pyrepsys.helpers as helpers
 
-logger = logging.getLogger(helpers.APP_NAME)
+logger = logging.getLogger(__name__)
 
 def simulate(artifacts_directory, default_config, scenarios):
     starttime = time.process_time()
@@ -95,18 +95,19 @@ def setup_logging(logfile_dir, default_level, module_levels=None):
         root_logger.addHandler(stream_handler)
         root_logger.addHandler(file_handler)
 
-        logger.setLevel(default_level)
+        app_logger = logging.getLogger("pyrepsys")
+        app_logger.setLevel(default_level)
 
         if module_levels:
             for module_name, module_level in module_levels.items():
-                module_logger = logging.getLogger(helpers.APP_NAME + "." + module_name)
+                module_logger = logging.getLogger("pyrepsys." + module_name)
                 module_logger.setLevel(module_level)
 
 
 def main():
     default_level = logging.INFO
     module_levels = {
-        #"system": logging.DEBUG,
+        #"scenario_simulator": logging.INFO,
         #"metrics": logging.DEBUG
     } # a module will remain on default if not overwritten here
     default_config_name = "default_config.yaml"

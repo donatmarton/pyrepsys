@@ -8,7 +8,7 @@ import pyrepsys.reputation as rep
 import pyrepsys.behavior as beh
 import pyrepsys.helpers as helpers
 
-logger = logging.getLogger(helpers.APP_NAME + "." + __name__)
+logger = logging.getLogger(__name__)
 
 class Configurator:
     def __init__(self):
