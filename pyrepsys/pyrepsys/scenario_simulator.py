@@ -7,7 +7,7 @@ import helpers
 
 logger = logging.getLogger(helpers.APP_NAME + "." + __name__)
 
-class System:
+class ScenarioSimulator:
 
     def __init__(self, reputation_strategy=None):
         self._reputation_strategy = reputation_strategy

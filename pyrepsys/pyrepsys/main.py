@@ -4,7 +4,7 @@ import datetime
 import time
 
 from config import configurator as config
-import system
+import scenario_simulator
 import results_processor as reproc
 import paths
 import helpers
@@ -18,7 +18,7 @@ def simulate(artifacts_directory, default_config, scenarios):
     logger.info("Artifact directory is at '{}'".format(artifacts_directory))
     logger.info("Scenarios planned: {}".format(scenarios))
 
-    sys = system.System()
+    sys = scenario_simulator.ScenarioSimulator()
     results_processor = reproc.ResultsProcessor(artifacts_directory)
     sys.results_processor = results_processor
     config.read_default_configuration(default_config)
