@@ -3,6 +3,8 @@ import logging
 import datetime
 import time
 
+import yaml
+
 from pyrepsys.config import configurator as config
 import pyrepsys.scenario_simulator as scenario_simulator
 import pyrepsys.results_processor as reproc
@@ -104,19 +106,25 @@ def setup_logging(logfile_dir, default_level, module_levels=None):
                 module_logger.setLevel(module_level)
 
 
+def read_scheduled_scenarios(run_params_file_name):
+    config_file_path = os.path.join(paths.default_run_params_dir, run_params_file_name)
+    with open(config_file_path, 'r') as file:
+        dictionary = yaml.safe_load(file)
+    scenarios = dictionary["scenarios"]
+    scenario_defaults = dictionary["scenario_defaults"]
+    assert len(scenarios) > 0
+    return scenarios, scenario_defaults
+
 def main():
     default_level = logging.INFO
     module_levels = {
         #"scenario_simulator": logging.INFO,
         #"metrics": logging.DEBUG
     } # a module will remain on default if not overwritten here
-    default_config_name = "default_config.yaml"
-    scenarios = [
-        "config.yaml",
-        "alt_config.yaml",
-        "test_scatter_metric.yaml"
-    ]
-    
+
+    run_params_file_name = "run_params.yaml"
+    scenarios, default_config_name = read_scheduled_scenarios(run_params_file_name)
+
     simulation_dir_path = prepare_artifacts_directory()
     setup_logging(simulation_dir_path, default_level, module_levels)
     simulate(simulation_dir_path, default_config_name, scenarios)
