@@ -3,10 +3,10 @@ import logging
 
 import yaml
 
-import paths
-import reputation as rep
-import behavior as beh
-import helpers
+import pyrepsys.paths as paths
+import pyrepsys.reputation as rep
+import pyrepsys.behavior as beh
+import pyrepsys.helpers as helpers
 
 logger = logging.getLogger(helpers.APP_NAME + "." + __name__)
 

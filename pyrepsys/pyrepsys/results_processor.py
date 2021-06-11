@@ -1,7 +1,7 @@
 import logging
 
-import helpers
-import metrics
+import pyrepsys.helpers as helpers
+import pyrepsys.metrics as metrics
 
 logger = logging.getLogger(helpers.APP_NAME + "." + __name__)
 

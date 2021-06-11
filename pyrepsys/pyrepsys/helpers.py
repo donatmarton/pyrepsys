@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from collections import namedtuple
 
-import config
+import pyrepsys.config as config
 
 APP_NAME = "repsys"
 

@@ -3,11 +3,11 @@ import logging
 import datetime
 import time
 
-from config import configurator as config
-import scenario_simulator
-import results_processor as reproc
-import paths
-import helpers
+from pyrepsys.config import configurator as config
+import pyrepsys.scenario_simulator as scenario_simulator
+import pyrepsys.results_processor as reproc
+import pyrepsys.paths as paths
+import pyrepsys.helpers as helpers
 
 logger = logging.getLogger(helpers.APP_NAME)
 
@@ -103,7 +103,7 @@ def setup_logging(logfile_dir, default_level, module_levels=None):
                 module_logger.setLevel(module_level)
 
 
-if __name__ == "__main__":
+def main():
     default_level = logging.INFO
     module_levels = {
         #"system": logging.DEBUG,
