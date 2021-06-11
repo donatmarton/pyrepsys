@@ -2,10 +2,10 @@ import logging
 import weakref
 import random
 
-import config
-import helpers
+import pyrepsys.config as config
+import pyrepsys.helpers as helpers
 
-logger = logging.getLogger(helpers.APP_NAME + "." + __name__)
+logger = logging.getLogger(__name__)
 
 class Agent:
     count = 0

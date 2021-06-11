@@ -1,9 +1,7 @@
 from enum import Enum, auto
 from collections import namedtuple
 
-import config
-
-APP_NAME = "repsys"
+import pyrepsys.config as config
 
 current_sim_round = 0
 

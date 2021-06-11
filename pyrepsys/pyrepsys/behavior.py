@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 import random
 
-import config
-from helpers import force_agent_exposed_bounds
-from agent import Claim
+import pyrepsys.config as config
+from pyrepsys.helpers import force_agent_exposed_bounds
+from pyrepsys.agent import Claim
 
 
 

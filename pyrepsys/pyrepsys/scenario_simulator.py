@@ -1,13 +1,13 @@
 import random
 import logging
 
-import config
-from agent import Agent
-import helpers
+import pyrepsys.config as config
+from pyrepsys.agent import Agent
+import pyrepsys.helpers as helpers
 
-logger = logging.getLogger(helpers.APP_NAME + "." + __name__)
+logger = logging.getLogger(__name__)
 
-class System:
+class ScenarioSimulator:
 
     def __init__(self, reputation_strategy=None):
         self._reputation_strategy = reputation_strategy

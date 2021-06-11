@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 import copy
 
-import config
-import helpers
+import pyrepsys.config as config
+import pyrepsys.helpers as helpers
 
 class ReputationStrategy(ABC):
     @abstractmethod

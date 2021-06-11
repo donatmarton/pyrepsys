@@ -3,13 +3,15 @@ import logging
 import datetime
 import time
 
-from config import configurator as config
-import system
-import results_processor as reproc
-import paths
-import helpers
+import yaml
 
-logger = logging.getLogger(helpers.APP_NAME)
+from pyrepsys.config import configurator as config
+import pyrepsys.scenario_simulator as scenario_simulator
+import pyrepsys.results_processor as reproc
+import pyrepsys.paths as paths
+import pyrepsys.helpers as helpers
+
+logger = logging.getLogger(__name__)
 
 def simulate(artifacts_directory, default_config, scenarios):
     starttime = time.process_time()
@@ -18,7 +20,7 @@ def simulate(artifacts_directory, default_config, scenarios):
     logger.info("Artifact directory is at '{}'".format(artifacts_directory))
     logger.info("Scenarios planned: {}".format(scenarios))
 
-    sys = system.System()
+    sys = scenario_simulator.ScenarioSimulator()
     results_processor = reproc.ResultsProcessor(artifacts_directory)
     sys.results_processor = results_processor
     config.read_default_configuration(default_config)
@@ -95,27 +97,34 @@ def setup_logging(logfile_dir, default_level, module_levels=None):
         root_logger.addHandler(stream_handler)
         root_logger.addHandler(file_handler)
 
-        logger.setLevel(default_level)
+        app_logger = logging.getLogger("pyrepsys")
+        app_logger.setLevel(default_level)
 
         if module_levels:
             for module_name, module_level in module_levels.items():
-                module_logger = logging.getLogger(helpers.APP_NAME + "." + module_name)
+                module_logger = logging.getLogger("pyrepsys." + module_name)
                 module_logger.setLevel(module_level)
 
 
-if __name__ == "__main__":
+def read_scheduled_scenarios(run_params_file_name):
+    config_file_path = os.path.join(paths.default_run_params_dir, run_params_file_name)
+    with open(config_file_path, 'r') as file:
+        dictionary = yaml.safe_load(file)
+    scenarios = dictionary["scenarios"]
+    scenario_defaults = dictionary["scenario_defaults"]
+    assert len(scenarios) > 0
+    return scenarios, scenario_defaults
+
+def main():
     default_level = logging.INFO
     module_levels = {
-        #"system": logging.DEBUG,
+        #"scenario_simulator": logging.INFO,
         #"metrics": logging.DEBUG
     } # a module will remain on default if not overwritten here
-    default_config_name = "default_config.yaml"
-    scenarios = [
-        "config.yaml",
-        "alt_config.yaml",
-        "test_scatter_metric.yaml"
-    ]
-    
+
+    run_params_file_name = "run_params.yaml"
+    scenarios, default_config_name = read_scheduled_scenarios(run_params_file_name)
+
     simulation_dir_path = prepare_artifacts_directory()
     setup_logging(simulation_dir_path, default_level, module_levels)
     simulate(simulation_dir_path, default_config_name, scenarios)
