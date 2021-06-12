@@ -116,14 +116,13 @@ def read_scheduled_scenarios(run_params_file_name):
     assert len(scenarios) > 0
     return scenarios, scenario_defaults
 
-def main(mode=helpers.Mode.SIMULATE):
+def main(run_params_file_name, mode=helpers.Mode.SIMULATE):
     default_level = logging.INFO
     module_levels = {
         #"scenario_simulator": logging.INFO,
         #"metrics": logging.DEBUG
     } # a module will remain on default if not overwritten here
 
-    run_params_file_name = "run_params.yaml"
     scenarios, default_config_name = read_scheduled_scenarios(run_params_file_name)
 
     simulation_dir_path = prepare_artifacts_directory()
