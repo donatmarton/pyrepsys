@@ -6,9 +6,9 @@ import pyrepsys
 def run_test(args):
     import pytest
     pytest.main(["tests/"])
-
+    
 def run_sim(args):
-    pyrepsys.run()
+    pyrepsys.run(mode=pyrepsys.Mode.SIMULATE)
 
 
 parser = argparse.ArgumentParser(

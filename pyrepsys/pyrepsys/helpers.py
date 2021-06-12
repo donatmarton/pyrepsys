@@ -11,6 +11,10 @@ class SimulationEvent(Enum):
     END_OF_SCENARIO = auto()
     END_OF_SIMULATION = auto()
 
+class Mode(Enum):
+    SIMULATE = auto()
+    TEST = auto()
+
 ClaimLimits = namedtuple("ClaimLimits",["min","max"])
 
 def force_agent_exposed_bounds(score):

@@ -13,16 +13,17 @@ import pyrepsys.helpers as helpers
 
 logger = logging.getLogger(__name__)
 
-def simulate(artifacts_directory, default_config, scenarios):
+def simulate(default_config, scenarios, artifacts_dir, scenarios_dir):
     starttime = time.process_time()
 
     logger.info("Simulation started")
-    logger.info("Artifact directory is at '{}'".format(artifacts_directory))
+    logger.info("Artifact directory is at '{}'".format(artifacts_dir))
     logger.info("Scenarios planned: {}".format(scenarios))
 
     sys = scenario_simulator.ScenarioSimulator()
-    results_processor = reproc.ResultsProcessor(artifacts_directory)
+    results_processor = reproc.ResultsProcessor(artifacts_dir)
     sys.results_processor = results_processor
+    config.scenarios_dir = scenarios_dir
     config.read_default_configuration(default_config)
 
     for scenario in scenarios:
@@ -115,7 +116,7 @@ def read_scheduled_scenarios(run_params_file_name):
     assert len(scenarios) > 0
     return scenarios, scenario_defaults
 
-def main():
+def main(mode=helpers.Mode.SIMULATE):
     default_level = logging.INFO
     module_levels = {
         #"scenario_simulator": logging.INFO,
@@ -127,4 +128,11 @@ def main():
 
     simulation_dir_path = prepare_artifacts_directory()
     setup_logging(simulation_dir_path, default_level, module_levels)
-    simulate(simulation_dir_path, default_config_name, scenarios)
+    if mode is helpers.Mode.SIMULATE:
+        scenarios_dir = paths.scenarios_dir
+    elif mode is helpers.Mode.TEST:
+        scenarios_dir = paths.test_scenarios_dir
+    else:
+        raise NotImplementedError
+    
+    simulate(default_config_name, scenarios, simulation_dir_path, scenarios_dir)

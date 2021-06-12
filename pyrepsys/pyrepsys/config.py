@@ -15,6 +15,7 @@ class Configurator:
         self._default_config = {}
         self._active_config = {}
         self.was_defaulted = False
+        self.scenarios_dir = None
 
     def read_configuration(self, config_file_name):
         if self._active_config:
@@ -32,7 +33,11 @@ class Configurator:
 
 
     def _config_from_file_to_memory(self, config_file_name):
-        config_file_path = os.path.join(paths.config_files_path, config_file_name)
+        if self.scenarios_dir is not None:
+            config_file_path = os.path.join(self.scenarios_dir, config_file_name)
+        else:
+            raise helpers.UncompleteInitializationError
+        
         with open(config_file_path, 'r') as file:
             dictionary = yaml.safe_load(file)
         dictionary["scenario_name"] = config_file_name.split(sep=".", maxsplit=1)[0]
