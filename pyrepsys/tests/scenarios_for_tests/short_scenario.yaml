@@ -1,0 +1,16 @@
+reputation_strategy: "ReputationAverageStrategy"
+improvement_handlers:
+  # in order of the chain from top to bottom
+  # i.e. the topmost is the entry handler
+  - "Aging"
+seed: #leave empty for random
+agents:
+  - amount: 4
+    distort_strategy: "DistortDoNothingStrategy"
+    rate_strategy: "RateDoNothing"
+    claim_range: [0, 1]
+    claim_probability: 1
+    rate_probability: 1
+    claim_truth_assessment_inaccuracy: 0.125
+metrics:
+SIM_ROUND_MAX: 1

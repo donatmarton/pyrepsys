@@ -13,7 +13,7 @@ def paths():
     dict["TEST_RUN_PARAMS_DIR"] = os.path.join( dict["TESTS_DIR"], "runparams_for_tests")
     return dict
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(autouse=True, scope="session")
 def prepare_pyrepsys_paths_for_tests(paths):
     pyrepsys.set_scenarios_dir(paths["TEST_SCENARIOS_DIR"])
     pyrepsys.set_run_params_dir(paths["TEST_RUN_PARAMS_DIR"])
