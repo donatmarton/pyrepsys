@@ -1,6 +1,7 @@
 # application-specific
 # =======================================
 simulation_artifacts/
+simulation_artifacts_from_tests/
 
 # vscode
 .vscode/

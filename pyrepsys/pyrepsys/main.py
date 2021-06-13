@@ -138,3 +138,4 @@ def main(run_params_file_name):
     simulation_dir_path = prepare_artifacts_directory()
     setup_logging(simulation_dir_path, default_level, module_levels)
     simulate(default_config_name, scenarios, simulation_dir_path)
+    return simulation_dir_path
