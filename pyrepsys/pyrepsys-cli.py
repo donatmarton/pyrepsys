@@ -8,7 +8,7 @@ def run_test(args):
     pytest.main(["tests/"])
     
 def run_sim(args):
-    pyrepsys.run(args.runparams, mode=pyrepsys.Mode.SIMULATE)
+    pyrepsys.run(args.runparams)
 
 def yaml_file(string: str) -> str:
     parts = string.split(".")

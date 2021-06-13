@@ -13,17 +13,18 @@ import pyrepsys.helpers as helpers
 
 logger = logging.getLogger(__name__)
 
-def simulate(default_config, scenarios, artifacts_dir, scenarios_dir):
+def simulate(default_config, scenarios, artifacts_dir):
     starttime = time.process_time()
 
     logger.info("Simulation started")
-    logger.info("Artifact directory is at '{}'".format(artifacts_dir))
+    logger.info("Artifacts will be save to '{}'".format(artifacts_dir))
+    logger.info("Scenarios will be read from '{}'".format(paths.scenarios_dir))
     logger.info("Scenarios planned: {}".format(scenarios))
 
     sys = scenario_simulator.ScenarioSimulator()
     results_processor = reproc.ResultsProcessor(artifacts_dir)
     sys.results_processor = results_processor
-    config.scenarios_dir = scenarios_dir
+    config.scenarios_dir = paths.scenarios_dir
     config.read_default_configuration(default_config)
 
     for scenario in scenarios:
@@ -108,7 +109,7 @@ def setup_logging(logfile_dir, default_level, module_levels=None):
 
 
 def read_scheduled_scenarios(run_params_file_name):
-    config_file_path = os.path.join(paths.default_run_params_dir, run_params_file_name)
+    config_file_path = os.path.join(paths.run_params_dir, run_params_file_name)
     with open(config_file_path, 'r') as file:
         dictionary = yaml.safe_load(file)
     scenarios = dictionary["scenarios"]
@@ -116,7 +117,16 @@ def read_scheduled_scenarios(run_params_file_name):
     assert len(scenarios) > 0
     return scenarios, scenario_defaults
 
-def main(run_params_file_name, mode=helpers.Mode.SIMULATE):
+def set_run_params_dir(path):
+    paths.run_params_dir = path
+
+def set_scenarios_dir(path):
+    paths.scenarios_dir = path
+
+def set_simulation_artifacts_dir(path):
+    paths.simulation_artifacts_path = path
+
+def main(run_params_file_name):
     default_level = logging.INFO
     module_levels = {
         #"scenario_simulator": logging.INFO,
@@ -127,11 +137,4 @@ def main(run_params_file_name, mode=helpers.Mode.SIMULATE):
 
     simulation_dir_path = prepare_artifacts_directory()
     setup_logging(simulation_dir_path, default_level, module_levels)
-    if mode is helpers.Mode.SIMULATE:
-        scenarios_dir = paths.scenarios_dir
-    elif mode is helpers.Mode.TEST:
-        scenarios_dir = paths.test_scenarios_dir
-    else:
-        raise NotImplementedError
-    
-    simulate(default_config_name, scenarios, simulation_dir_path, scenarios_dir)
+    simulate(default_config_name, scenarios, simulation_dir_path)
