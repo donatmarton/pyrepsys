@@ -63,9 +63,10 @@ class Configurator:
         metrics_cfg = self.get("metrics")
         results_processor.deactivate_all_metrics()
 
-        for metric_cfg in metrics_cfg:
-            results_processor.activate_metric(metric_cfg)
-        logger.info("Enabled metrics: {}".format(metrics_cfg))
+        if metrics_cfg is not None:
+            for metric_cfg in metrics_cfg:
+                results_processor.activate_metric(metric_cfg)
+        logger.info("Enabled metrics: {}".format(metrics_cfg))           
 
     def configure_system(self, system):
         logger.debug("Configuring system")
