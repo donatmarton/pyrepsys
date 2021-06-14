@@ -1,0 +1,3 @@
+scenario_defaults: "default_tests_config.yaml"
+scenarios:
+  - "short_scenario_no_improvements.yaml"

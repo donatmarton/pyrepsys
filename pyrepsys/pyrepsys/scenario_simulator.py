@@ -90,9 +90,7 @@ class ScenarioSimulator:
                     logger.debug("            " + str(claim))
 
     def apply_improvements(self):
-        if self.improvement_handler is None:
-            logger.warning("Improvements NOT performed as none were given.")
-        else:
+        if self.improvement_handler is not None:
             self.improvement_handler.handle(self.agents)
 
     def calculate_reputations(self):

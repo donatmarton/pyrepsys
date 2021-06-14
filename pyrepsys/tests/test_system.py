@@ -6,6 +6,9 @@ import pyrepsys
 def test_simulation_finishes_without_error():
     sim_dir = pyrepsys.run("run_short_scenario.yaml")
 
+def test_no_improvements_given():
+    sim_dir = pyrepsys.run("run_no_improvements.yaml")
+
 def test_three_successive_runs():
     run1_sim_dir = pyrepsys.run("run_short_scenario.yaml")
     run2_sim_dir = pyrepsys.run("run_short_scenario.yaml")

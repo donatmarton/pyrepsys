@@ -76,18 +76,21 @@ class Configurator:
         system.reputation_strategy = reputation_strategy
 
         cfg_improvement_handlers = self.get("improvement_handlers")
-        assert len(cfg_improvement_handlers) > 0
-        improvement_handlers = []
-        for cfg_handler in cfg_improvement_handlers:
-            handler = getattr(rep, cfg_handler)()
-            improvement_handlers.append(handler)
-        for i, handler in enumerate(improvement_handlers):
-            if i < len(improvement_handlers)-1:
-                handler.set_next(improvement_handlers[i+1])
-        logger.info("Handler chain found: {}".format(
-            "".join([h + " > " for h in cfg_improvement_handlers])
-        ))
-        system.improvement_handler = improvement_handlers[0]
+        if cfg_improvement_handlers is not None:
+            improvement_handlers = []
+            for cfg_handler in cfg_improvement_handlers:
+                handler = getattr(rep, cfg_handler)()
+                improvement_handlers.append(handler)
+            for i, handler in enumerate(improvement_handlers):
+                if i < len(improvement_handlers)-1:
+                    handler.set_next(improvement_handlers[i+1])
+            logger.info("Improvement handler chain found: {}".format(
+                "".join([h + " > " for h in cfg_improvement_handlers])
+            ))
+            system.improvement_handler = improvement_handlers[0]
+        else:
+            logger.warning("No improvement handler chain found")
+            system.improvement_handler = None
 
         agents = self.get("agents")
         for agent in agents:
