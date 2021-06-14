@@ -1,4 +1,5 @@
 import os
+import shutil
 import pytest
 
 import pyrepsys
@@ -17,4 +18,6 @@ def paths():
 def prepare_pyrepsys_paths_for_tests(paths):
     pyrepsys.set_scenarios_dir(paths["TEST_SCENARIOS_DIR"])
     pyrepsys.set_run_params_dir(paths["TEST_RUN_PARAMS_DIR"])
-    pyrepsys.set_simulation_artifacts_dir(paths["TEST_SIMULATION_ARTIFACTS_DIR"])    
+    pyrepsys.set_simulation_artifacts_dir(paths["TEST_SIMULATION_ARTIFACTS_DIR"])
+    # clean the artifacts dir of past runs:
+    shutil.rmtree(paths["TEST_SIMULATION_ARTIFACTS_DIR"])

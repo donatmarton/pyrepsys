@@ -67,7 +67,20 @@ def prepare_artifacts_directory():
         simulation_dir_path = os.path.abspath(
             os.path.join( paths.simulation_artifacts_path, simulation_dir_name ))
         
-        os.makedirs(simulation_dir_path, exist_ok=True)
+        try:
+            os.makedirs(simulation_dir_path, exist_ok=False)
+        except FileExistsError:
+            success = False
+            count = 1
+            while not success:
+                alt_sim_dir = simulation_dir_path + " ({})".format(count)
+                try: 
+                    os.makedirs(alt_sim_dir, exist_ok=False)
+                except FileExistsError:
+                    count += 1
+                else:
+                    success = True
+                    simulation_dir_path = alt_sim_dir
 
         symlink = os.path.join( paths.simulation_artifacts_path, "run_latest" )
         try:
