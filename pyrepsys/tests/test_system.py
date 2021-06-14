@@ -1,17 +1,41 @@
 import os
 
+import pytest
+
 import pyrepsys
 
 
 def test_simulation_finishes_without_error():
-    sim_dir = pyrepsys.run("run_short_scenario.yaml")
+    sim_dir = pyrepsys.run(run_params_file_name="run_short_scenario.yaml")
 
 def test_no_improvements_given():
-    sim_dir = pyrepsys.run("run_no_improvements.yaml")
+    sim_dir = pyrepsys.run(
+        scenario_list=["short_scenario_no_improvements.yaml"], 
+        scenario_defaults="default_tests_config.yaml"
+    )
 
+def test_incorrect_run_calls():
+    with pytest.raises(TypeError):
+        # neither runparams nor scenario list
+        pyrepsys.run()
+    with pytest.raises(TypeError):
+        # both runparams and scenario list
+        pyrepsys.run(
+            run_params_file_name="run_short_scenario.yaml",
+            scenario_list=["short_scenario_no_improvements.yaml"]
+        )
+    with pytest.raises(TypeError):
+        # no default given
+        pyrepsys.run(scenario_list=["short_scenario_no_improvements.yaml"])
+    with pytest.raises(TypeError):
+        # scenario list not as list
+        pyrepsys.run(
+            scenario_list="short_scenario_no_improvements.yaml",
+            scenario_defaults="default_tests_config.yaml"
+        )
 def test_three_successive_runs():
-    run1_sim_dir = pyrepsys.run("run_short_scenario.yaml")
-    run2_sim_dir = pyrepsys.run("run_short_scenario.yaml")
+    run1_sim_dir = pyrepsys.run(run_params_file_name="run_short_scenario.yaml")
+    run2_sim_dir = pyrepsys.run(run_params_file_name="run_short_scenario.yaml")
     run3_sim_dir = pyrepsys.run("run_short_scenario.yaml")
 
     assert os.path.exists( run1_sim_dir )

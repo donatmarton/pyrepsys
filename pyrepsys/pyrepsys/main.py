@@ -139,14 +139,26 @@ def set_scenarios_dir(path):
 def set_simulation_artifacts_dir(path):
     paths.simulation_artifacts_path = path
 
-def main(run_params_file_name):
+def main(run_params_file_name=None, scenario_list=None, scenario_defaults=None):
     default_level = logging.INFO
     module_levels = {
         #"scenario_simulator": logging.INFO,
         #"metrics": logging.DEBUG
     } # a module will remain on default if not overwritten here
 
-    scenarios, default_config_name = read_scheduled_scenarios(run_params_file_name)
+    if run_params_file_name and scenario_list:
+        raise TypeError("run_params_file_name and scenario_list were both passed, only one is allowed")
+    elif run_params_file_name:
+        scenarios, default_config_name = read_scheduled_scenarios(run_params_file_name)
+    elif scenario_list:
+        if type(scenario_list) is not list:
+            raise TypeError("scenario_list must be a list")
+        if not scenario_defaults:
+            raise TypeError("when giving scenario_list, scenario_defaults also must be provided")
+        scenarios = scenario_list
+        default_config_name = scenario_defaults
+    else:
+        raise TypeError("either run_params_file_name or scenario_list with scenario_defaults must be provided")
 
     simulation_dir_path = prepare_artifacts_directory()
     setup_logging(simulation_dir_path, default_level, module_levels)
