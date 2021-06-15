@@ -7,27 +7,12 @@ improvement_handlers:
   - "StakeBasedReputation"
 seed: #leave empty for random
 agents:
-  - amount: 10 # the honest & 1-off claimer
-    distort_strategy: "DistortDoNothingStrategy"
-    rate_strategy: "RateDoNothing"
-    claim_range: [0, 1]
-    claim_probability: 1
-    rate_probability: 0
-    claim_truth_assessment_inaccuracy: 0.125
-  - amount: 30 # the dishonest , 1-off accurate claimer
-    distort_strategy: "DistortHugeUpRandom"
-    rate_strategy: "RateFromOwnExperience"
-    claim_range: [0, 1]
-    claim_probability: 1
-    rate_probability: 0
-    claim_truth_assessment_inaccuracy: 0
-  - amount: 100 # the honest, half-off accurate rater
-    distort_strategy: "DistortDoNothingStrategy"
-    rate_strategy: "RateFromOwnExperience"
-    claim_range: [0, 1]
-    claim_probability: 0
-    rate_probability: 1
-    claim_truth_assessment_inaccuracy: 0.0625
+  - amount: 10
+    base_behavior: "HonestClaimer"
+  - amount: 30
+    base_behavior: "DishonestClaimer"
+  - amount: 100
+    base_behavior: "HonestAccurateRater"
 metrics:
   - "AvgTotClaimInaccuracyAndReputationScatter"
 DECIMAL_PRECISION: 0

@@ -57,3 +57,6 @@ class PermissionViolatedError(Exception):
 
 class UncompleteInitializationError(Exception):
     pass
+
+class ConfigurationError(Exception):
+    pass

@@ -93,19 +93,47 @@ class Configurator:
             system.improvement_handler = None
 
         agents = self.get("agents")
+        agent_base_behaviors = self.get("agent_base_behaviors")
         for agent in agents:
-            amount = agent["amount"]
+            try:
+                cfg_base_behavior = agent["base_behavior"]
+            except KeyError: # no base behavior was given
+                base_behavior = None
+            else: # get the base behavior, KeyError shows config error (not catched)
+                base_behavior = None
+                for bb in agent_base_behaviors:
+                    if bb["name"] == cfg_base_behavior:
+                        base_behavior = bb
+                if base_behavior is None:
+                    raise helpers.ConfigurationError("can't find base behavior with name '{}'".format(cfg_base_behavior))
+
+            def fetch_agent_cfg_entry(cfg_param_key):
+                try:
+                    cfg_param_value = agent[cfg_param_key]
+                except KeyError:
+                    if base_behavior:
+                        try:
+                            cfg_param_value = base_behavior[cfg_param_key]
+                        except KeyError:
+                            raise helpers.ConfigurationError("missing parameter '{}' must be defined".format(cfg_param_key))
+                return cfg_param_value
+
+            amount = agent["amount"] # can't be defined as base behavior
             assert type(amount) is int
-            cfg_rate_strategy = agent["rate_strategy"]
-            cfg_distort_strategy = agent["distort_strategy"]
+
+            cfg_rate_strategy = fetch_agent_cfg_entry("rate_strategy")
+            cfg_distort_strategy = fetch_agent_cfg_entry("distort_strategy")
             ds = getattr(beh,cfg_distort_strategy)()
             rs = getattr(beh,cfg_rate_strategy)()
-            claim_probability = agent["claim_probability"]
-            rate_probability = agent["rate_probability"]
-            claim_range = agent["claim_range"]
+            claim_probability = fetch_agent_cfg_entry("claim_probability")
+            rate_probability = fetch_agent_cfg_entry("rate_probability")
+            claim_range = fetch_agent_cfg_entry("claim_range")
             assert len(claim_range) == 2
-            claim_limits = helpers.ClaimLimits(min=claim_range[0], max=claim_range[1])
-            claim_truth_assessment_inaccuracy = agent["claim_truth_assessment_inaccuracy"]
+            min_claim = claim_range[0]
+            max_claim = claim_range[1]
+            assert min_claim <= max_claim
+            claim_limits = helpers.ClaimLimits(min=min_claim, max=max_claim)
+            claim_truth_assessment_inaccuracy = fetch_agent_cfg_entry("claim_truth_assessment_inaccuracy")
             system.create_agents(
                 ds, 
                 rs, 

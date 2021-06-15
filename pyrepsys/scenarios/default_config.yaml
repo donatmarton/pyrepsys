@@ -6,6 +6,28 @@ improvement_handlers:
   - "Weights"
   - "StakeBasedReputation"
 seed: #leave empty for random
+agent_base_behaviors:
+  - name: "HonestClaimer"
+    distort_strategy: "DistortDoNothingStrategy"
+    rate_strategy: "RateDoNothing"
+    claim_range: [0, 1]
+    claim_probability: 1
+    rate_probability: 0
+    claim_truth_assessment_inaccuracy: 0.125
+  - name: "DishonestClaimer"
+    distort_strategy: "DistortHugeUpRandom"
+    rate_strategy: "RateFromOwnExperience"
+    claim_range: [0, 1]
+    claim_probability: 1
+    rate_probability: 0
+    claim_truth_assessment_inaccuracy: 0.125
+  - name: "HonestAccurateRater"
+    distort_strategy: "DistortDoNothingStrategy"
+    rate_strategy: "RateFromOwnExperience"
+    claim_range: [0, 1]
+    claim_probability: 0
+    rate_probability: 1
+    claim_truth_assessment_inaccuracy: 0.0625
 agents:
   - amount: 10
     distort_strategy: "DistortDoNothingStrategy"
