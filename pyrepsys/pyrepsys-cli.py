@@ -71,10 +71,11 @@ parser_test.set_defaults(selected_mode=run_test)
 args = parser.parse_args()
 
 # post-parsing argument processing
-if args.scenario is not None and args.default_scenario is None:
-    parser_sim.error("the following arguments are required with -s/--scenario: -d/--default-scenario")
-if args.runparams and args.default_scenario:
-    parser_sim.error("the following arguments are not allowed with -rp/--runparams: -d/--default-scenario")
+if args.selected_mode == run_sim:
+    if args.scenario is not None and args.default_scenario is None:
+        parser_sim.error("the following arguments are required with -s/--scenario: -d/--default-scenario")
+    if args.runparams and args.default_scenario:
+        parser_sim.error("the following arguments are not allowed with -rp/--runparams: -d/--default-scenario")
 
 # call given command
 args.selected_mode(args)
