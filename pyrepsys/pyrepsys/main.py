@@ -127,7 +127,8 @@ def read_scheduled_scenarios(run_params_file_name):
         dictionary = yaml.safe_load(file)
     scenarios = dictionary["scenarios"]
     scenario_defaults = dictionary["scenario_defaults"]
-    assert len(scenarios) > 0
+    if not scenarios or len(scenarios) == 0:
+        raise helpers.ConfigurationError("no scenarios found in runparams file")
     return scenarios, scenario_defaults
 
 def set_run_params_dir(path):

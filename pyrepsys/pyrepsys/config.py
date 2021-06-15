@@ -119,8 +119,8 @@ class Configurator:
                 return cfg_param_value
 
             amount = agent["amount"] # can't be defined as base behavior
-            assert type(amount) is int
-
+            if type(amount) is not int or amount <= 0:
+                raise helpers.ConfigurationError("'amount' must be an integer > 0")
             cfg_rate_strategy = fetch_agent_cfg_entry("rate_strategy")
             cfg_distort_strategy = fetch_agent_cfg_entry("distort_strategy")
             ds = getattr(beh,cfg_distort_strategy)()
@@ -128,10 +128,15 @@ class Configurator:
             claim_probability = fetch_agent_cfg_entry("claim_probability")
             rate_probability = fetch_agent_cfg_entry("rate_probability")
             claim_range = fetch_agent_cfg_entry("claim_range")
-            assert len(claim_range) == 2
+            if len(claim_range) != 2:
+                raise helpers.ConfigurationError("incorrect 'claim_range'")
             min_claim = claim_range[0]
             max_claim = claim_range[1]
-            assert min_claim <= max_claim
+            if not helpers.is_within_internal_bounds(min_claim) or \
+                not helpers.is_within_internal_bounds(max_claim):
+                raise helpers.ConfigurationError("min and max claim must be within 0..1")
+            if min_claim > max_claim:
+                raise helpers.ConfigurationError("'min_claim' can't be larger than 'max_claim'")
             claim_limits = helpers.ClaimLimits(min=min_claim, max=max_claim)
             claim_truth_assessment_inaccuracy = fetch_agent_cfg_entry("claim_truth_assessment_inaccuracy")
             system.create_agents(

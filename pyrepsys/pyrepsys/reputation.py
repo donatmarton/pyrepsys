@@ -31,7 +31,8 @@ class ReputationWeightedAverage(ReputationStrategy):
                 for review in claim.reviews:
                     scores.append(review.value)
                     review_author = review.author()
-                    assert review_author is not None
+                    if review_author is None:
+                        raise helpers.UncompleteInitializationError("a review is missing its author link")
                     weights.append(review_author.weight)
             if scores: 
                 weighted_sum = 0

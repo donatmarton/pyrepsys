@@ -41,8 +41,11 @@ class ScenarioSimulator:
             logger.debug("Created: " + str(new_agent))
 
     def simulate(self, seed=None):
-        assert self.reputation_strategy is not None
-        assert self.results_processor is not None
+        if self.reputation_strategy is None:
+            raise helpers.ConfigurationError("simulation can't start without a reputation strategy, none found")
+        if  self.results_processor is None:
+            raise helpers.ConfigurationError("simulation can't start without a results processor, none found")
+
         self.log_state()
         self.rng.seed(seed)
         if seed: logger.info("RNG seeded with '{}'".format(seed))
