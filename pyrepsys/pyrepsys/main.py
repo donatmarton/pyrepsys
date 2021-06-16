@@ -13,7 +13,7 @@ import pyrepsys.helpers as helpers
 
 logger = logging.getLogger(__name__)
 
-def simulate(default_config, scenarios, artifacts_dir):
+def simulate(default_scenario, scenarios, artifacts_dir):
     starttime = time.process_time()
 
     logger.info("Simulation started")
@@ -25,7 +25,7 @@ def simulate(default_config, scenarios, artifacts_dir):
     results_processor = reproc.ResultsProcessor(artifacts_dir)
     sys.results_processor = results_processor
     config.scenarios_dir = paths.scenarios_dir
-    config.read_default_configuration(default_config)
+    config.read_default_configuration(default_scenario)
 
     for scenario in scenarios:
         logger.info("Beginning scenario: '{}'".format(scenario))

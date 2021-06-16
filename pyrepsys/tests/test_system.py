@@ -11,7 +11,7 @@ def test_simulation_finishes_without_error():
 def test_no_improvements_given():
     sim_dir = pyrepsys.run(
         scenario_list=["short_scenario_no_improvements.yaml"], 
-        scenario_defaults="default_tests_config.yaml"
+        scenario_defaults="test_scenario_defaults.yaml"
     )
 
 def test_incorrect_run_calls():
@@ -31,7 +31,7 @@ def test_incorrect_run_calls():
         # scenario list not as list
         pyrepsys.run(
             scenario_list="short_scenario_no_improvements.yaml",
-            scenario_defaults="default_tests_config.yaml"
+            scenario_defaults="test_scenario_defaults.yaml"
         )
 def test_three_successive_runs():
     run1_sim_dir = pyrepsys.run(run_params_file_name="run_short_scenario.yaml")

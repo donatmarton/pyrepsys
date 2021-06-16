@@ -1,5 +1,4 @@
-scenario_defaults: "default_config.yaml"
+scenario_defaults: "scenario_defaults.yaml"
 scenarios:
   - "config.yaml"
   - "alt_config.yaml"
-  - "test_scatter_metric.yaml"
