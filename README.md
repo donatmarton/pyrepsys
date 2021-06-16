@@ -44,17 +44,17 @@ In order to use the CLI, go to the pyrepsys project directory. This is  where `p
 cd [...]/repository/pyrepsys
 ```
 #### Starting Simulation
-Simulation is started with the `simulate` subcommand. The shorter `s` or `sim` are also available.
+Simulation is started with the `simulate` subcommand. The shorter `s` or `sim` are also available as aliases.
 
 ```bash
-python3 pyrepsys-cli.py simulate --help
+python3 pyrepsys-cli.py simulate [arguments]
 ```
 
 There are two ways to tell pyrepsys which scenarios to simulate.
 
 1. Use a runparams file. List all the scenarios and the defaults you need in a YAML file. Place it in the same directory as `pyrepsys-cli.py`. 
 
-    An example runparams file named runparams.yaml:
+    An example runparams file named run_params.yaml could look like:
     
     ```yaml
     scenario_defaults: "my_scenario_defaults.yaml"
@@ -64,19 +64,19 @@ There are two ways to tell pyrepsys which scenarios to simulate.
     - "third_scenario.yaml"
     ```
     
-    Call a simulation with the runparams file:
+    Call a simulation with this runparams file:
     
     ```bash
-    python3 pyrepsys-cli.py simulate -rp runparams.yaml
+    python3 pyrepsys-cli.py simulate -rp run_params.yaml
     ```
-2. List scenarios and the defaults directly in the command line as arguments. E.g. to achieve the same as above, type:
+2. List scenarios and the defaults directly in the command line as arguments. E.g. to achieve the same as in the above example, type:
 
     ```bash
     python3 pyrepsys-cli.py simulate -s scenario.yaml alt_scenario.yaml third_scenario.yaml -d my_scenario_defaults.yaml
     ```
 
 #### Starting Tests
-To run all the tests, give the `test` or `t`subcommand.
+To run all the tests, give the `test` or `t` subcommand.
 
 ```bash
 python3 pyrepsys-cli.py test
