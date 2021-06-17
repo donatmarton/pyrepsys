@@ -71,15 +71,15 @@ class MetricNameHere(Metric):
 """
 
 
-class ScenarioDataByRounds:
+class ScenarioDataPoints:
     def __init__(self, scenario_name):
         self.name = scenario_name
-        self.round_indices = []
-        self.round_data = []
+        self.x = []
+        self.y = []
 
-    def record_round(self, round_index, round_data):
-        self.round_indices.append(round_index)
-        self.round_data.append(round_data)
+    def record_data_point(self, x, y):
+        self.x.append( x )
+        self.y.append( y )
 
 class AvgAccuracyPerRound(Metric):
     def __init__(self):
@@ -90,7 +90,7 @@ class AvgAccuracyPerRound(Metric):
 
     def prepare_new_scenario(self, scenario):
         logger.debug("AvgAccuracyPerRound scenario preparation: {}".format(scenario))
-        self.scenarios_data.append( ScenarioDataByRounds(scenario) )
+        self.scenarios_data.append( ScenarioDataPoints(scenario) )
 
     def calculate(self, **data):
         logger.debug("AvgAccuracyPerRound was called")
@@ -110,7 +110,7 @@ class AvgAccuracyPerRound(Metric):
                     agent_accuracies.append(accuracy)
         avg_accuracy = sum(agent_accuracies) / len(agent_accuracies)
 
-        self.scenarios_data[-1].record_round(round_number, avg_accuracy)
+        self.scenarios_data[-1].record_data_point(round_number, avg_accuracy)
 
     def draw(self, target_dir):
         logger.debug("AvgAccuracyPerRound draw to {}".format(target_dir))
@@ -121,8 +121,8 @@ class AvgAccuracyPerRound(Metric):
 
         for scenario in self.scenarios_data:
             ax.plot(
-                scenario.round_indices,
-                scenario.round_data,
+                scenario.x,
+                scenario.y,
                 'o',
                 label=scenario.name)
 
@@ -146,16 +146,6 @@ class AvgAccuracyPerScenario(Metric):
 
     def draw(self, target_dir):
         logger.debug("AvgAccuracyPerScenario draw")
-
-class ScenarioDataPoints:
-    def __init__(self, scenario_name):
-        self.name = scenario_name
-        self.x = []
-        self.y = []
-
-    def record_data_point(self, x, y):
-        self.x.append( x )
-        self.y.append( y )
 
 class AvgTotClaimInaccuracyAndReputationScatter(Metric):
     def __init__(self):
