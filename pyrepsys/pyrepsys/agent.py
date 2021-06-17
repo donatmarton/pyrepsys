@@ -66,7 +66,8 @@ class Agent:
             # claim would be outside of limits, agent refuses to publish claim
             return None
         else:
-            claim.set_score_i(self, distorted_claim_i)
+            author_review = Review(weakref.ref(self), distorted_claim_i)
+            claim.add_author_review(self, author_review)
             self.claims.append(claim)
             return claim
 
@@ -104,15 +105,15 @@ class Agent:
                 self.rate_probability,
                 self.claim_truth_assessment_inaccuracy
         )
-   
+
 class Claim:
     count = 0
-    def __init__(self, author, rng, claim_score_i=None, stake=None):
+    def __init__(self, author, rng, author_review=None, stake=None):
         self.ID = Claim.count
         Claim.count += 1
         self.author = author
         self._ground_truth_i = rng.random()
-        self._score_i = claim_score_i
+        self._author_review = author_review
         self.stake = stake
         self.reviews = []
         self.round_timestamp = helpers.current_sim_round
@@ -120,32 +121,32 @@ class Claim:
     def __del__(self):
         Claim.count -= 1
 
-    def add_review(self,review):
+    def add_review(self, review):
         self.reviews.append(review)
 
-    def set_score_i(self, setter_agent, score_value_i):
-        if self._score_i is not None:
-            logger.error("Claim {}: Agent {} tried to overwrite set score {} with {}".format(
-                self.ID, setter_agent.ID, self._score_i, score_value_i ))
-            raise helpers.PermissionViolatedError
-        if setter_agent is not self.author():
-            logger.error("Claim {}: Agent {} tried to set who is not the author! (author: {})".format(
-                self.ID, setter_agent.ID, self.author().ID ))
-            raise helpers.PermissionViolatedError
-        if not helpers.is_within_internal_bounds(score_value_i):
-            logger.warning("Claim {}: agent {} attempted to set out-of-bound score. Was forced within.'{}'".format(
-                self.ID, setter_agent.ID, score_value_i ))
-            score_value_i = helpers.force_internal_bounds(score_value_i)
-
-        self._score_i = score_value_i
-
     @property
-    def value(self):
-        if self._score_i is None:
-            logger.error("Claim {}: score accessed but is not yet initialized!".format(self.ID))
+    def author_review(self):
+        if self._author_review is None:
+            logger.error("Claim {}: author review accessed but is not yet initialized!".format(self.ID))
             raise helpers.UncompleteInitializationError
         else:
-            return helpers.i2a(self._score_i)
+            return self._author_review
+
+    def add_author_review(self, adding_agent, review):
+        if self._author_review is not None:
+            logger.error("Claim {}: Agent {} tried to change existing author review".format(
+                self.ID, adding_agent.ID))
+            raise helpers.PermissionViolatedError
+        if adding_agent is not self.author():
+            logger.error("Claim {}: Agent {} tried add author review who is not the author! (author: {})".format(
+                self.ID, adding_agent.ID, self.author().ID ))
+            raise helpers.PermissionViolatedError
+        if review.author() is not self.author():
+            logger.error("Claim {}: Agent {} tried add author review who is not the author! (author: {})".format(
+                self.ID, adding_agent.ID, self.author().ID ))
+            raise helpers.PermissionViolatedError
+        
+        self._author_review = review
 
     @property
     def ground_truth(self):
@@ -157,7 +158,7 @@ class Claim:
         return self._ground_truth_i
 
     def __str__(self):
-        return "c{}a{}-{}".format(self.value, self.round_timestamp, 
+        return "c{}a{}-{}".format(self.author_review.value, self.round_timestamp, 
             " ".join([str(r)+"w"+str(round(r.author().weight,2)) for r in self.reviews]))
             
 
