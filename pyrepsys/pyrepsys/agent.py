@@ -171,9 +171,5 @@ class Review:
     def value(self):
         return helpers.i2a(self._score_i)
 
-    @value.setter
-    def value(self, score_ae):
-        self._score_i = helpers.a2i(score_ae)
-
     def __str__(self):
         return "{}".format(self.value)
