@@ -68,7 +68,7 @@ class RateHigherHalfRandom(RateStrategy):
 class RateNearClaimScore(RateStrategy):
     def rate_claim(self, rater, claim, random_seed=None):
         inaccuracy = self.rng(random_seed).randint(-1, 1)
-        return claim.value + inaccuracy
+        return claim.author_review.value + inaccuracy
 
 class RateFromOwnExperience(RateStrategy):
     def rate_claim(self, rater, claim, random_seed=None):
@@ -76,7 +76,7 @@ class RateFromOwnExperience(RateStrategy):
 
 class RateDoNothing(RateStrategy):
     def rate_claim(self, rater, claim, random_seed=None):
-        return claim.value
+        return claim.author_review.value
 
 
 

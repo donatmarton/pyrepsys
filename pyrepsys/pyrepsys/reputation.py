@@ -60,7 +60,7 @@ class BasedOnAvgDifferenceOfClaimsAndReviews(ReputationStrategy):
                     reviews.append(review.value)
                 if reviews:
                     avg_review_for_claim = sum(reviews) / len(reviews)
-                    diff = abs(avg_review_for_claim - claim.value)
+                    diff = abs(avg_review_for_claim - claim.author_review.value)
                     # for review and claim value to be "compatible" / directly comparable, 
                     # must note that review score means:
                     # that "this claim should have been an x"

@@ -178,7 +178,7 @@ class AvgTotClaimInaccuracyAndReputationScatter(Metric):
             if len(agent.claims) > 0:
                 tot_claim_honesties = []
                 for claim in agent.claims:
-                    tot_claim_honesties.append(abs( claim.ground_truth - claim.value ))
+                    tot_claim_honesties.append(abs( claim.ground_truth - claim.author_review.value ))
                 avg_tot_claim_hon = sum(tot_claim_honesties) / len(tot_claim_honesties)
 
                 rep = agent.global_reputation
