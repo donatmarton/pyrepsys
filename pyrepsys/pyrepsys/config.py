@@ -85,7 +85,7 @@ class Configurator:
                 if i < len(improvement_handlers)-1:
                     handler.set_next(improvement_handlers[i+1])
             logger.info("Improvement handler chain found: {}".format(
-                "".join([h + " > " for h in cfg_improvement_handlers])
+                " > ".join([h for h in cfg_improvement_handlers])
             ))
             system.improvement_handler = improvement_handlers[0]
         else:
