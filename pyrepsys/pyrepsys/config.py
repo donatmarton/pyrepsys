@@ -80,6 +80,8 @@ class Configurator:
     def configure_system(self, system):
         logger.debug("Configuring system")
 
+        self._configure_system_resolutions()
+
         cfg_reputation_strategy = self.get("reputation_strategy")
         reputation_strategy = self.instantiator.create_reputation_strategy(cfg_reputation_strategy)
         system.reputation_strategy = reputation_strategy
@@ -90,9 +92,9 @@ class Configurator:
             for cfg_handler in cfg_improvement_handlers:
                 handler = self.instantiator.create_improvement_handler(cfg_handler)
                 improvement_handlers.append(handler)
-            for i, handler in enumerate(improvement_handlers):
-                if i < len(improvement_handlers)-1:
-                    handler.set_next(improvement_handlers[i+1])
+            for idx, handler in enumerate(improvement_handlers):
+                if idx < len(improvement_handlers)-1:
+                    handler.set_next(improvement_handlers[idx+1])
             logger.info("Improvement handler chain found: {}".format(
                 " > ".join([h for h in cfg_improvement_handlers])
             ))
@@ -156,6 +158,30 @@ class Configurator:
                 rate_probability,
                 claim_truth_assessment_inaccuracy, 
                 amount)
+    
+    def _configure_system_resolutions(self):
+        def generate_resolution_steps(min, max, step_size):
+            span = max - min
+            if span % step_size != 0:
+                raise helpers.ConfigurationError("resolutions must be divisor of their range spans (max-min)")
+            num_steps = int(1 + span / step_size)
+            return [min + idx*step_size for idx in range(num_steps)]
+
+        min_rating = self.get("MIN_RATING")
+        max_rating = self.get("MAX_RATING")
+        measured_claim_resolution = self.get("MEASURED_CLAIM_RESOLUTION")
+        helpers.measured_claim_steps = generate_resolution_steps(
+            min_rating, 
+            max_rating, 
+            measured_claim_resolution
+        )
+        review_resolution = self.get("REVIEW_RESOLUTION")
+        helpers.review_steps = generate_resolution_steps(
+            min_rating, 
+            max_rating, 
+            review_resolution
+        )
+
 
 _configurator = None
 def getConfigurator():

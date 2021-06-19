@@ -2,9 +2,22 @@ import pyrepsys.config
 
 config = pyrepsys.config.getConfigurator()
 
+<<<<<<< HEAD
+=======
+current_sim_round = 0
+measured_claim_steps = None
+review_steps = None
+
+class SimulationEvent(Enum):
+    BEGIN_SCENARIO = auto()
+    END_OF_ROUND = auto()
+    END_OF_SCENARIO = auto()
+    END_OF_SIMULATION = auto()
+>>>>>>> resolution configurable, steps are generated
 
 current_sim_round = 0
 
+<<<<<<< HEAD
 _config_cache = {
     "MIN_RATING": None,
     "MAX_RATING": None,
@@ -17,6 +30,19 @@ def update_config_cache():
     _config_cache["DECIMAL_PRECISION"] = config.get("DECIMAL_PRECISION")
     _config_cache["MAX_MIN_RATING_SPAN"] = _config_cache["MAX_RATING"] - _config_cache["MIN_RATING"]
 config.register_config_updated_callback(update_config_cache)
+=======
+class ResolutionDomain(Enum):
+    MEASURED_CLAIM = auto()
+    REVIEW = auto()
+
+ClaimLimits = namedtuple("ClaimLimits",["min","max"])
+>>>>>>> resolution configurable, steps are generated
+
+def convert_resolution(number, target_resolution_domain):
+   raise NotImplementedError 
+
+def find_nearest_step(number, steps_ordered_list):
+    raise NotImplementedError
 
 def force_agent_exposed_bounds(score):
     return max( min(score, _config_cache["MAX_RATING"]), _config_cache["MIN_RATING"])
