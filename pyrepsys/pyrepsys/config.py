@@ -169,6 +169,11 @@ class Configurator:
 
         min_rating = self.get("MIN_RATING")
         max_rating = self.get("MAX_RATING")
+        if min_rating > max_rating:
+            raise helpers.ConfigurationError("'min_rating' can't be larger than 'max_rating'")
+        if min_rating == max_rating:
+            raise helpers.ConfigurationError("rating span (max-min) can't be 0")
+
         measured_claim_resolution = self.get("MEASURED_CLAIM_RESOLUTION")
         helpers.measured_claim_steps = generate_resolution_steps(
             min_rating, 
