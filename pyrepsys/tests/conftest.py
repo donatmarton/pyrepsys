@@ -1,5 +1,7 @@
 import os
 import shutil
+import random
+
 import pytest
 
 import pyrepsys
@@ -22,3 +24,7 @@ def prepare_pyrepsys_paths_for_tests(paths):
     # clean the artifacts dir of past runs:
     try: shutil.rmtree(paths["TEST_SIMULATION_ARTIFACTS_DIR"])
     except: FileNotFoundError
+
+@pytest.fixture(scope="module")
+def rng():
+    yield random.Random()

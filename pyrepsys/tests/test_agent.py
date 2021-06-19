@@ -1,5 +1,4 @@
 import weakref
-import random
 
 import pytest
 
@@ -9,10 +8,6 @@ import pyrepsys.helper_types
 import pyrepsys.errors
 from pyrepsys.behavior.behavior_base import RateStrategy, DistortStrategy
 import pyrepsys.config
-
-@pytest.fixture(scope="module")
-def rng():
-    yield random.Random()
 
 @pytest.fixture
 def mock_get(monkeypatch):
