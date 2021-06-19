@@ -1,23 +1,13 @@
 import pyrepsys.config
+from enum import Enum, auto
+import bisect
 
 config = pyrepsys.config.getConfigurator()
 
-<<<<<<< HEAD
-=======
 current_sim_round = 0
 measured_claim_steps = None
 review_steps = None
 
-class SimulationEvent(Enum):
-    BEGIN_SCENARIO = auto()
-    END_OF_ROUND = auto()
-    END_OF_SCENARIO = auto()
-    END_OF_SIMULATION = auto()
->>>>>>> resolution configurable, steps are generated
-
-current_sim_round = 0
-
-<<<<<<< HEAD
 _config_cache = {
     "MIN_RATING": None,
     "MAX_RATING": None,
@@ -30,19 +20,32 @@ def update_config_cache():
     _config_cache["DECIMAL_PRECISION"] = config.get("DECIMAL_PRECISION")
     _config_cache["MAX_MIN_RATING_SPAN"] = _config_cache["MAX_RATING"] - _config_cache["MIN_RATING"]
 config.register_config_updated_callback(update_config_cache)
-=======
+
 class ResolutionDomain(Enum):
     MEASURED_CLAIM = auto()
     REVIEW = auto()
 
-ClaimLimits = namedtuple("ClaimLimits",["min","max"])
->>>>>>> resolution configurable, steps are generated
-
 def convert_resolution(number, target_resolution_domain):
-   raise NotImplementedError 
+    if target_resolution_domain is ResolutionDomain.MEASURED_CLAIM:
+        return find_nearest_step(number, measured_claim_steps)
+    elif target_resolution_domain is ResolutionDomain.REVIEW:
+        return find_nearest_step(number, review_steps)
+    else:
+        raise NotImplementedError
 
-def find_nearest_step(number, steps_ordered_list):
-    raise NotImplementedError
+def find_nearest_step(number, steps_sorted_list):
+    i = bisect.bisect_left(steps_sorted_list, number)
+
+    if number < steps_sorted_list[0] or number > steps_sorted_list[-1]:
+        raise ValueError
+
+    if steps_sorted_list[i] == number:
+        return steps_sorted_list[i]
+    else:
+        diff_left = round(abs( steps_sorted_list[i-1] - number ), 8)
+        diff_right = round(abs( steps_sorted_list[i] - number ), 8)
+        if diff_left < diff_right: return steps_sorted_list[i-1]
+        else: return steps_sorted_list[i]
 
 def force_agent_exposed_bounds(score):
     return max( min(score, _config_cache["MAX_RATING"]), _config_cache["MIN_RATING"])
