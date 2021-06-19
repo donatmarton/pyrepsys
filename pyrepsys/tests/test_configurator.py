@@ -43,6 +43,21 @@ def test_binary_resolutions(monkeypatch, configurator):
     assert pyrepsys.helpers.review_steps == expected_steps
     assert pyrepsys.helpers.measured_claim_steps == expected_steps
 
+def test_small_resolution(monkeypatch, configurator):
+    monkeypatch.setitem(configurator._active_config, "MIN_RATING", 1)
+    monkeypatch.setitem(configurator._active_config, "MAX_RATING", 9)
+    monkeypatch.setitem(configurator._active_config, "MEASURED_CLAIM_RESOLUTION", 0.01)
+    monkeypatch.setitem(configurator._active_config, "REVIEW_RESOLUTION", 1)
+
+    configurator._configure_system_resolutions()
+
+    expected_review_steps = [x for x in range(1,10)]
+    assert pyrepsys.helpers.review_steps == expected_review_steps
+
+    expected_measured_claim_steps = [1+ 0.01*x for x in range(int(1+ 8/0.01))]
+    # [1, 1.5, 2, ... 8, 8.5, 9]
+    assert pyrepsys.helpers.measured_claim_steps == expected_measured_claim_steps
+
 def test_incorrect_configuration(monkeypatch, configurator):
     # min = max
     monkeypatch.setitem(configurator._active_config, "MIN_RATING", 1)

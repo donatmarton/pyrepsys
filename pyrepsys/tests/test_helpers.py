@@ -92,3 +92,12 @@ def test_convert_resolution():
     check(input=0.4999, expect=0)
     check(input=0.5, expect=1)
     check(input=0.5, expect=1)
+
+def test_dumb_mod():
+    dmod = pyrepsys.helpers.dumb_mod
+
+    assert dmod(20, 5) == 0
+    assert dmod(21, 5) == 1
+    assert dmod(200, 0.01) == 0
+    assert dmod(200.05, 0.01) == 0
+    assert dmod(200.005, 0.01) == 0.005

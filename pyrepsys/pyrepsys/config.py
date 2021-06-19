@@ -162,7 +162,7 @@ class Configurator:
     def _configure_system_resolutions(self):
         def generate_resolution_steps(min, max, step_size):
             span = max - min
-            if span % step_size != 0:
+            if helpers.dumb_mod(span, step_size) != 0:
                 raise helpers.ConfigurationError("resolutions must be divisor of their range spans (max-min)")
             num_steps = int(1 + span / step_size)
             return [min + idx*step_size for idx in range(num_steps)]

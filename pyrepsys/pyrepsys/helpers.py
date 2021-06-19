@@ -73,3 +73,13 @@ a2i= agent_to_internal
 
 def is_within_internal_bounds(score):
     return score <= 1 and score >= 0
+
+def dumb_mod(x, y):
+    """
+    aka the best modulo. More precise with small y values (e.g. 0.01). Only for positive inputs!
+    """
+    remain = x
+    while remain > 0:
+        remain -= y
+    if remain < 0: remain+=y
+    return round(remain,8)
