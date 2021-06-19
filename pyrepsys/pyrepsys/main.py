@@ -17,7 +17,7 @@ def simulate(default_scenario, scenarios, artifacts_dir):
     starttime = time.process_time()
 
     logger.info("Simulation started")
-    logger.info("Artifacts will be save to '{}'".format(artifacts_dir))
+    logger.info("Artifacts will be saved to '{}'".format(artifacts_dir))
     logger.info("Scenarios will be read from '{}'".format(paths.scenarios_dir))
     logger.info("Scenarios planned: {}".format(scenarios))
 
