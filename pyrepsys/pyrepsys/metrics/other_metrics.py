@@ -1,85 +1,17 @@
-from abc import ABC, abstractmethod
 import logging
 import os
 
 from matplotlib import pyplot as plt
 
+from .metrics_base import Metric, ScenarioDataPoints
 import pyrepsys.helpers as helpers
 import pyrepsys.config as config
 
 logger = logging.getLogger(__name__)
 
-class Metric(ABC):
-    @abstractmethod
-    def __init__(self):
-        self._events_of_interest = []
-        self.add_event_of_interest(helpers.SimulationEvent.BEGIN_SCENARIO)
-        self.name = "Default Metric Class Name"
-
-    @property
-    def events_of_interest(self):
-        return self._events_of_interest
-
-    def add_event_of_interest(self, event):
-        self._events_of_interest.append(event)
-
-    def notify(self, event, **data):
-        if event is helpers.SimulationEvent.BEGIN_SCENARIO:
-            self.prepare_new_scenario(data["scenario"])
-        else:
-            self.calculate(**data)
-
-    @abstractmethod
-    def prepare_new_scenario(self, scenario):
-        pass
-
-    @abstractmethod
-    def calculate(self, **data):
-        pass
-    
-    def export(self, target_dir):
-        raise NotImplementedError #TODO
-
-    @abstractmethod
-    def draw(self, target_dir):
-        pass
-
-"""
-# Example stub metric to help creating new ones
-
-class MetricNameHere(Metric):
-    def __init__(self):
-        super().__init__()
-        # TODO: add events of interest
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_SCENARIO)
-        # TODO: change name of metric
-        self.name = "Average Accuracy Per Scenarios"
-    
-    def prepare_new_scenario(self, scenario):
-        # TODO: implement method, called before simulating a scenario
-        logger.debug("MetricNameHere scenario preparation: {}".format(scenario))
-
-    def calculate(self, **data):
-        # TODO: implement method called on added events of interest
-        logger.debug("MetricNameHere was called")
-
-    def draw(self, target_dir):
-        # TODO: implement method to draw and saves the metric
-        logger.debug("MetricNameHere draw")
-
-"""
 
 
-class ScenarioDataPoints:
-    def __init__(self, scenario_name):
-        self.name = scenario_name
-        self.x = []
-        self.y = []
 
-    def record_data_point(self, x, y):
-        self.x.append( x )
-        self.y.append( y )
 
 class AvgAccuracyPerRound(Metric):
     def __init__(self):
@@ -202,34 +134,3 @@ class AvgTotClaimInaccuracyAndReputationScatter(Metric):
 
 
 
-
-# these are example metrics used for testing, debugging:
-
-class AvgAccuracyPerRound_Another(Metric):
-    def __init__(self):
-        super().__init__()
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
-    
-    def prepare_new_scenario(self, scenario):
-        logger.debug("AvgAccuracyPerRound_Another scenario preparation: {}".format(scenario))
-
-    def calculate(self, **data):
-        logger.debug("AvgAccuracyPerRound_Another was called")
-
-    def draw(self, target_dir):
-        logger.debug("AvgAccuracyPerRound_Another draw")
-
-class MetricBothRoundAndScenario(Metric):
-    def __init__(self):
-        super().__init__()
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_SCENARIO)
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
-    
-    def prepare_new_scenario(self, scenario):
-        logger.debug("MetricBothRoundAndScenario scenario preparation: {}".format(scenario))
-
-    def calculate(self, **data):
-        logger.debug("MetricBothRoundAndScenario was called")
-
-    def draw(self, target_dir):
-        logger.debug("MetricBothRoundAndScenario draw")
