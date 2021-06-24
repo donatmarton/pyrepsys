@@ -1,6 +1,8 @@
 import logging
 import os
 from copy import deepcopy
+import re
+
 import yaml
 
 import pyrepsys.paths as paths
@@ -8,25 +10,35 @@ from pyrepsys.helpers import ConfigurationError
 from pyrepsys.main import setup_logging
 
 logger = logging.getLogger(__name__)
-"""
-sc_*.yaml for all generated
-'sc clean' or '-c' deletes all of these types
-"""
 
-def run_scenario_creator():
-    template_scenario = "scenario_1.yaml"
-    generator = "generator.yaml"
+# TODO logging needs to be fixed, displays twice now, called twice to setup
+# TODO runparams_file needs to go also as argument
+
+def run_scenario_creator(generator, scenario_defaults=None):
     runparams_file = "run_params.yaml"
 
     setup_logging(logging.INFO)
 
-    logger.debug("Using '{}' as scenario template".format(template_scenario))
     logger.debug("Using '{}' for parameter variants".format(generator))
 
     created_scenarios = create_scenarios(generator)
-    write_runparams(runparams_file, template_scenario, created_scenarios)
+    write_runparams(runparams_file, scenario_defaults, created_scenarios)
 
     logger.info("Scenario creation finished")
+
+def clean_generated_scenarios():
+    setup_logging(logging.INFO)
+    scenarios_dir = paths.scenarios_dir
+
+    num_cleaned = 0
+    pattern = re.compile("sc_.*[.]yaml")
+    for file in os.listdir(scenarios_dir):
+        if re.search(pattern, file):
+            os.remove(os.path.join(scenarios_dir, file))
+            num_cleaned += 1
+    
+    logger.info("Cleaned {} scenarios".format(num_cleaned))
+
 
 def create_scenarios(generator_file_name):
     scenarios_dir = paths.scenarios_dir
