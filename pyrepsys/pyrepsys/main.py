@@ -91,29 +91,31 @@ def prepare_artifacts_directory():
 
         return simulation_dir_path
 
-def setup_logging(logfile_dir, default_level, module_levels=None):
-        logfile_path = os.path.join( logfile_dir, "simulation.log" )
+def setup_logging(default_level, logfile_dir=None, module_levels=None):
+        app_logger = logging.getLogger("pyrepsys")
+        app_logger.setLevel(default_level)
 
-        file_formatter = logging.Formatter(
-            fmt="%(asctime)s,%(msecs)03d %(levelname)s: [%(name)s > %(funcName)s()] %(message)s",
-            datefmt="%H:%M:%S")
         stream_formatter = logging.Formatter(
             fmt="%(levelname)s: %(message)s",
             datefmt="%M:%S"
         )
-
-        file_handler = logging.FileHandler(logfile_path)
-        file_handler.setFormatter(file_formatter)
 
         stream_handler = logging.StreamHandler()
         stream_handler.setFormatter(stream_formatter)
         
         root_logger = logging.getLogger()
         root_logger.addHandler(stream_handler)
-        root_logger.addHandler(file_handler)
+        
+        if logfile_dir:
+            logfile_path = os.path.join( logfile_dir, "simulation.log" )
+            file_formatter = logging.Formatter(
+                fmt="%(asctime)s,%(msecs)03d %(levelname)s: [%(name)s > %(funcName)s()] %(message)s",
+                datefmt="%H:%M:%S")
 
-        app_logger = logging.getLogger("pyrepsys")
-        app_logger.setLevel(default_level)
+            file_handler = logging.FileHandler(logfile_path)
+            file_handler.setFormatter(file_formatter)
+
+            root_logger.addHandler(file_handler)
 
         if module_levels:
             for module_name, module_level in module_levels.items():
@@ -162,6 +164,6 @@ def main(run_params_file_name=None, scenario_list=None, scenario_defaults=None):
         raise TypeError("either run_params_file_name or scenario_list with scenario_defaults must be provided")
 
     simulation_dir_path = prepare_artifacts_directory()
-    setup_logging(simulation_dir_path, default_level, module_levels)
+    setup_logging(default_level, simulation_dir_path, module_levels)
     simulate(default_config_name, scenarios, simulation_dir_path)
     return simulation_dir_path
