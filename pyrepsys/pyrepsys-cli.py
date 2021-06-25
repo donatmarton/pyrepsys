@@ -15,13 +15,11 @@ def run_sim(args):
 
 def run_scenario_creator(args):
     import pyrepsys.scenario_creator
-    if args.clean:
-        pyrepsys.scenario_creator.clean_generated_scenarios()
-    if args.generator:
-        pyrepsys.scenario_creator.run_scenario_creator(
-            generator=args.generator, 
-            scenario_defaults=args.default_scenario
-        )
+    pyrepsys.scenario_creator.run_scenario_creator(
+        generator=args.generator, 
+        scenario_defaults=args.default_scenario,
+        clean=args.clean
+    )
 
 def yaml_file(string: str) -> str:
     parts = string.split(".")
@@ -112,6 +110,7 @@ if args.selected_mode == run_sim:
 if args.selected_mode == run_scenario_creator:
     if args.generator is None and args.clean is False:
         parser_sc.print_usage()
+        parser_sc.exit()
 
 # call given command
 args.selected_mode(args)

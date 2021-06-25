@@ -11,25 +11,23 @@ from pyrepsys.main import setup_logging
 
 logger = logging.getLogger(__name__)
 
-# TODO logging needs to be fixed, displays twice now, called twice to setup
 # TODO runparams_file needs to go also as argument
 
-def run_scenario_creator(generator, scenario_defaults=None):
+def run_scenario_creator(generator=None, scenario_defaults=None, clean=False):
     runparams_file = "run_params.yaml"
-
-    setup_logging(logging.INFO)
-
-    logger.debug("Using '{}' for parameter variants".format(generator))
-
-    created_scenarios = create_scenarios(generator)
-    write_runparams(runparams_file, scenario_defaults, created_scenarios)
-
-    logger.info("Scenario creation finished")
-
-def clean_generated_scenarios():
-    setup_logging(logging.INFO)
     scenarios_dir = paths.scenarios_dir
+    setup_logging(logging.INFO)
 
+    if clean:
+        clean_generated_scenarios(scenarios_dir)
+
+    if generator:
+        created_scenarios = create_scenarios(generator, scenarios_dir)
+        write_runparams(runparams_file, scenario_defaults, created_scenarios)
+
+    logger.info("Exiting")
+
+def clean_generated_scenarios(scenarios_dir):
     num_cleaned = 0
     pattern = re.compile("sc_.*[.]yaml")
     for file in os.listdir(scenarios_dir):
@@ -37,11 +35,15 @@ def clean_generated_scenarios():
             os.remove(os.path.join(scenarios_dir, file))
             num_cleaned += 1
     
-    logger.info("Cleaned {} scenarios".format(num_cleaned))
+    if num_cleaned > 0:
+        logger.info("Cleaned {} scenarios".format(num_cleaned))
+    else:
+        logger.info("Nothing to clean")
 
 
-def create_scenarios(generator_file_name):
-    scenarios_dir = paths.scenarios_dir
+def create_scenarios(generator_file_name, scenarios_dir):
+    logger.debug("Using '{}' for parameter variants".format(generator_file_name))
+    logger.debug("Scenarios dir: '{}'".format(scenarios_dir))
 
     generator_path = os.path.join(scenarios_dir, generator_file_name)
     with open(generator_path, 'r') as file:
