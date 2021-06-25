@@ -69,7 +69,7 @@ def create_scenarios(generator_file_name, scenarios_dir):
                 new_combinations = deepcopy(previos_combinations)
                 for combination in new_combinations:
                     combination[param] = variant
-                    combination["id"] = combination["id"] + str(i)
+                    combination["id"] = combination["id"] + "-" + str(i)
                     all_combinations.append(combination)
         else: # no combinations yet
             for i, variant in enumerate(variants_list):
