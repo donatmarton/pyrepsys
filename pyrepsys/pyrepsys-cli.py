@@ -45,7 +45,8 @@ parser_sim = subparsers.add_parser(
     "simulate",
     aliases=["sim", "s"],
     help="Simulate selected scenarios",
-    description="Simulate selected scenarios"
+    description="Simulate selected scenarios",
+    usage="%(prog)s -rp RUNPARAMS\n   or: %(prog)s -s SCENARIO [SCENARIO ...] -d DEFAULT_SCENARIO"
 )
 parser_sim.set_defaults(selected_mode=run_sim)
 scenario_arg_group = parser_sim.add_mutually_exclusive_group(required=True)
