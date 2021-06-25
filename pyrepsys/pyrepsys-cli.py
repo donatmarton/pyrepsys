@@ -116,8 +116,7 @@ if args.selected_mode == run_sim:
         parser_sim.error("the following arguments are not allowed with -rp/--runparams: -d/--default-scenario")
 if args.selected_mode == run_scenario_creator:
     if args.generator is None and args.clean is False:
-        parser_sc.print_usage()
-        parser_sc.exit()
+        parser_sc.error("one of the arguments -g/--generator -c/--clean is required")
 
 # call given command
 args.selected_mode(args)
