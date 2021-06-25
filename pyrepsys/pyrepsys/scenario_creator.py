@@ -11,10 +11,8 @@ from pyrepsys.main import setup_logging
 
 logger = logging.getLogger(__name__)
 
-# TODO runparams_file needs to go also as argument
 
-def run_scenario_creator(generator=None, scenario_defaults=None, clean=False):
-    runparams_file = "run_params.yaml"
+def run_scenario_creator(generator=None, runparams_file_name=None, scenario_defaults=None, clean=False):
     scenarios_dir = paths.scenarios_dir
     setup_logging(logging.INFO)
 
@@ -23,7 +21,10 @@ def run_scenario_creator(generator=None, scenario_defaults=None, clean=False):
 
     if generator:
         created_scenarios = create_scenarios(generator, scenarios_dir)
-        write_runparams(runparams_file, scenario_defaults, created_scenarios)
+        if runparams_file_name:       
+            if not scenario_defaults:
+                logger.warning("No scenario defaults were given, will be missing from runparams file") 
+            write_runparams(runparams_file_name, scenario_defaults, created_scenarios)
 
     logger.info("Exiting")
 
