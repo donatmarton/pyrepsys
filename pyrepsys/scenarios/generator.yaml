@@ -1,0 +1,7 @@
+reputation_strategy: 
+  - "ReputationWeightedAverage"
+  - "BasedOnAvgDifferenceOfClaimsAndReviews"
+  
+improvement_handlers:
+  - ["Aging", "Weights", "StakeBasedReputation"]
+  - ["Weights", "StakeBasedReputation"]
