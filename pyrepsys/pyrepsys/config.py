@@ -3,7 +3,6 @@ import logging
 
 import yaml
 
-import pyrepsys.paths as paths
 import pyrepsys.reputation as rep
 import pyrepsys.behavior as beh
 import pyrepsys.helpers as helpers
