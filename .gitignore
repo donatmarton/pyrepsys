@@ -2,7 +2,9 @@
 # =======================================
 simulation_artifacts/
 simulation_artifacts_from_tests/
-
+*.yaml
+!example_*.yaml
+!pyrepsys/tests/**/*.yaml
 # vscode
 .vscode/
 

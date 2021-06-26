@@ -1,0 +1,15 @@
+reputation_strategy: "ReputationWeightedAverage"
+improvement_handlers:
+  # in order of the chain from top to bottom
+  # i.e. the topmost is the entry handler
+  - "Aging"
+  - "Weights"
+  - "StakeBasedReputation"
+agents:
+  - amount: 20
+    base_behavior: "HonestClaimer"
+    claim_range: [0.5, 1]
+  - amount: 5
+    base_behavior: "DishonestClaimer"
+  - amount: 50
+    base_behavior: "HonestAccurateRater"

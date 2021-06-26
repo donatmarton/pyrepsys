@@ -9,10 +9,12 @@ Evaluate and compare reputation systems & their improvement methods in Python
 └───pyrepsys                                # pyrepsys project dir
     ├───pyrepsys                            # source files
     ├───pyrepsys-cli.py                     # CLI for calling from terminal
-    ├───run_params.yaml
+    ├───example_run_params.yaml
     ├───scenarios                           # scenarios for simulation purposes
-    │   ├───scenario_defaults.yaml
+    │   ├───example_generator.yaml
+    │   ├───example_scenario_defaults.yaml
     │   ├───example_scenario_1.yaml
+    │   ├───example_scenario_1_noage.yaml
     │   ├───...
     ├───simulation_artifacts                # results of simulations, not cleared by pyrepsys
     │   ├───run_2021-06-15_15:12:46

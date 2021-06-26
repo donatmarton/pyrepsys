@@ -1,4 +1,0 @@
-scenario_defaults: "scenario_defaults.yaml"
-scenarios:
-  - "config.yaml"
-  - "alt_config.yaml"

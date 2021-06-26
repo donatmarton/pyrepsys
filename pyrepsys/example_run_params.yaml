@@ -1,0 +1,4 @@
+scenario_defaults: "example_scenario_defaults.yaml"
+scenarios:
+  - "example_scenario_1.yaml"
+  - "example_scenario_1_noage.yaml"
