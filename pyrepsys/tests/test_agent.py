@@ -5,7 +5,7 @@ import pytest
 
 import pyrepsys.agent
 import pyrepsys.helpers
-from pyrepsys.behavior import RateStrategy, DistortStrategy
+from pyrepsys.behavior.behavior_base import RateStrategy, DistortStrategy
 
 @pytest.fixture(scope="module")
 def rng():
