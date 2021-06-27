@@ -4,6 +4,7 @@ import logging
 import yaml
 
 import pyrepsys.helpers as helpers
+from pyrepsys.errors import ConfigurationError, UncompleteInitializationError
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class Configurator:
         if self.scenarios_dir is not None:
             config_file_path = os.path.join(self.scenarios_dir, config_file_name)
         else:
-            raise helpers.UncompleteInitializationError
+            raise UncompleteInitializationError
         
         with open(config_file_path, 'r') as file:
             dictionary = yaml.safe_load(file)
@@ -113,7 +114,7 @@ class Configurator:
                     if bb["name"] == cfg_base_behavior:
                         base_behavior = bb
                 if base_behavior is None:
-                    raise helpers.ConfigurationError("can't find base behavior with name '{}'".format(cfg_base_behavior))
+                    raise ConfigurationError("can't find base behavior with name '{}'".format(cfg_base_behavior))
 
             def fetch_agent_cfg_entry(cfg_param_key):
                 try:
@@ -123,12 +124,12 @@ class Configurator:
                         try:
                             cfg_param_value = base_behavior[cfg_param_key]
                         except KeyError:
-                            raise helpers.ConfigurationError("missing parameter '{}' must be defined".format(cfg_param_key))
+                            raise ConfigurationError("missing parameter '{}' must be defined".format(cfg_param_key))
                 return cfg_param_value
 
             amount = agent["amount"] # can't be defined as base behavior
             if type(amount) is not int or amount <= 0:
-                raise helpers.ConfigurationError("'amount' must be an integer > 0")
+                raise ConfigurationError("'amount' must be an integer > 0")
             cfg_rate_strategy = fetch_agent_cfg_entry("rate_strategy")
             cfg_distort_strategy = fetch_agent_cfg_entry("distort_strategy")
             ds = self.instantiator.create(
@@ -141,14 +142,14 @@ class Configurator:
             rate_probability = fetch_agent_cfg_entry("rate_probability")
             claim_range = fetch_agent_cfg_entry("claim_range")
             if len(claim_range) != 2:
-                raise helpers.ConfigurationError("incorrect 'claim_range'")
+                raise ConfigurationError("incorrect 'claim_range'")
             min_claim = claim_range[0]
             max_claim = claim_range[1]
             if not helpers.is_within_internal_bounds(min_claim) or \
                 not helpers.is_within_internal_bounds(max_claim):
-                raise helpers.ConfigurationError("min and max claim must be within 0..1")
+                raise ConfigurationError("min and max claim must be within 0..1")
             if min_claim > max_claim:
-                raise helpers.ConfigurationError("'min_claim' can't be larger than 'max_claim'")
+                raise ConfigurationError("'min_claim' can't be larger than 'max_claim'")
             claim_limits = helpers.ClaimLimits(min=min_claim, max=max_claim)
             claim_truth_assessment_inaccuracy = fetch_agent_cfg_entry("claim_truth_assessment_inaccuracy")
             system.create_agents(

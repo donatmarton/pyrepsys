@@ -5,6 +5,7 @@ import pytest
 
 import pyrepsys.agent
 import pyrepsys.helpers
+import pyrepsys.errors
 from pyrepsys.behavior.behavior_base import RateStrategy, DistortStrategy
 
 @pytest.fixture(scope="module")
@@ -85,14 +86,14 @@ def test_author_review(agent, another_agent, rng):
     with pytest.raises(AttributeError):
         claim.author_review = new_author_review
     # try to change it through designated function
-    with pytest.raises(pyrepsys.helpers.PermissionViolatedError):
+    with pytest.raises(pyrepsys.errors.PermissionViolatedError):
         claim.add_author_review(agent, new_author_review)
     # try removing it
     with pytest.raises(AttributeError):
         claim.author_review = None
-    with pytest.raises(pyrepsys.helpers.PermissionViolatedError):
+    with pytest.raises(pyrepsys.errors.PermissionViolatedError):
         claim.add_author_review(agent, None)
     # non-claimer agent tries to change it
-    with pytest.raises(pyrepsys.helpers.PermissionViolatedError):
+    with pytest.raises(pyrepsys.errors.PermissionViolatedError):
         claim.add_author_review(another_agent, non_author_review)
     

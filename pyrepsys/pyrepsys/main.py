@@ -11,6 +11,7 @@ import pyrepsys.scenario_simulator as scenario_simulator
 import pyrepsys.results_processor as reproc
 import pyrepsys.paths as paths
 import pyrepsys.helpers as helpers
+from pyrepsys.errors import ConfigurationError
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +133,7 @@ def read_scheduled_scenarios(run_params_file_name):
     scenarios = dictionary["scenarios"]
     scenario_defaults = dictionary["scenario_defaults"]
     if not scenarios or len(scenarios) == 0:
-        raise helpers.ConfigurationError("no scenarios found in runparams file")
+        raise ConfigurationError("no scenarios found in runparams file")
     return scenarios, scenario_defaults
 
 def set_run_params_dir(path):

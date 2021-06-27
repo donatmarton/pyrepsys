@@ -4,6 +4,7 @@ import logging
 import pyrepsys.config as config
 from pyrepsys.agent import Agent
 import pyrepsys.helpers as helpers
+from pyrepsys.errors import ConfigurationError
 
 logger = logging.getLogger(__name__)
 
@@ -42,9 +43,9 @@ class ScenarioSimulator:
 
     def simulate(self, seed=None):
         if self.reputation_strategy is None:
-            raise helpers.ConfigurationError("simulation can't start without a reputation strategy, none found")
+            raise ConfigurationError("simulation can't start without a reputation strategy, none found")
         if  self.results_processor is None:
-            raise helpers.ConfigurationError("simulation can't start without a results processor, none found")
+            raise ConfigurationError("simulation can't start without a results processor, none found")
 
         self.log_state()
         self.rng.seed(seed)

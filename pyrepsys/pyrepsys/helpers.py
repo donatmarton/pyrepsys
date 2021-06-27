@@ -54,12 +54,3 @@ a2i= agent_to_internal
 
 def is_within_internal_bounds(score):
     return score <= 1 and score >= 0
-
-class PermissionViolatedError(Exception):
-    pass
-
-class UncompleteInitializationError(Exception):
-    pass
-
-class ConfigurationError(Exception):
-    pass

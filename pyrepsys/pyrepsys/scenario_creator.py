@@ -6,7 +6,7 @@ import re
 import yaml
 
 import pyrepsys.paths as paths
-from pyrepsys.helpers import ConfigurationError
+from pyrepsys.errors import ConfigurationError
 from pyrepsys.main import setup_logging
 
 logger = logging.getLogger(__name__)

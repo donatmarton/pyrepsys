@@ -1,6 +1,7 @@
 import logging
 
 import pyrepsys.helpers as helpers
+from pyrepsys.errors import UncompleteInitializationError
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ class ResultsProcessor:
                 self.active_metrics_by_events[event].add(metric)
             logger.debug("Activated existing metric '{}'".format(metric))
         else:
-            raise helpers.UncompleteInitializationError("tried activating metric '{}' but I (reproc) don't have it".format(metric_classname))
+            raise UncompleteInitializationError("tried activating metric '{}' but I (reproc) don't have it".format(metric_classname))
 
     def deactivate_all_metrics(self):
         for set_of_metrics in self.active_metrics_by_events.values():
