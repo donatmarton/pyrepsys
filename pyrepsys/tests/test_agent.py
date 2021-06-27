@@ -8,6 +8,7 @@ import pyrepsys.helpers
 import pyrepsys.helper_types
 import pyrepsys.errors
 from pyrepsys.behavior.behavior_base import RateStrategy, DistortStrategy
+import pyrepsys.config
 
 @pytest.fixture(scope="module")
 def rng():
@@ -23,7 +24,7 @@ def mock_get(monkeypatch):
             "DECIMAL_PRECISION": 0
         }
         return dict[config_name]
-    monkeypatch.setattr(pyrepsys.config, "get", mock_get, raising=True)
+    monkeypatch.setattr(pyrepsys.config.getConfigurator(), "get", mock_get, raising=True)
     yield
 
 @pytest.fixture

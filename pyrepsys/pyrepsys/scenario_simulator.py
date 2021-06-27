@@ -1,16 +1,17 @@
 import random
 import logging
 
-import pyrepsys.config as config
+import pyrepsys.config
 from pyrepsys.agent import Agent
 import pyrepsys.helpers as helpers
 from pyrepsys.helper_types import SimulationEvent
 from pyrepsys.errors import ConfigurationError
 
 logger = logging.getLogger(__name__)
+config = pyrepsys.config.getConfigurator()
+
 
 class ScenarioSimulator:
-
     def __init__(self, reputation_strategy=None):
         self._reputation_strategy = reputation_strategy
         self.agents = []

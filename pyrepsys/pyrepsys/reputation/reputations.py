@@ -1,10 +1,8 @@
-#
-
-#
-
 from .reputation_base import ReputationStrategy
-import pyrepsys.config as config
+import pyrepsys.config
 from pyrepsys.errors import UncompleteInitializationError
+
+config = pyrepsys.config.getConfigurator()
 
 
 class ReputationAverageStrategy(ReputationStrategy):

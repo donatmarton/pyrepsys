@@ -1,4 +1,6 @@
-import pyrepsys.config as config
+import pyrepsys.config
+
+config = pyrepsys.config.getConfigurator()
 
 
 current_sim_round = 0

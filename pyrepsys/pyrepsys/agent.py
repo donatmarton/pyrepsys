@@ -2,11 +2,12 @@ import logging
 import weakref
 import random
 
-import pyrepsys.config as config
+import pyrepsys.config
 import pyrepsys.helpers as helpers
 from pyrepsys.errors import UncompleteInitializationError, PermissionViolatedError
 
 logger = logging.getLogger(__name__)
+config = pyrepsys.config.getConfigurator()
 
 class Agent:
     count = 0

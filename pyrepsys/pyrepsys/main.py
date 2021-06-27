@@ -6,7 +6,7 @@ import time
 import yaml
 
 import pyrepsys.instantiator as instantiator
-from pyrepsys.config import configurator as config
+import pyrepsys.config as config
 import pyrepsys.scenario_simulator as scenario_simulator
 import pyrepsys.results_processor as reproc
 import pyrepsys.paths as paths
@@ -26,19 +26,20 @@ def simulate(default_scenario, scenarios, artifacts_dir):
     sys = scenario_simulator.ScenarioSimulator()
     results_processor = reproc.ResultsProcessor(artifacts_dir)
     sys.results_processor = results_processor
-    config.scenarios_dir = paths.scenarios_dir
-    config.instantiator = instantiator.Instantiator()
-    config.read_default_configuration(default_scenario)
+    configurator = config.getConfigurator()
+    configurator.scenarios_dir = paths.scenarios_dir
+    configurator.instantiator = instantiator.Instantiator()
+    configurator.read_default_configuration(default_scenario)
 
     for scenario in scenarios:
         logger.info("Beginning scenario: '{}'".format(scenario))
 
-        config.read_configuration(scenario)
-        config.configure_system(sys)
-        config.configure_results_processor(results_processor)
+        configurator.read_configuration(scenario)
+        configurator.configure_system(sys)
+        configurator.configure_results_processor(results_processor)
 
-        scenario_display_name = config.get("scenario_name")
-        seed = config.get("seed")
+        scenario_display_name = configurator.get("scenario_name")
+        seed = configurator.get("seed")
 
         results_processor.process(
             SimulationEvent.BEGIN_SCENARIO,
@@ -54,7 +55,7 @@ def simulate(default_scenario, scenarios, artifacts_dir):
 
         logger.info("Scenario '{}' finished".format(scenario))
         sys.reset_system()
-        config.reset_active_configuration()
+        configurator.reset_active_configuration()
 
     results_processor.process(SimulationEvent.END_OF_SIMULATION)
     logger.info("Simulation finished")

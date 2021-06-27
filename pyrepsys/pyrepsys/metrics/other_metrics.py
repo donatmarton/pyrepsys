@@ -5,12 +5,10 @@ from matplotlib import pyplot as plt
 
 from .metrics_base import Metric, ScenarioDataPoints
 from pyrepsys.helper_types import SimulationEvent
-import pyrepsys.config as config
+import pyrepsys.config
 
 logger = logging.getLogger(__name__)
-
-
-
+config = pyrepsys.config.getConfigurator()
 
 
 class AvgAccuracyPerRound(Metric):

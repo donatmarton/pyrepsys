@@ -151,5 +151,9 @@ class Configurator:
                 claim_truth_assessment_inaccuracy, 
                 amount)
 
-configurator = Configurator()
-get = configurator.get
+_configurator = None
+def getConfigurator():
+    global _configurator
+    if not _configurator: 
+        _configurator = Configurator()
+    return _configurator

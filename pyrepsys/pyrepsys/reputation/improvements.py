@@ -1,10 +1,10 @@
 import copy
 
-#
-
 from .reputation_base import AbstractHandler
-import pyrepsys.config as config
+import pyrepsys.config
 import pyrepsys.helpers as helpers
+
+config = pyrepsys.config.getConfigurator()
 
 
 class Aging(AbstractHandler):
