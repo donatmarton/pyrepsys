@@ -4,7 +4,7 @@ import os
 from matplotlib import pyplot as plt
 
 from .metrics_base import Metric, ScenarioDataPoints
-import pyrepsys.helpers as helpers
+from pyrepsys.helper_types import SimulationEvent
 import pyrepsys.config as config
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class AvgAccuracyPerRound(Metric):
     def __init__(self):
         super().__init__()
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
+        self.add_event_of_interest(SimulationEvent.END_OF_ROUND)
         self.name = "Average Inaccuracy of Raters Per Rounds"
         self.scenarios_data = []
 
@@ -67,7 +67,7 @@ class AvgAccuracyPerRound(Metric):
 class AvgAccuracyPerScenario(Metric):
     def __init__(self):
         super().__init__()
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_SCENARIO)
+        self.add_event_of_interest(SimulationEvent.END_OF_SCENARIO)
         self.name = "Average Accuracy Per Scenarios"
     
     def prepare_new_scenario(self, scenario):
@@ -82,7 +82,7 @@ class AvgAccuracyPerScenario(Metric):
 class AvgTotClaimInaccuracyAndReputationScatter(Metric):
     def __init__(self):
         super().__init__()
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_SCENARIO)
+        self.add_event_of_interest(SimulationEvent.END_OF_SCENARIO)
         self.name = "Reputation vs Average Total Claiming Inaccuracy"
         self.scenarios_data = []
 
@@ -131,6 +131,3 @@ class AvgTotClaimInaccuracyAndReputationScatter(Metric):
             fig.savefig(figfile)
             
             ax.clear()
-
-
-

@@ -10,7 +10,7 @@ from pyrepsys.config import configurator as config
 import pyrepsys.scenario_simulator as scenario_simulator
 import pyrepsys.results_processor as reproc
 import pyrepsys.paths as paths
-import pyrepsys.helpers as helpers
+from pyrepsys.helper_types import SimulationEvent
 from pyrepsys.errors import ConfigurationError
 
 logger = logging.getLogger(__name__)
@@ -41,14 +41,14 @@ def simulate(default_scenario, scenarios, artifacts_dir):
         seed = config.get("seed")
 
         results_processor.process(
-            helpers.SimulationEvent.BEGIN_SCENARIO,
+            SimulationEvent.BEGIN_SCENARIO,
             scenario=scenario_display_name)
 
         sys.simulate(seed)
         sys.show()
 
         results_processor.process(
-            helpers.SimulationEvent.END_OF_SCENARIO,
+            SimulationEvent.END_OF_SCENARIO,
             agents_data=sys.agents,
             scenario=scenario_display_name)
 
@@ -56,7 +56,7 @@ def simulate(default_scenario, scenarios, artifacts_dir):
         sys.reset_system()
         config.reset_active_configuration()
 
-    results_processor.process(helpers.SimulationEvent.END_OF_SIMULATION)
+    results_processor.process(SimulationEvent.END_OF_SIMULATION)
     logger.info("Simulation finished")
 
     endtime = time.process_time()

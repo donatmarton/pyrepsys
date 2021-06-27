@@ -3,7 +3,7 @@ import logging
 
 import yaml
 
-import pyrepsys.helpers as helpers
+from pyrepsys.helper_types import ClaimLimits
 from pyrepsys.errors import ConfigurationError, UncompleteInitializationError
 
 logger = logging.getLogger(__name__)
@@ -135,12 +135,12 @@ class Configurator:
                 raise ConfigurationError("incorrect 'claim_range'")
             min_claim = claim_range[0]
             max_claim = claim_range[1]
-            if not helpers.is_within_internal_bounds(min_claim) or \
-                not helpers.is_within_internal_bounds(max_claim):
+            if not (min_claim <= 1 and min_claim >= 0) or \
+                not (max_claim <= 1 and max_claim >= 0):
                 raise ConfigurationError("min and max claim must be within 0..1")
             if min_claim > max_claim:
                 raise ConfigurationError("'min_claim' can't be larger than 'max_claim'")
-            claim_limits = helpers.ClaimLimits(min=min_claim, max=max_claim)
+            claim_limits = ClaimLimits(min=min_claim, max=max_claim)
             claim_truth_assessment_inaccuracy = fetch_agent_cfg_entry("claim_truth_assessment_inaccuracy")
             system.create_agents(
                 ds, 

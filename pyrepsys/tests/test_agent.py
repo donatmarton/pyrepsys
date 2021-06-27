@@ -5,6 +5,7 @@ import pytest
 
 import pyrepsys.agent
 import pyrepsys.helpers
+import pyrepsys.helper_types
 import pyrepsys.errors
 from pyrepsys.behavior.behavior_base import RateStrategy, DistortStrategy
 
@@ -46,7 +47,7 @@ def agent(mock_get, mock_distort_strat, mock_rating_strat):
     agent = pyrepsys.agent.Agent(
         distort_strategy=mock_distort_strat,
         rating_strategy=mock_rating_strat,
-        claim_limits=pyrepsys.helpers.ClaimLimits(min=0, max=1),
+        claim_limits=pyrepsys.helper_types.ClaimLimits(min=0, max=1),
         claim_probability=1,
         rate_probability=1,
         claim_truth_assessment_inaccuracy=0.125
@@ -58,7 +59,7 @@ def another_agent(mock_get, mock_distort_strat, mock_rating_strat):
     agent = pyrepsys.agent.Agent(
         distort_strategy=mock_distort_strat,
         rating_strategy=mock_rating_strat,
-        claim_limits=pyrepsys.helpers.ClaimLimits(min=0, max=1),
+        claim_limits=pyrepsys.helper_types.ClaimLimits(min=0, max=1),
         claim_probability=1,
         rate_probability=1,
         claim_truth_assessment_inaccuracy=0.125

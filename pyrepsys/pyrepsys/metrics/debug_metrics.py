@@ -1,7 +1,7 @@
 import logging
 
 from .metrics_base import Metric
-import pyrepsys.helpers as helpers
+from pyrepsys.helper_types import SimulationEvent
 
 
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class AvgAccuracyPerRound_Another(Metric):
     def __init__(self):
         super().__init__()
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
+        self.add_event_of_interest(SimulationEvent.END_OF_ROUND)
     
     def prepare_new_scenario(self, scenario):
         logger.debug("AvgAccuracyPerRound_Another scenario preparation: {}".format(scenario))
@@ -25,8 +25,8 @@ class AvgAccuracyPerRound_Another(Metric):
 class MetricBothRoundAndScenario(Metric):
     def __init__(self):
         super().__init__()
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_SCENARIO)
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
+        self.add_event_of_interest(SimulationEvent.END_OF_SCENARIO)
+        self.add_event_of_interest(SimulationEvent.END_OF_ROUND)
     
     def prepare_new_scenario(self, scenario):
         logger.debug("MetricBothRoundAndScenario scenario preparation: {}".format(scenario))

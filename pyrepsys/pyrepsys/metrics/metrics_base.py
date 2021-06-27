@@ -1,15 +1,13 @@
 from abc import ABC, abstractmethod
 
-#
-
-import pyrepsys.helpers as helpers
+from pyrepsys.helper_types import SimulationEvent
 
 
 class Metric(ABC):
     @abstractmethod
     def __init__(self):
         self._events_of_interest = []
-        self.add_event_of_interest(helpers.SimulationEvent.BEGIN_SCENARIO)
+        self.add_event_of_interest(SimulationEvent.BEGIN_SCENARIO)
         self.name = "Default Metric Class Name"
 
     @property
@@ -20,7 +18,7 @@ class Metric(ABC):
         self._events_of_interest.append(event)
 
     def notify(self, event, **data):
-        if event is helpers.SimulationEvent.BEGIN_SCENARIO:
+        if event is SimulationEvent.BEGIN_SCENARIO:
             self.prepare_new_scenario(data["scenario"])
         else:
             self.calculate(**data)
@@ -59,8 +57,8 @@ class MetricNameHere(Metric):
     def __init__(self):
         super().__init__()
         # TODO: add events of interest
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_ROUND)
-        self.add_event_of_interest(helpers.SimulationEvent.END_OF_SCENARIO)
+        self.add_event_of_interest(SimulationEvent.END_OF_ROUND)
+        self.add_event_of_interest(SimulationEvent.END_OF_SCENARIO)
         # TODO: change name of metric
         self.name = "Average Accuracy Per Scenarios"
     

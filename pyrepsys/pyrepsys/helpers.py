@@ -1,17 +1,7 @@
-from enum import Enum, auto
-from collections import namedtuple
-
 import pyrepsys.config as config
 
+
 current_sim_round = 0
-
-class SimulationEvent(Enum):
-    BEGIN_SCENARIO = auto()
-    END_OF_ROUND = auto()
-    END_OF_SCENARIO = auto()
-    END_OF_SIMULATION = auto()
-
-ClaimLimits = namedtuple("ClaimLimits",["min","max"])
 
 def force_agent_exposed_bounds(score):
     min_rating = config.get("MIN_RATING")

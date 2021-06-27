@@ -4,6 +4,7 @@ import logging
 import pyrepsys.config as config
 from pyrepsys.agent import Agent
 import pyrepsys.helpers as helpers
+from pyrepsys.helper_types import SimulationEvent
 from pyrepsys.errors import ConfigurationError
 
 logger = logging.getLogger(__name__)
@@ -60,7 +61,7 @@ class ScenarioSimulator:
             self.apply_improvements()
             self.calculate_reputations()
             self.results_processor.process(
-                helpers.SimulationEvent.END_OF_ROUND,
+                SimulationEvent.END_OF_ROUND,
                 agents_data=self.agents,
                 round_number=sim_round)
         logger.info("Simulation finished")

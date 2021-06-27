@@ -1,6 +1,6 @@
 import logging
 
-import pyrepsys.helpers as helpers
+from pyrepsys.helper_types import SimulationEvent
 from pyrepsys.errors import UncompleteInitializationError
 
 logger = logging.getLogger(__name__)
@@ -10,7 +10,7 @@ class ResultsProcessor:
         self.artifacts_directory = artifacts_directory
         self.metric_instances = {}
         self.active_metrics_by_events = {}
-        for event in helpers.SimulationEvent:
+        for event in SimulationEvent:
             self.active_metrics_by_events[event] = set()
 
     def activate_metric(self, metric_classname):
@@ -38,18 +38,18 @@ class ResultsProcessor:
         do the calculation for all active metrics
         'event_details' holds data for: 'agents_data' 'round_number' or 'scenario'
         """
-        if call_event is helpers.SimulationEvent.BEGIN_SCENARIO:
+        if call_event is SimulationEvent.BEGIN_SCENARIO:
             logger.debug("BEGIN_SCENARIO: {}".format(event_details["scenario"]))
-        elif call_event is helpers.SimulationEvent.END_OF_ROUND:
+        elif call_event is SimulationEvent.END_OF_ROUND:
             logger.debug("END_OF_ROUND: {}".format(event_details["round_number"]))
-        elif call_event is helpers.SimulationEvent.END_OF_SCENARIO:
+        elif call_event is SimulationEvent.END_OF_SCENARIO:
             logger.debug("END_OF_SCENARIO: {}".format(event_details["scenario"]))
-        elif call_event is helpers.SimulationEvent.END_OF_SIMULATION:
+        elif call_event is SimulationEvent.END_OF_SIMULATION:
             logger.debug("END_OF_SIMULATION")
         else:
             raise NotImplementedError #TODO
 
-        if call_event is helpers.SimulationEvent.END_OF_SIMULATION:
+        if call_event is SimulationEvent.END_OF_SIMULATION:
             self.draw_all_metrics()
         else:
             for metric in self.active_metrics_by_events[call_event]:
