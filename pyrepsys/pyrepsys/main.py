@@ -170,3 +170,13 @@ def main(run_params_file_name=None, scenario_list=None, scenario_defaults=None):
     setup_logging(default_level, simulation_dir_path, module_levels)
     simulate(default_config_name, scenarios, simulation_dir_path)
     return simulation_dir_path
+
+def run_scenario_creator(generator=None, runparams_file_name=None, scenario_defaults=None, clean=False):
+    import pyrepsys.scenario_creator
+    setup_logging(logging.INFO)
+    return pyrepsys.scenario_creator.run_scenario_creator(
+        generator=generator,
+        runparams_file_name=runparams_file_name,
+        scenario_defaults=scenario_defaults,
+        clean=clean
+    )
