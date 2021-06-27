@@ -1,7 +1,6 @@
 import logging
 
 import pyrepsys.helpers as helpers
-import pyrepsys.metrics as metrics
 
 logger = logging.getLogger(__name__)
 
@@ -14,20 +13,24 @@ class ResultsProcessor:
             self.active_metrics_by_events[event] = set()
 
     def activate_metric(self, metric_classname):
-        if metric_classname in self.metric_instances:
+        if self.has_metric(metric_classname):
             metric = self.metric_instances[metric_classname]
-            logger.debug("Found existing metric '{}'".format(metric))
+            for event in metric.events_of_interest:
+                self.active_metrics_by_events[event].add(metric)
+            logger.debug("Activated existing metric '{}'".format(metric))
         else:
-            metric = getattr(metrics,metric_classname)()
-            self.metric_instances[metric_classname] = metric
-            logger.debug("Created metric '{}'".format(metric))
-
-        for event in metric.events_of_interest:
-            self.active_metrics_by_events[event].add(metric)
+            raise helpers.UncompleteInitializationError("tried activating metric '{}' but I (reproc) don't have it".format(metric_classname))
 
     def deactivate_all_metrics(self):
         for set_of_metrics in self.active_metrics_by_events.values():
             set_of_metrics.clear()
+
+    def has_metric(self, metric_classname):
+        return metric_classname in self.metric_instances
+
+    def add_metric(self, metric_object):
+        self.metric_instances[type(metric_object).__name__] = metric_object
+        logger.debug("Added metric '{}'".format(metric_object))
 
     def process(self, call_event, **event_details):
         """

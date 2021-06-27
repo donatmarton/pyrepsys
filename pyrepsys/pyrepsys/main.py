@@ -5,6 +5,7 @@ import time
 
 import yaml
 
+import pyrepsys.instantiator as instantiator
 from pyrepsys.config import configurator as config
 import pyrepsys.scenario_simulator as scenario_simulator
 import pyrepsys.results_processor as reproc
@@ -25,6 +26,7 @@ def simulate(default_scenario, scenarios, artifacts_dir):
     results_processor = reproc.ResultsProcessor(artifacts_dir)
     sys.results_processor = results_processor
     config.scenarios_dir = paths.scenarios_dir
+    config.instantiator = instantiator.Instantiator()
     config.read_default_configuration(default_scenario)
 
     for scenario in scenarios:
