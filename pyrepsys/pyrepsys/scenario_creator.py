@@ -100,4 +100,5 @@ def write_runparams(runparams_file_name, scenario_defaults, scenarios_list):
     with open(runparams_file_path, 'w') as file:
         yaml.dump(runparams, file, default_flow_style=False)
 
+    logger.info("Runparams saved")
     logger.debug("Scenarios written to runparams file: '{}'".format(runparams_file_path))
