@@ -27,6 +27,7 @@ def tmp_profiling_file(tmpdir):
     file = os.path.join(tmpdir, "profiling_test_run")
     yield file
 
+@pytest.mark.perf
 def test_profile_short(tmp_profiling_file, results_file):
     cProfile.run(
         'pyrepsys.run(scenario_list=["perf_base.yaml"], scenario_defaults="perf_base.yaml")',
@@ -40,7 +41,9 @@ def test_profile_short(tmp_profiling_file, results_file):
     p.strip_dirs().sort_stats(SortKey.CUMULATIVE).print_stats(20)
     p.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
 
-def test_profile_short_noage(tmp_profiling_file, results_file):
+@pytest.mark.perf
+@pytest.mark.long
+def test_profile_noage(tmp_profiling_file, results_file):
     cProfile.run(
         'pyrepsys.run(scenario_list=["perf_noage.yaml"], scenario_defaults="perf_base.yaml")',
         tmp_profiling_file)    
@@ -53,6 +56,8 @@ def test_profile_short_noage(tmp_profiling_file, results_file):
     p.strip_dirs().sort_stats(SortKey.CUMULATIVE).print_stats(20)
     p.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
 
+@pytest.mark.perf
+@pytest.mark.long
 def test_profile_long(tmp_profiling_file, results_file):
     cProfile.run(
         'pyrepsys.run(scenario_list=["perf_long.yaml"], scenario_defaults="perf_base.yaml")',
@@ -66,6 +71,7 @@ def test_profile_long(tmp_profiling_file, results_file):
     p.strip_dirs().sort_stats(SortKey.CUMULATIVE).print_stats(20)
     p.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
 
+@pytest.mark.perf
 def test_benchmark_short(results_file):
     timer = timeit.Timer(
         'pyrepsys.run(scenario_list=["perf_base.yaml"], scenario_defaults="perf_base.yaml")',
