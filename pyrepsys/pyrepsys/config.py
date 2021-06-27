@@ -65,9 +65,7 @@ class Configurator:
         if metrics_cfg is not None:
             for metric_cfg in metrics_cfg:
                 if not results_processor.has_metric(metric_cfg):
-                    metric = self.instantiator.create(
-                        helpers.ObjectType.METRIC, 
-                        metric_cfg)
+                    metric = self.instantiator.create_metric(metric_cfg)
                     logger.debug("Created metric '{}'".format(metric))
                     results_processor.add_metric(metric)
                 results_processor.activate_metric(metric_cfg)
@@ -77,18 +75,14 @@ class Configurator:
         logger.debug("Configuring system")
 
         cfg_reputation_strategy = self.get("reputation_strategy")
-        reputation_strategy = self.instantiator.create(
-            helpers.ObjectType.REPUTATION_STRATEGY, 
-            cfg_reputation_strategy)
+        reputation_strategy = self.instantiator.create_reputation_strategy(cfg_reputation_strategy)
         system.reputation_strategy = reputation_strategy
 
         cfg_improvement_handlers = self.get("improvement_handlers")
         if cfg_improvement_handlers is not None:
             improvement_handlers = []
             for cfg_handler in cfg_improvement_handlers:
-                handler = self.instantiator.create(
-                    helpers.ObjectType.IMPROVEMENT_HANDLER,
-                    cfg_handler)
+                handler = self.instantiator.create_improvement_handler(cfg_handler)
                 improvement_handlers.append(handler)
             for i, handler in enumerate(improvement_handlers):
                 if i < len(improvement_handlers)-1:
@@ -132,12 +126,8 @@ class Configurator:
                 raise ConfigurationError("'amount' must be an integer > 0")
             cfg_rate_strategy = fetch_agent_cfg_entry("rate_strategy")
             cfg_distort_strategy = fetch_agent_cfg_entry("distort_strategy")
-            ds = self.instantiator.create(
-                    helpers.ObjectType.DISTORT_STRATEGY,
-                    cfg_distort_strategy)
-            rs = self.instantiator.create(
-                    helpers.ObjectType.RATING_STRATEGY,
-                    cfg_rate_strategy)
+            ds = self.instantiator.create_distort_strategy(cfg_distort_strategy)
+            rs = self.instantiator.create_rating_strategy(cfg_rate_strategy)
             claim_probability = fetch_agent_cfg_entry("claim_probability")
             rate_probability = fetch_agent_cfg_entry("rate_probability")
             claim_range = fetch_agent_cfg_entry("claim_range")

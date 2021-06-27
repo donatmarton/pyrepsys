@@ -11,13 +11,6 @@ class SimulationEvent(Enum):
     END_OF_SCENARIO = auto()
     END_OF_SIMULATION = auto()
 
-class ObjectType(Enum):
-    REPUTATION_STRATEGY = auto()
-    IMPROVEMENT_HANDLER = auto()
-    METRIC = auto()
-    RATING_STRATEGY = auto()
-    DISTORT_STRATEGY = auto()
-
 ClaimLimits = namedtuple("ClaimLimits",["min","max"])
 
 def force_agent_exposed_bounds(score):
