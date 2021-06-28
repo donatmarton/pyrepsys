@@ -1,14 +1,17 @@
 import random
 import logging
 
-import pyrepsys.config as config
+import pyrepsys.config
 from pyrepsys.agent import Agent
 import pyrepsys.helpers as helpers
+from pyrepsys.helper_types import SimulationEvent
+from pyrepsys.errors import ConfigurationError
 
 logger = logging.getLogger(__name__)
+config = pyrepsys.config.getConfigurator()
+
 
 class ScenarioSimulator:
-
     def __init__(self, reputation_strategy=None):
         self._reputation_strategy = reputation_strategy
         self.agents = []
@@ -42,9 +45,9 @@ class ScenarioSimulator:
 
     def simulate(self, seed=None):
         if self.reputation_strategy is None:
-            raise helpers.ConfigurationError("simulation can't start without a reputation strategy, none found")
+            raise ConfigurationError("simulation can't start without a reputation strategy, none found")
         if  self.results_processor is None:
-            raise helpers.ConfigurationError("simulation can't start without a results processor, none found")
+            raise ConfigurationError("simulation can't start without a results processor, none found")
 
         self.log_state()
         self.rng.seed(seed)
@@ -59,7 +62,7 @@ class ScenarioSimulator:
             self.apply_improvements()
             self.calculate_reputations()
             self.results_processor.process(
-                helpers.SimulationEvent.END_OF_ROUND,
+                SimulationEvent.END_OF_ROUND,
                 agents_data=self.agents,
                 round_number=sim_round)
         logger.info("Simulation finished")

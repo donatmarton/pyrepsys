@@ -14,8 +14,7 @@ def run_sim(args):
         pyrepsys.run(scenario_list=args.scenario, scenario_defaults=args.default_scenario)
 
 def run_scenario_creator(args):
-    import pyrepsys.scenario_creator
-    pyrepsys.scenario_creator.run_scenario_creator(
+    pyrepsys.run_scenario_creator(
         generator=args.generator, 
         runparams_file_name=args.runparams,
         scenario_defaults=args.default_scenario,

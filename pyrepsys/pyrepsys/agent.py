@@ -2,10 +2,12 @@ import logging
 import weakref
 import random
 
-import pyrepsys.config as config
+import pyrepsys.config
 import pyrepsys.helpers as helpers
+from pyrepsys.errors import UncompleteInitializationError, PermissionViolatedError
 
 logger = logging.getLogger(__name__)
+config = pyrepsys.config.getConfigurator()
 
 class Agent:
     count = 0
@@ -128,7 +130,7 @@ class Claim:
     def author_review(self):
         if self._author_review is None:
             logger.error("Claim {}: author review accessed but is not yet initialized!".format(self.ID))
-            raise helpers.UncompleteInitializationError
+            raise UncompleteInitializationError
         else:
             return self._author_review
 
@@ -136,15 +138,15 @@ class Claim:
         if self._author_review is not None:
             logger.error("Claim {}: Agent {} tried to change existing author review".format(
                 self.ID, adding_agent.ID))
-            raise helpers.PermissionViolatedError
+            raise PermissionViolatedError
         if adding_agent is not self.author():
             logger.error("Claim {}: Agent {} tried add author review who is not the author! (author: {})".format(
                 self.ID, adding_agent.ID, self.author().ID ))
-            raise helpers.PermissionViolatedError
+            raise PermissionViolatedError
         if review.author() is not self.author():
             logger.error("Claim {}: Agent {} tried add author review who is not the author! (author: {})".format(
                 self.ID, adding_agent.ID, self.author().ID ))
-            raise helpers.PermissionViolatedError
+            raise PermissionViolatedError
         
         self._author_review = review
 

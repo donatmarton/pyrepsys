@@ -5,11 +5,13 @@ import time
 
 import yaml
 
-from pyrepsys.config import configurator as config
+import pyrepsys.instantiator as instantiator
+import pyrepsys.config as config
 import pyrepsys.scenario_simulator as scenario_simulator
 import pyrepsys.results_processor as reproc
 import pyrepsys.paths as paths
-import pyrepsys.helpers as helpers
+from pyrepsys.helper_types import SimulationEvent
+from pyrepsys.errors import ConfigurationError
 
 logger = logging.getLogger(__name__)
 
@@ -24,36 +26,38 @@ def simulate(default_scenario, scenarios, artifacts_dir):
     sys = scenario_simulator.ScenarioSimulator()
     results_processor = reproc.ResultsProcessor(artifacts_dir)
     sys.results_processor = results_processor
-    config.scenarios_dir = paths.scenarios_dir
-    config.read_default_configuration(default_scenario)
+    configurator = config.getConfigurator()
+    configurator.scenarios_dir = paths.scenarios_dir
+    configurator.instantiator = instantiator.Instantiator()
+    configurator.read_default_configuration(default_scenario)
 
     for scenario in scenarios:
         logger.info("Beginning scenario: '{}'".format(scenario))
 
-        config.read_configuration(scenario)
-        config.configure_system(sys)
-        config.configure_results_processor(results_processor)
+        configurator.read_configuration(scenario)
+        configurator.configure_system(sys)
+        configurator.configure_results_processor(results_processor)
 
-        scenario_display_name = config.get("scenario_name")
-        seed = config.get("seed")
+        scenario_display_name = configurator.get("scenario_name")
+        seed = configurator.get("seed")
 
         results_processor.process(
-            helpers.SimulationEvent.BEGIN_SCENARIO,
+            SimulationEvent.BEGIN_SCENARIO,
             scenario=scenario_display_name)
 
         sys.simulate(seed)
         sys.show()
 
         results_processor.process(
-            helpers.SimulationEvent.END_OF_SCENARIO,
+            SimulationEvent.END_OF_SCENARIO,
             agents_data=sys.agents,
             scenario=scenario_display_name)
 
         logger.info("Scenario '{}' finished".format(scenario))
         sys.reset_system()
-        config.reset_active_configuration()
+        configurator.reset_active_configuration()
 
-    results_processor.process(helpers.SimulationEvent.END_OF_SIMULATION)
+    results_processor.process(SimulationEvent.END_OF_SIMULATION)
     logger.info("Simulation finished")
 
     endtime = time.process_time()
@@ -130,7 +134,7 @@ def read_scheduled_scenarios(run_params_file_name):
     scenarios = dictionary["scenarios"]
     scenario_defaults = dictionary["scenario_defaults"]
     if not scenarios or len(scenarios) == 0:
-        raise helpers.ConfigurationError("no scenarios found in runparams file")
+        raise ConfigurationError("no scenarios found in runparams file")
     return scenarios, scenario_defaults
 
 def set_run_params_dir(path):
@@ -167,3 +171,13 @@ def main(run_params_file_name=None, scenario_list=None, scenario_defaults=None):
     setup_logging(default_level, simulation_dir_path, module_levels)
     simulate(default_config_name, scenarios, simulation_dir_path)
     return simulation_dir_path
+
+def run_scenario_creator(generator=None, runparams_file_name=None, scenario_defaults=None, clean=False):
+    import pyrepsys.scenario_creator
+    setup_logging(logging.INFO)
+    return pyrepsys.scenario_creator.run_scenario_creator(
+        generator=generator,
+        runparams_file_name=runparams_file_name,
+        scenario_defaults=scenario_defaults,
+        clean=clean
+    )

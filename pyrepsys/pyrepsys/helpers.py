@@ -1,21 +1,9 @@
-from enum import Enum, auto
-from collections import namedtuple
+import pyrepsys.config
 
-import pyrepsys.config as config
+config = pyrepsys.config.getConfigurator()
+
 
 current_sim_round = 0
-
-class SimulationEvent(Enum):
-    BEGIN_SCENARIO = auto()
-    END_OF_ROUND = auto()
-    END_OF_SCENARIO = auto()
-    END_OF_SIMULATION = auto()
-
-class Mode(Enum):
-    SIMULATE = auto()
-    TEST = auto()
-
-ClaimLimits = namedtuple("ClaimLimits",["min","max"])
 
 def force_agent_exposed_bounds(score):
     min_rating = config.get("MIN_RATING")
@@ -51,12 +39,3 @@ a2i= agent_to_internal
 
 def is_within_internal_bounds(score):
     return score <= 1 and score >= 0
-
-class PermissionViolatedError(Exception):
-    pass
-
-class UncompleteInitializationError(Exception):
-    pass
-
-class ConfigurationError(Exception):
-    pass

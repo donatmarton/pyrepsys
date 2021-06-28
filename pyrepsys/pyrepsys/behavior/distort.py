@@ -1,11 +1,8 @@
-#
-
-#
-
 from .behavior_base import DistortStrategy
-import pyrepsys.config as config
+import pyrepsys.config
 from pyrepsys.helpers import force_agent_exposed_bounds
 
+config = pyrepsys.config.getConfigurator()
 
 class DistortDoNothingStrategy(DistortStrategy):
     def distort(self, distorter, measured_truth, random_seed=None):

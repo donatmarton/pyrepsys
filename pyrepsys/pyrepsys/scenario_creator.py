@@ -6,19 +6,18 @@ import re
 import yaml
 
 import pyrepsys.paths as paths
-from pyrepsys.helpers import ConfigurationError
-from pyrepsys.main import setup_logging
+from pyrepsys.errors import ConfigurationError
 
 logger = logging.getLogger(__name__)
 
 
 def run_scenario_creator(generator=None, runparams_file_name=None, scenario_defaults=None, clean=False):
     scenarios_dir = paths.scenarios_dir
-    setup_logging(logging.INFO)
-
+    
     if clean:
         clean_generated_scenarios(scenarios_dir)
 
+    created_scenarios = None
     if generator:
         created_scenarios = create_scenarios(generator, scenarios_dir)
         if runparams_file_name:       
@@ -27,6 +26,7 @@ def run_scenario_creator(generator=None, runparams_file_name=None, scenario_defa
             write_runparams(runparams_file_name, scenario_defaults, created_scenarios)
 
     logger.info("Exiting")
+    return created_scenarios
 
 def clean_generated_scenarios(scenarios_dir):
     num_cleaned = 0

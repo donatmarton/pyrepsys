@@ -1,9 +1,7 @@
-#
-
-#
-
 from .behavior_base import RateStrategy
-import pyrepsys.config as config
+import pyrepsys.config
+
+config = pyrepsys.config.getConfigurator()
 
 
 class RateRandomStrategy(RateStrategy):

@@ -5,7 +5,10 @@ import pytest
 
 import pyrepsys.agent
 import pyrepsys.helpers
+import pyrepsys.helper_types
+import pyrepsys.errors
 from pyrepsys.behavior.behavior_base import RateStrategy, DistortStrategy
+import pyrepsys.config
 
 @pytest.fixture(scope="module")
 def rng():
@@ -21,7 +24,7 @@ def mock_get(monkeypatch):
             "DECIMAL_PRECISION": 0
         }
         return dict[config_name]
-    monkeypatch.setattr(pyrepsys.config, "get", mock_get, raising=True)
+    monkeypatch.setattr(pyrepsys.config.getConfigurator(), "get", mock_get, raising=True)
     yield
 
 @pytest.fixture
@@ -45,7 +48,7 @@ def agent(mock_get, mock_distort_strat, mock_rating_strat):
     agent = pyrepsys.agent.Agent(
         distort_strategy=mock_distort_strat,
         rating_strategy=mock_rating_strat,
-        claim_limits=pyrepsys.helpers.ClaimLimits(min=0, max=1),
+        claim_limits=pyrepsys.helper_types.ClaimLimits(min=0, max=1),
         claim_probability=1,
         rate_probability=1,
         claim_truth_assessment_inaccuracy=0.125
@@ -57,7 +60,7 @@ def another_agent(mock_get, mock_distort_strat, mock_rating_strat):
     agent = pyrepsys.agent.Agent(
         distort_strategy=mock_distort_strat,
         rating_strategy=mock_rating_strat,
-        claim_limits=pyrepsys.helpers.ClaimLimits(min=0, max=1),
+        claim_limits=pyrepsys.helper_types.ClaimLimits(min=0, max=1),
         claim_probability=1,
         rate_probability=1,
         claim_truth_assessment_inaccuracy=0.125
@@ -85,14 +88,14 @@ def test_author_review(agent, another_agent, rng):
     with pytest.raises(AttributeError):
         claim.author_review = new_author_review
     # try to change it through designated function
-    with pytest.raises(pyrepsys.helpers.PermissionViolatedError):
+    with pytest.raises(pyrepsys.errors.PermissionViolatedError):
         claim.add_author_review(agent, new_author_review)
     # try removing it
     with pytest.raises(AttributeError):
         claim.author_review = None
-    with pytest.raises(pyrepsys.helpers.PermissionViolatedError):
+    with pytest.raises(pyrepsys.errors.PermissionViolatedError):
         claim.add_author_review(agent, None)
     # non-claimer agent tries to change it
-    with pytest.raises(pyrepsys.helpers.PermissionViolatedError):
+    with pytest.raises(pyrepsys.errors.PermissionViolatedError):
         claim.add_author_review(another_agent, non_author_review)
     

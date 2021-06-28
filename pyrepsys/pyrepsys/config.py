@@ -3,15 +3,14 @@ import logging
 
 import yaml
 
-import pyrepsys.paths as paths
-import pyrepsys.reputation as rep
-import pyrepsys.behavior as beh
-import pyrepsys.helpers as helpers
+from pyrepsys.helper_types import ClaimLimits
+from pyrepsys.errors import ConfigurationError, UncompleteInitializationError
 
 logger = logging.getLogger(__name__)
 
 class Configurator:
-    def __init__(self):
+    def __init__(self, instantiator=None):
+        self.instantiator = instantiator
         self._default_config = {}
         self._active_config = {}
         self.was_defaulted = False
@@ -36,7 +35,7 @@ class Configurator:
         if self.scenarios_dir is not None:
             config_file_path = os.path.join(self.scenarios_dir, config_file_name)
         else:
-            raise helpers.UncompleteInitializationError
+            raise UncompleteInitializationError
         
         with open(config_file_path, 'r') as file:
             dictionary = yaml.safe_load(file)
@@ -65,6 +64,10 @@ class Configurator:
 
         if metrics_cfg is not None:
             for metric_cfg in metrics_cfg:
+                if not results_processor.has_metric(metric_cfg):
+                    metric = self.instantiator.create_metric(metric_cfg)
+                    logger.debug("Created metric '{}'".format(metric))
+                    results_processor.add_metric(metric)
                 results_processor.activate_metric(metric_cfg)
         logger.info("Enabled metrics: {}".format(metrics_cfg))           
 
@@ -72,14 +75,14 @@ class Configurator:
         logger.debug("Configuring system")
 
         cfg_reputation_strategy = self.get("reputation_strategy")
-        reputation_strategy = getattr(rep,cfg_reputation_strategy)()
+        reputation_strategy = self.instantiator.create_reputation_strategy(cfg_reputation_strategy)
         system.reputation_strategy = reputation_strategy
 
         cfg_improvement_handlers = self.get("improvement_handlers")
         if cfg_improvement_handlers is not None:
             improvement_handlers = []
             for cfg_handler in cfg_improvement_handlers:
-                handler = getattr(rep, cfg_handler)()
+                handler = self.instantiator.create_improvement_handler(cfg_handler)
                 improvement_handlers.append(handler)
             for i, handler in enumerate(improvement_handlers):
                 if i < len(improvement_handlers)-1:
@@ -105,7 +108,7 @@ class Configurator:
                     if bb["name"] == cfg_base_behavior:
                         base_behavior = bb
                 if base_behavior is None:
-                    raise helpers.ConfigurationError("can't find base behavior with name '{}'".format(cfg_base_behavior))
+                    raise ConfigurationError("can't find base behavior with name '{}'".format(cfg_base_behavior))
 
             def fetch_agent_cfg_entry(cfg_param_key):
                 try:
@@ -115,29 +118,29 @@ class Configurator:
                         try:
                             cfg_param_value = base_behavior[cfg_param_key]
                         except KeyError:
-                            raise helpers.ConfigurationError("missing parameter '{}' must be defined".format(cfg_param_key))
+                            raise ConfigurationError("missing parameter '{}' must be defined".format(cfg_param_key))
                 return cfg_param_value
 
             amount = agent["amount"] # can't be defined as base behavior
             if type(amount) is not int or amount <= 0:
-                raise helpers.ConfigurationError("'amount' must be an integer > 0")
+                raise ConfigurationError("'amount' must be an integer > 0")
             cfg_rate_strategy = fetch_agent_cfg_entry("rate_strategy")
             cfg_distort_strategy = fetch_agent_cfg_entry("distort_strategy")
-            ds = getattr(beh,cfg_distort_strategy)()
-            rs = getattr(beh,cfg_rate_strategy)()
+            ds = self.instantiator.create_distort_strategy(cfg_distort_strategy)
+            rs = self.instantiator.create_rating_strategy(cfg_rate_strategy)
             claim_probability = fetch_agent_cfg_entry("claim_probability")
             rate_probability = fetch_agent_cfg_entry("rate_probability")
             claim_range = fetch_agent_cfg_entry("claim_range")
             if len(claim_range) != 2:
-                raise helpers.ConfigurationError("incorrect 'claim_range'")
+                raise ConfigurationError("incorrect 'claim_range'")
             min_claim = claim_range[0]
             max_claim = claim_range[1]
-            if not helpers.is_within_internal_bounds(min_claim) or \
-                not helpers.is_within_internal_bounds(max_claim):
-                raise helpers.ConfigurationError("min and max claim must be within 0..1")
+            if not (min_claim <= 1 and min_claim >= 0) or \
+                not (max_claim <= 1 and max_claim >= 0):
+                raise ConfigurationError("min and max claim must be within 0..1")
             if min_claim > max_claim:
-                raise helpers.ConfigurationError("'min_claim' can't be larger than 'max_claim'")
-            claim_limits = helpers.ClaimLimits(min=min_claim, max=max_claim)
+                raise ConfigurationError("'min_claim' can't be larger than 'max_claim'")
+            claim_limits = ClaimLimits(min=min_claim, max=max_claim)
             claim_truth_assessment_inaccuracy = fetch_agent_cfg_entry("claim_truth_assessment_inaccuracy")
             system.create_agents(
                 ds, 
@@ -148,5 +151,9 @@ class Configurator:
                 claim_truth_assessment_inaccuracy, 
                 amount)
 
-configurator = Configurator()
-get = configurator.get
+_configurator = None
+def getConfigurator():
+    global _configurator
+    if not _configurator: 
+        _configurator = Configurator()
+    return _configurator

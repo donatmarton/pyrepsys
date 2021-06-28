@@ -1,10 +1,8 @@
-#
-
-#
-
 from .reputation_base import ReputationStrategy
-import pyrepsys.config as config
-import pyrepsys.helpers as helpers
+import pyrepsys.config
+from pyrepsys.errors import UncompleteInitializationError
+
+config = pyrepsys.config.getConfigurator()
 
 
 class ReputationAverageStrategy(ReputationStrategy):
@@ -30,7 +28,7 @@ class ReputationWeightedAverage(ReputationStrategy):
                     scores.append(review.value)
                     review_author = review.author()
                     if review_author is None:
-                        raise helpers.UncompleteInitializationError("a review is missing its author link")
+                        raise UncompleteInitializationError("a review is missing its author link")
                     weights.append(review_author.weight)
             if scores: 
                 weighted_sum = 0
