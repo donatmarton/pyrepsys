@@ -1,5 +1,3 @@
-
-
 import pytest
 
 import pyrepsys.config
@@ -8,7 +6,7 @@ import pyrepsys.helpers
 
 @pytest.fixture
 def configurator():
-    return pyrepsys.config.Configurator()
+    return pyrepsys.config.getConfigurator()
 
 @pytest.fixture(autouse=True)
 def resolution_steps():
@@ -22,7 +20,7 @@ def test_correct_resolutions(monkeypatch, configurator):
     monkeypatch.setitem(configurator._active_config, "MEASURED_CLAIM_RESOLUTION", 0.5)
     monkeypatch.setitem(configurator._active_config, "REVIEW_RESOLUTION", 1)
 
-    configurator._configure_system_resolutions()
+    pyrepsys.helpers._configure_system_resolutions()
 
     expected_review_steps = [x for x in range(1,10)]
     assert pyrepsys.helpers.review_steps == expected_review_steps
@@ -37,7 +35,7 @@ def test_binary_resolutions(monkeypatch, configurator):
     monkeypatch.setitem(configurator._active_config, "MEASURED_CLAIM_RESOLUTION", 1)
     monkeypatch.setitem(configurator._active_config, "REVIEW_RESOLUTION", 1)
 
-    configurator._configure_system_resolutions()
+    pyrepsys.helpers._configure_system_resolutions()
 
     expected_steps = [0, 1]
     assert pyrepsys.helpers.review_steps == expected_steps
@@ -49,7 +47,7 @@ def test_small_resolution(monkeypatch, configurator):
     monkeypatch.setitem(configurator._active_config, "MEASURED_CLAIM_RESOLUTION", 0.01)
     monkeypatch.setitem(configurator._active_config, "REVIEW_RESOLUTION", 1)
 
-    configurator._configure_system_resolutions()
+    pyrepsys.helpers._configure_system_resolutions()
 
     expected_review_steps = [x for x in range(1,10)]
     assert pyrepsys.helpers.review_steps == expected_review_steps
@@ -65,13 +63,13 @@ def test_incorrect_configuration(monkeypatch, configurator):
     monkeypatch.setitem(configurator._active_config, "MEASURED_CLAIM_RESOLUTION", 1)
     monkeypatch.setitem(configurator._active_config, "REVIEW_RESOLUTION", 1)
     with pytest.raises(pyrepsys.helpers.ConfigurationError):
-        configurator._configure_system_resolutions()
+        pyrepsys.helpers._configure_system_resolutions()
 
     # min > max
     monkeypatch.setitem(configurator._active_config, "MIN_RATING", 5)
     monkeypatch.setitem(configurator._active_config, "MAX_RATING", 3)
     with pytest.raises(pyrepsys.helpers.ConfigurationError):
-        configurator._configure_system_resolutions()
+        pyrepsys.helpers._configure_system_resolutions()
 
     # step larger than span
     monkeypatch.setitem(configurator._active_config, "MIN_RATING", 1)
@@ -79,7 +77,7 @@ def test_incorrect_configuration(monkeypatch, configurator):
     monkeypatch.setitem(configurator._active_config, "MEASURED_CLAIM_RESOLUTION", 6)
     monkeypatch.setitem(configurator._active_config, "REVIEW_RESOLUTION", 5)
     with pytest.raises(pyrepsys.helpers.ConfigurationError):
-        configurator._configure_system_resolutions()
+        pyrepsys.helpers._configure_system_resolutions()
 
     # step doesnt fit in span without remainder
     monkeypatch.setitem(configurator._active_config, "MIN_RATING", 1)
@@ -87,4 +85,4 @@ def test_incorrect_configuration(monkeypatch, configurator):
     monkeypatch.setitem(configurator._active_config, "MEASURED_CLAIM_RESOLUTION", 3)
     monkeypatch.setitem(configurator._active_config, "REVIEW_RESOLUTION", 3)
     with pytest.raises(pyrepsys.helpers.ConfigurationError):
-        configurator._configure_system_resolutions()
+        pyrepsys.helpers._configure_system_resolutions()

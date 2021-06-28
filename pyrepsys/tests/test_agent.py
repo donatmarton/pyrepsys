@@ -16,7 +16,9 @@ def mock_get(monkeypatch):
             "INITIAL_REPUTATION": 5,
             "MIN_RATING": 1,
             "MAX_RATING": 9,
-            "DECIMAL_PRECISION": 0
+            "DECIMAL_PRECISION": 0,
+            "MEASURED_CLAIM_RESOLUTION": 0.5,
+            "REVIEW_RESOLUTION": 1
         }
         return dict[config_name]
     configurator = pyrepsys.config.getConfigurator()

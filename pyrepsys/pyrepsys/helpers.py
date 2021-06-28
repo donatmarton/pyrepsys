@@ -1,6 +1,8 @@
-import pyrepsys.config
-from enum import Enum, auto
 import bisect
+
+import pyrepsys.config
+from pyrepsys.errors import ConfigurationError
+from pyrepsys.helper_types import ResolutionDomain
 
 config = pyrepsys.config.getConfigurator()
 
@@ -21,9 +23,36 @@ def update_config_cache():
     _config_cache["MAX_MIN_RATING_SPAN"] = _config_cache["MAX_RATING"] - _config_cache["MIN_RATING"]
 config.register_config_updated_callback(update_config_cache)
 
-class ResolutionDomain(Enum):
-    MEASURED_CLAIM = auto()
-    REVIEW = auto()
+def _configure_system_resolutions():
+    def generate_resolution_steps(min, max, step_size):
+        span = max - min
+        if dumb_mod(span, step_size) != 0:
+            raise ConfigurationError("resolutions must be divisor of their range spans (max-min)")
+        num_steps = int(1 + span / step_size)
+        return [min + idx*step_size for idx in range(num_steps)]
+
+    min_rating = config.get("MIN_RATING")
+    max_rating = config.get("MAX_RATING")
+    if min_rating > max_rating:
+        raise ConfigurationError("'min_rating' can't be larger than 'max_rating'")
+    if min_rating == max_rating:
+        raise ConfigurationError("rating span (max-min) can't be 0")
+
+    measured_claim_resolution = config.get("MEASURED_CLAIM_RESOLUTION")
+    global measured_claim_steps
+    measured_claim_steps = generate_resolution_steps(
+        min_rating, 
+        max_rating, 
+        measured_claim_resolution
+    )
+    review_resolution = config.get("REVIEW_RESOLUTION")
+    global review_steps
+    review_steps = generate_resolution_steps(
+        min_rating, 
+        max_rating, 
+        review_resolution
+    )
+config.register_config_updated_callback(_configure_system_resolutions)
 
 def convert_resolution(number, target_resolution_domain):
     if target_resolution_domain is ResolutionDomain.MEASURED_CLAIM:

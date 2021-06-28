@@ -45,3 +45,5 @@ DECIMAL_PRECISION: 0 # 0 for int
 INITIAL_REPUTATION: 5 # in user-facing range and precision
 SIM_ROUND_MAX: 25
 AGING_LIMIT: 6 # 0 to only allow from current round, 1 to allow from one before too ...
+MEASURED_CLAIM_RESOLUTION: 0.5 # in agent-exposed
+REVIEW_RESOLUTION: 1 # in agent-exposed
