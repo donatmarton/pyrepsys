@@ -15,21 +15,32 @@ class Configurator:
         self._active_config = {}
         self.was_defaulted = False
         self.scenarios_dir = None
+        self._update_callbacks = []
 
     def read_configuration(self, config_file_name):
         if self._active_config:
             logger.warning("Overwriting not empty active configuration, is this ok?")
         self._active_config = self._config_from_file_to_memory(config_file_name)
+        self._notify_update()
 
     def read_default_configuration(self, default_config_file_name):
         self._default_config = self._config_from_file_to_memory(default_config_file_name)
+        self._notify_update()
 
     def reset_active_configuration(self):
         self._active_config = {}
+        self._notify_update()
         if self.was_defaulted:
             logger.warning("Configurator has defaulted at least one parameter since last active reset, is this ok?")
             self.was_defaulted = False
 
+    def register_config_updated_callback(self, callable):
+        if callable not in self._update_callbacks:
+            self._update_callbacks.append(callable)
+
+    def _notify_update(self):
+        for callable in self._update_callbacks:
+            callable()
 
     def _config_from_file_to_memory(self, config_file_name):
         if self.scenarios_dir is not None:

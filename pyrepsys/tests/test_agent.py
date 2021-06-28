@@ -24,7 +24,9 @@ def mock_get(monkeypatch):
             "DECIMAL_PRECISION": 0
         }
         return dict[config_name]
-    monkeypatch.setattr(pyrepsys.config.getConfigurator(), "get", mock_get, raising=True)
+    configurator = pyrepsys.config.getConfigurator()
+    monkeypatch.setattr(configurator, "get", mock_get, raising=True)
+    configurator._notify_update()
     yield
 
 @pytest.fixture
