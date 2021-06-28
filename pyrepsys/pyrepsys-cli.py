@@ -36,11 +36,11 @@ def yaml_file(string: str) -> str:
 parser = argparse.ArgumentParser(
     epilog="See 'pyrepsys-cli <command> -h'"
 )
+parser.set_defaults(selected_mode=None)
 
 subparsers = parser.add_subparsers(
     title="commands",
     description="pyrepsys can be launched in these modes:",
-    required=True,
     metavar="{simulate|test|scenario-creator}"
 )
 
@@ -120,6 +120,9 @@ parser_sc.add_argument(
 
 # parse args
 args = parser.parse_args()
+
+if not args.selected_mode:
+    parser.error("one of the subcommands is required: {simulate|test|scenario-creator}")
 
 # post-parsing argument processing
 if args.selected_mode == run_sim:
