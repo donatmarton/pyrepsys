@@ -5,7 +5,12 @@ import pyrepsys
 
 def run_test(args):
     import pytest
-    pytest.main(["tests/"])
+    pytest_args = ["tests/"]
+    if args.verbose: pytest_args.append("-v")
+    if args.markexpr: 
+        pytest_args.append("-m")
+        pytest_args.append(args.markexpr)
+    pytest.main(pytest_args)
     
 def run_sim(args):
     if args.runparams:
@@ -74,6 +79,15 @@ parser_test = subparsers.add_parser(
     description="Run all self-tests"
     )
 parser_test.set_defaults(selected_mode=run_test)
+parser_test.add_argument(
+    "-v", "--verbose",
+    action="store_true",
+    help="Increase verbosity of pytest output"
+)
+parser_test.add_argument(
+    "-m", "--markexpr",
+    help="Only run tests matching the given mark expression"
+)
 
 # create the parser for the "scenario-creator" command
 parser_sc = subparsers.add_parser(
