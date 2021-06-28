@@ -16,7 +16,7 @@ def rng():
 
 @pytest.fixture
 def mock_get(monkeypatch):
-    def mock_get(config_name, allow_default=True):
+    def mock_get(config_name):
         dict = {
             "INITIAL_REPUTATION": 5,
             "MIN_RATING": 1,
