@@ -20,4 +20,5 @@ def prepare_pyrepsys_paths_for_tests(paths):
     pyrepsys.set_run_params_dir(paths["TEST_RUN_PARAMS_DIR"])
     pyrepsys.set_simulation_artifacts_dir(paths["TEST_SIMULATION_ARTIFACTS_DIR"])
     # clean the artifacts dir of past runs:
-    shutil.rmtree(paths["TEST_SIMULATION_ARTIFACTS_DIR"])
+    shutil.rmtree(paths["TEST_SIMULATION_ARTIFACTS_DIR"], ignore_errors=True)
+    os.mkdir(paths["TEST_SIMULATION_ARTIFACTS_DIR"])

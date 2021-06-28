@@ -137,10 +137,16 @@ improvement_handlers: ["Improvement_A", "Improvement_D"]
 ```
 
 #### Starting Tests
-To run all the tests, give the `test` or `t` subcommand.
+To run all the tests, give the `test` or `t` subcommand. The `-v` flag increases pytest verbosity. 
 
 ```bash
-python3 pyrepsys-cli.py test
+python3 pyrepsys-cli.py test [-h] [-v] [-m MARKEXPR]
+```
+
+When not all tests are needed, select which tests to run with the `-m` or `--markexpr` flag. Certain tests are decorated with markers. An expression string using `not`, `and`, `or` and the marker name can select or deselect these tests. Supported marks are listed in `tests/pytest.ini`. For example, to run performance-related tests that are not long:
+
+```bash
+python3 pyrepsys-cli.py t -m "perf and not long"
 ```
 
 

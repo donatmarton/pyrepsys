@@ -16,7 +16,7 @@ def rng():
 
 @pytest.fixture
 def mock_get(monkeypatch):
-    def mock_get(config_name, allow_default=True):
+    def mock_get(config_name):
         dict = {
             "INITIAL_REPUTATION": 5,
             "MIN_RATING": 1,
@@ -24,7 +24,9 @@ def mock_get(monkeypatch):
             "DECIMAL_PRECISION": 0
         }
         return dict[config_name]
-    monkeypatch.setattr(pyrepsys.config.getConfigurator(), "get", mock_get, raising=True)
+    configurator = pyrepsys.config.getConfigurator()
+    monkeypatch.setattr(configurator, "get", mock_get, raising=True)
+    configurator._notify_update()
     yield
 
 @pytest.fixture

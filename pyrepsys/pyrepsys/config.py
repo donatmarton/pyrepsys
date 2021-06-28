@@ -15,21 +15,32 @@ class Configurator:
         self._active_config = {}
         self.was_defaulted = False
         self.scenarios_dir = None
+        self._update_callbacks = []
 
     def read_configuration(self, config_file_name):
         if self._active_config:
             logger.warning("Overwriting not empty active configuration, is this ok?")
         self._active_config = self._config_from_file_to_memory(config_file_name)
+        self._notify_update()
 
     def read_default_configuration(self, default_config_file_name):
         self._default_config = self._config_from_file_to_memory(default_config_file_name)
+        self._notify_update()
 
     def reset_active_configuration(self):
         self._active_config = {}
+        self._notify_update()
         if self.was_defaulted:
             logger.warning("Configurator has defaulted at least one parameter since last active reset, is this ok?")
             self.was_defaulted = False
 
+    def register_config_updated_callback(self, callable):
+        if callable not in self._update_callbacks:
+            self._update_callbacks.append(callable)
+
+    def _notify_update(self):
+        for callable in self._update_callbacks:
+            callable()
 
     def _config_from_file_to_memory(self, config_file_name):
         if self.scenarios_dir is not None:
@@ -42,26 +53,21 @@ class Configurator:
         dictionary["scenario_name"] = config_file_name.split(sep=".", maxsplit=1)[0]
         return dictionary
 
-    def get(self, config_name, allow_default=True):
+    def get(self, config_name):
         try:
             cfg_value = self._active_config[config_name]
         except KeyError:
-            if allow_default:
-                try:
-                    cfg_value = self._default_config[config_name]
-                    self.was_defaulted = True
-                except KeyError:
-                    logger.error("'{}' is not part of the active or default config".format(config_name))
-                    raise
-            else:
-                logger.error("'{}' not in active config and defaulting is not allowed".format(config_name))
+            try:
+                cfg_value = self._default_config[config_name]
+                self.was_defaulted = True
+            except KeyError:
+                logger.error("'{}' is not part of the active or default config".format(config_name))
                 raise
         return cfg_value
 
     def configure_results_processor(self, results_processor):
         metrics_cfg = self.get("metrics")
         results_processor.deactivate_all_metrics()
-
         if metrics_cfg is not None:
             for metric_cfg in metrics_cfg:
                 if not results_processor.has_metric(metric_cfg):
