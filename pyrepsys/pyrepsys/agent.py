@@ -55,12 +55,13 @@ class Agent:
 
     def __make_new_claim(self, rng):
         claim = Claim(weakref.ref(self), rng)
-        measured_claim_score_i = self.measure_claim(claim, rng, return_internal=True)
+        measured_claim_score_ae = self.measure_claim(claim, rng)
 
         distorted_claim_ae = self.distort_strategy.execute(
             self,
-            helpers.i2a(measured_claim_score_i),
+            measured_claim_score_ae,
             rng.random())
+        distorted_claim_ae = helpers.convert_resolution(distorted_claim_ae, helpers.ResolutionDomain.REVIEW)
         distorted_claim_ae = helpers.force_agent_exposed_bounds(distorted_claim_ae)
         distorted_claim_i = helpers.a2i(distorted_claim_ae)
 
@@ -82,19 +83,18 @@ class Agent:
     
     def __rate_claim(self, claim, rng):
         review_score_ae = self.rating_strategy.execute(self, claim, rng.random())
+        review_score_ae = helpers.convert_resolution(review_score_ae, helpers.ResolutionDomain.REVIEW)
         review_score_ae = helpers.force_agent_exposed_bounds(review_score_ae)
         review = Review(weakref.ref(self), helpers.a2i(review_score_ae))
         claim.add_review(review)
         self.reviews.append(review)
 
-    def measure_claim(self, claim, rng, return_internal=False):
+    def measure_claim(self, claim, rng):
         max_error_i = self.claim_truth_assessment_inaccuracy
         measurement_error_i = rng.uniform(-1*max_error_i, max_error_i)
         measured_score_i = helpers.force_internal_bounds(claim.ground_truth_i + measurement_error_i)
-        if return_internal:
-            return measured_score_i
-        else:
-            return helpers.i2a(measured_score_i)
+        measured_score_ae = helpers.i2a(measured_score_i)
+        return helpers.convert_resolution(measured_score_ae, helpers.ResolutionDomain.MEASURED_CLAIM)
     
     def __str__(self):
         return "Agent {:>3}: {:<30} {:<30} {:.4f} .. {:.4f} {:>6.0%} {:>6.0%} {:>6.4f}".format(

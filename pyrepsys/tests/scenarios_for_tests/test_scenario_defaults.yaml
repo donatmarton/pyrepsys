@@ -49,7 +49,8 @@ metrics:
   - "MetricBothRoundAndScenario"
 MIN_RATING: 1
 MAX_RATING: 9
-DECIMAL_PRECISION: 0 # 0 for int
 INITIAL_REPUTATION: 5 # in user-facing range and precision
 SIM_ROUND_MAX: 50
 AGING_LIMIT: 2 # 0 to only allow from current round, 1 to allow from one before too ...
+MEASURED_CLAIM_RESOLUTION: 0.5 # in agent-exposed
+REVIEW_RESOLUTION: 1 # in agent-exposed

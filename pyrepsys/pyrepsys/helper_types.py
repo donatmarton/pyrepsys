@@ -9,3 +9,7 @@ class SimulationEvent(Enum):
     END_OF_SIMULATION = auto()
 
 ClaimLimits = namedtuple("ClaimLimits",["min","max"])
+
+class ResolutionDomain(Enum):
+    MEASURED_CLAIM = auto()
+    REVIEW = auto()

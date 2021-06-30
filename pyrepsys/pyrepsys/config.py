@@ -90,9 +90,9 @@ class Configurator:
             for cfg_handler in cfg_improvement_handlers:
                 handler = self.instantiator.create_improvement_handler(cfg_handler)
                 improvement_handlers.append(handler)
-            for i, handler in enumerate(improvement_handlers):
-                if i < len(improvement_handlers)-1:
-                    handler.set_next(improvement_handlers[i+1])
+            for idx, handler in enumerate(improvement_handlers):
+                if idx < len(improvement_handlers)-1:
+                    handler.set_next(improvement_handlers[idx+1])
             logger.info("Improvement handler chain found: {}".format(
                 " > ".join([h for h in cfg_improvement_handlers])
             ))

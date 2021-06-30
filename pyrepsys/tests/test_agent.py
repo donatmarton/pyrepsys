@@ -1,5 +1,4 @@
 import weakref
-import random
 
 import pytest
 
@@ -10,10 +9,6 @@ import pyrepsys.errors
 from pyrepsys.behavior.behavior_base import RateStrategy, DistortStrategy
 import pyrepsys.config
 
-@pytest.fixture(scope="module")
-def rng():
-    yield random.Random()
-
 @pytest.fixture
 def mock_get(monkeypatch):
     def mock_get(config_name):
@@ -21,13 +16,21 @@ def mock_get(monkeypatch):
             "INITIAL_REPUTATION": 5,
             "MIN_RATING": 1,
             "MAX_RATING": 9,
-            "DECIMAL_PRECISION": 0
+            "MEASURED_CLAIM_RESOLUTION": 0.5,
+            "REVIEW_RESOLUTION": 1
         }
         return dict[config_name]
     configurator = pyrepsys.config.getConfigurator()
     monkeypatch.setattr(configurator, "get", mock_get, raising=True)
     configurator._notify_update()
     yield
+
+@pytest.fixture
+def prep_resolutions(monkeypatch):
+    mock_measured_claim_steps = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9]
+    monkeypatch.setattr(pyrepsys.helpers, "measured_claim_steps", mock_measured_claim_steps, raising=True)
+    mock_review_steps = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    monkeypatch.setattr(pyrepsys.helpers, "review_steps", mock_review_steps, raising=True)
 
 @pytest.fixture
 def mock_distort_strat():
@@ -46,7 +49,7 @@ def mock_rating_strat():
     yield rs
 
 @pytest.fixture
-def agent(mock_get, mock_distort_strat, mock_rating_strat):
+def agent(mock_get, prep_resolutions, mock_distort_strat, mock_rating_strat):
     agent = pyrepsys.agent.Agent(
         distort_strategy=mock_distort_strat,
         rating_strategy=mock_rating_strat,
@@ -58,7 +61,7 @@ def agent(mock_get, mock_distort_strat, mock_rating_strat):
     yield agent
 
 @pytest.fixture
-def another_agent(mock_get, mock_distort_strat, mock_rating_strat):
+def another_agent(mock_get, prep_resolutions, mock_distort_strat, mock_rating_strat):
     agent = pyrepsys.agent.Agent(
         distort_strategy=mock_distort_strat,
         rating_strategy=mock_rating_strat,
