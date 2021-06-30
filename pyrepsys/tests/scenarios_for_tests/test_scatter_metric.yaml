@@ -15,6 +15,8 @@ agents:
     base_behavior: "HonestAccurateRater"
 metrics:
   - "AvgTotClaimInaccuracyAndReputationScatter"
-SIM_ROUND_MAX: 20
-AGING_LIMIT: 20
+SIM_ROUND_MAX: 10
+#AGING_LIMIT: 20
 INITIAL_REPUTATION: 1
+MEASURED_CLAIM_RESOLUTION: 0.5 # in agent-exposed
+REVIEW_RESOLUTION: 0.5 # in agent-exposed
