@@ -22,6 +22,7 @@ def simulate(default_scenario, scenarios, artifacts_dir):
     logger.info("Artifacts will be saved to '{}'".format(artifacts_dir))
     logger.info("Scenarios will be read from '{}'".format(paths.scenarios_dir))
     logger.info("Scenarios planned: {}".format(scenarios))
+    logger.info("Fallback scenario defaults: '{}'".format(default_scenario))
 
     sys = scenario_simulator.ScenarioSimulator()
     results_processor = reproc.ResultsProcessor(artifacts_dir)
