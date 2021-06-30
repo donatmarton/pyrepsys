@@ -26,7 +26,6 @@ agents:
     claim_range: [0.8, 1]
     claim_probability: 0.1
 #metrics: # more metrics would make it even slower
-DECIMAL_PRECISION: 2 # 0 for int
 SIM_ROUND_MAX: 100
 MEASURED_CLAIM_RESOLUTION: 0.1 # in agent-exposed
 REVIEW_RESOLUTION: 0.25 # in agent-exposed

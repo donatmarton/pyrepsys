@@ -22,5 +22,4 @@ class DistortHugeUpRandom(DistortStrategy):
         distorted_truth = measured_truth + self.rng(random_seed).uniform(
             leeway/2,
             leeway)
-        distorted_truth = round(distorted_truth, config.get("DECIMAL_PRECISION"))
         return force_agent_exposed_bounds( distorted_truth )
