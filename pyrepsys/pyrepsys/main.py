@@ -109,6 +109,9 @@ def setup_logging(default_level, logfile_dir=None, module_levels=None):
         stream_handler.setFormatter(stream_formatter)
         
         root_logger = logging.getLogger()
+        if root_logger.hasHandlers():
+            for h in root_logger.handlers:
+                root_logger.removeHandler(h)
         root_logger.addHandler(stream_handler)
         
         if logfile_dir:
