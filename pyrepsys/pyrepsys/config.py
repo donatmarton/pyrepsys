@@ -1,5 +1,6 @@
 import os
 import logging
+import hashlib
 
 import yaml
 
@@ -20,11 +21,13 @@ class Configurator:
     def read_configuration(self, config_file_name):
         if self._active_config:
             logger.warning("Overwriting not empty active configuration, is this ok?")
-        self._active_config = self._config_from_file_to_memory(config_file_name)
+        self._active_config, filehash = self._config_from_file_to_memory(config_file_name)
+        logger.info("Scenario file hash: '{}'".format(filehash))
         self._notify_update()
 
     def read_default_configuration(self, default_config_file_name):
-        self._default_config = self._config_from_file_to_memory(default_config_file_name)
+        self._default_config, filehash = self._config_from_file_to_memory(default_config_file_name)
+        logger.info("Scenario defaults file hash: '{}'".format(filehash))
         self._notify_update()
 
     def reset_active_configuration(self):
@@ -49,9 +52,15 @@ class Configurator:
             raise UncompleteInitializationError
         
         with open(config_file_path, 'r') as file:
-            dictionary = yaml.safe_load(file)
+            config_file_contents = file.read()
+
+        dictionary = yaml.safe_load(config_file_contents)
         dictionary["scenario_name"] = config_file_name.split(sep=".", maxsplit=1)[0]
-        return dictionary
+
+        sha256 = hashlib.sha256(config_file_contents.encode("utf-8"))
+        filehash = sha256.hexdigest()
+        
+        return dictionary, filehash
 
     def get(self, config_name):
         try:
