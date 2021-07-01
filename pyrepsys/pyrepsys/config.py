@@ -80,10 +80,16 @@ class Configurator:
     def configure_system(self, system):
         logger.debug("Configuring system")
 
+        self._configure_system_reputation_strategy(system)
+        self._configure_system_improvement_handlers(system)
+        self._configure_system_agents(system)
+
+    def _configure_system_reputation_strategy(self, system):
         cfg_reputation_strategy = self.get("reputation_strategy")
         reputation_strategy = self.instantiator.create_reputation_strategy(cfg_reputation_strategy)
         system.reputation_strategy = reputation_strategy
 
+    def _configure_system_improvement_handlers(self, system):
         cfg_improvement_handlers = self.get("improvement_handlers")
         if cfg_improvement_handlers is not None:
             improvement_handlers = []
@@ -101,6 +107,7 @@ class Configurator:
             logger.warning("No improvement handler chain found")
             system.improvement_handler = None
 
+    def _configure_system_agents(self, system):
         agents = self.get("agents")
         agent_base_behaviors = self.get("agent_base_behaviors")
         for agent in agents:
@@ -108,7 +115,7 @@ class Configurator:
                 cfg_base_behavior = agent["base_behavior"]
             except KeyError: # no base behavior was given
                 base_behavior = None
-            else: # get the base behavior, KeyError shows config error (not catched)
+            else: # get the base behavior, raise config error if missing
                 base_behavior = None
                 for bb in agent_base_behaviors:
                     if bb["name"] == cfg_base_behavior:
@@ -124,7 +131,8 @@ class Configurator:
                         try:
                             cfg_param_value = base_behavior[cfg_param_key]
                         except KeyError:
-                            raise ConfigurationError("missing parameter '{}' must be defined".format(cfg_param_key))
+                            raise ConfigurationError("missing parameter '{}' must be defined, not in agent or base behavior".format(cfg_param_key))
+                    else: raise ConfigurationError("missing parameter '{}' must be defined, not in agent and no base behavior given".format(cfg_param_key))
                 return cfg_param_value
 
             amount = agent["amount"] # can't be defined as base behavior
