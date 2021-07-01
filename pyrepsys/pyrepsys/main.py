@@ -47,7 +47,6 @@ def simulate(default_scenario, scenarios, artifacts_dir):
             scenario=scenario_display_name)
 
         sys.simulate(seed)
-        sys.show()
 
         results_processor.process(
             SimulationEvent.END_OF_SCENARIO,

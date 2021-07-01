@@ -49,7 +49,8 @@ class ScenarioSimulator:
         if  self.results_processor is None:
             raise ConfigurationError("simulation can't start without a results processor, none found")
 
-        self.log_state()
+        self.log_resolutions()
+        self.log_agents()
         self.rng.seed(seed)
         if seed: logger.info("RNG seeded with '{}'".format(seed))
         else: logger.info("RNG seeded with a random seed")
@@ -65,6 +66,7 @@ class ScenarioSimulator:
                 SimulationEvent.END_OF_ROUND,
                 agents_data=self.agents,
                 round_number=sim_round)
+        self.log_reps_and_claims()
         logger.info("Simulation finished")
 
     def make_claims(self):
@@ -85,16 +87,6 @@ class ScenarioSimulator:
                 if agent is not claim.author():
                     agent.give_rate_opportunity(claim, self.rng)
 
-    def show(self):
-        logger.debug("Round #{} of 0..{}".format(helpers.current_sim_round, config.get("SIM_ROUND_MAX")-1))
-        logger.debug("There are " + str(len(self.agents)) + " agents")
-        for agent in self.agents:
-            logger.debug("Agent #{:>3}: Rep: {}".format(agent.ID, round(agent.global_reputation,2)))
-            if agent.claims:
-                string = ""
-                for claim in agent.claims:
-                    logger.debug("            " + str(claim))
-
     def apply_improvements(self):
         if self.improvement_handler is not None:
             self.improvement_handler.handle(self.agents)
@@ -108,9 +100,34 @@ class ScenarioSimulator:
         self.reputation_strategy = None
         self.improvement_handler = None
 
-    def log_state(self):
+    def log_agents(self):
         logger.info("There are " + str(len(self.agents)) + " agents")
         logger.info("{:^10} {:^30} {:^30} {:^16} {:^6} {:>6} {:^6}".format(
             "#","DISTORT STRATEGY", "RATING STRATEGY", "claim limits", "claim%", "rate%", "CTAI"))
         for agent in self.agents:
             logger.info(str(agent))
+
+    def log_resolutions(self):
+        tolog = [
+            (helpers.measured_claim_steps, "Measured claim resolution steps"),
+            (helpers.review_steps, "Review resolution steps")
+        ]
+        for res in tolog:
+            steps = res[0]
+            name = res[1]
+            if len(steps) > 6: 
+                logger.info("{}: '{} [...] {}'".format( 
+                    name,
+                    ", ".join(str(s) for s in steps[:3]),
+                    ", ".join(str(s) for s in steps[-3:] )))
+            else: logger.info("{}: '{}'".format(name, ", ".join(str(s) for s in steps)))
+
+    def log_reps_and_claims(self):
+        logger.debug("Round #{} of 0..{}".format(helpers.current_sim_round, config.get("SIM_ROUND_MAX")-1))
+        logger.debug("There are " + str(len(self.agents)) + " agents")
+        for agent in self.agents:
+            logger.debug("Agent #{:>3}: Rep: {}".format(agent.ID, round(agent.global_reputation,2)))
+            if agent.claims:
+                string = ""
+                for claim in agent.claims:
+                    logger.debug("            " + str(claim))
