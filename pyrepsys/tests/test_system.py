@@ -55,5 +55,10 @@ def test_artifact_dir_and_logfile_generation():
 @pytest.mark.manual
 def test_scenarios_manual_evaluation(paths):
     sim_dir = pyrepsys.run("for_manual_evaluation.yaml")
+
     os.rename(sim_dir, os.path.join(paths["TEST_SIMULATION_ARTIFACTS_DIR"], "manual_evaluation"))
+    try:
+        os.remove(os.path.join(paths["TEST_SIMULATION_ARTIFACTS_DIR"], "run_latest"))
+    except FileNotFoundError:
+        pass
     assert True
