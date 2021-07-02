@@ -14,12 +14,12 @@ class ResultsProcessor:
             self.active_metrics_by_events[event] = set()
 
     def activate_metric(self, metric_classname):
-        if self.has_metric(metric_classname):
+        try:
             metric = self.metric_instances[metric_classname]
             for event in metric.events_of_interest:
                 self.active_metrics_by_events[event].add(metric)
             logger.debug("Activated existing metric '{}'".format(metric))
-        else:
+        except KeyError:
             raise UncompleteInitializationError("tried activating metric '{}' but I (reproc) don't have it".format(metric_classname))
 
     def deactivate_all_metrics(self):
