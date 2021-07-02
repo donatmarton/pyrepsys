@@ -54,7 +54,7 @@ class ScenarioSimulator:
         self.rng.seed(seed)
         if seed: logger.info("RNG seeded with '{}'".format(seed))
         else: logger.info("RNG seeded with a random seed")
-        logger.info("Simulation started")
+        logger.info("Scenario simulation started")
         for sim_round in range(0,config.get("SIM_ROUND_MAX")):
             helpers.current_sim_round = sim_round
             logger.debug("Beginning round #{}".format(sim_round))
@@ -67,7 +67,7 @@ class ScenarioSimulator:
                 agents_data=self.agents,
                 round_number=sim_round)
         self.log_reps_and_claims()
-        logger.info("Simulation finished")
+        logger.info("Scenario simulation finished")
 
     def make_claims(self):
         all_new_claims = []

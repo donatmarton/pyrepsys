@@ -50,6 +50,7 @@ class ResultsProcessor:
             raise NotImplementedError #TODO
 
         if call_event is SimulationEvent.END_OF_SIMULATION:
+            logger.info("Started drawing & exporting metrics")
             self.draw_all_metrics()
         else:
             for metric in self.active_metrics_by_events[call_event]:
