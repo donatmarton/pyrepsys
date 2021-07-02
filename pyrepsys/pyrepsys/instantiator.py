@@ -1,7 +1,3 @@
-#
-
-#
-
 import pyrepsys.behavior as behavior
 import pyrepsys.reputation as reputation
 import pyrepsys.metrics as metrics
