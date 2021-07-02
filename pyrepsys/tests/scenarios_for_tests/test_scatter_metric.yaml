@@ -1,8 +1,10 @@
-reputation_strategy: "BasedOnAvgDifferenceOfClaimsAndReviews"
+reputation_strategy: 
+  name: "BasedOnAvgDifferenceOfClaimsAndReviews"
 improvement_handlers:
   # in order of the chain from top to bottom
   # i.e. the topmost is the entry handler
-#  - "Aging"
+#  - name: "Aging"
+#    limit: 20
   - "Weights"
   - "StakeBasedReputation"
 seed: #leave empty for random
@@ -16,7 +18,6 @@ agents:
 metrics:
   - "AvgTotClaimInaccuracyAndReputationScatter"
 SIM_ROUND_MAX: 10
-#AGING_LIMIT: 20
 INITIAL_REPUTATION: 1
 MEASURED_CLAIM_RESOLUTION: 0.5 # in agent-exposed
 REVIEW_RESOLUTION: 0.5 # in agent-exposed

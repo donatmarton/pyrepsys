@@ -2,7 +2,8 @@ reputation_strategy: "ReputationWeightedAverage"
 improvement_handlers:
   # in order of the chain from top to bottom
   # i.e. the topmost is the entry handler
-  - "Aging"
+  - name: "Aging"
+    limit: 6 # 0 to only allow from current round, 1 to allow from one before too ...
   - "Weights"
   - "StakeBasedReputation"
 seed: "pyrepsys_random_seed" #leave empty for random
@@ -43,6 +44,5 @@ MIN_RATING: 1
 MAX_RATING: 9
 INITIAL_REPUTATION: 5 # in user-facing range and precision
 SIM_ROUND_MAX: 25
-AGING_LIMIT: 6 # 0 to only allow from current round, 1 to allow from one before too ...
 MEASURED_CLAIM_RESOLUTION: 0.5 # in agent-exposed
 REVIEW_RESOLUTION: 1 # in agent-exposed

@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 
-from pyrepsys.helper_types import SimulationEvent
+from pyrepsys.helper_types import SimulationEvent, LocalConfig
 
 
-class Metric(ABC):
+class Metric(ABC, LocalConfig):
     @abstractmethod
     def __init__(self):
+        super().__init__()
         self._events_of_interest = []
         self.add_event_of_interest(SimulationEvent.BEGIN_SCENARIO)
         self.name = "Default Metric Class Name"

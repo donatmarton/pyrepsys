@@ -2,11 +2,21 @@ import pytest
 
 import pyrepsys.config
 import pyrepsys.helpers
+import pyrepsys.scenario_simulator
+import pyrepsys.instantiator
+import pyrepsys.errors
 
 
 @pytest.fixture
-def configurator():
-    return pyrepsys.config.getConfigurator()
+def configurator(paths):
+    configurator = pyrepsys.config.getConfigurator()
+    configurator.scenarios_dir = paths["TEST_SCENARIOS_DIR"]
+    configurator.instantiator = pyrepsys.instantiator.Instantiator()
+    yield configurator
+
+@pytest.fixture
+def simulator():
+    return pyrepsys.scenario_simulator.ScenarioSimulator()
 
 @pytest.fixture(autouse=True)
 def resolution_steps():
@@ -86,3 +96,34 @@ def test_incorrect_configuration(monkeypatch, configurator):
     monkeypatch.setitem(configurator._active_config, "REVIEW_RESOLUTION", 3)
     with pytest.raises(pyrepsys.helpers.ConfigurationError):
         pyrepsys.helpers._configure_system_resolutions()
+
+def test_config_items_extended_with_settings(configurator, simulator):
+    configurator.read_default_configuration("test_scenario_defaults.yaml")
+    configurator.read_configuration("test_config_items_extended_settings.yaml")
+
+    configurator.configure_system(simulator)
+
+    assert simulator._reputation_strategy.local_config is not None
+    assert simulator._reputation_strategy.get_local_config("repstrat_test_param") == 23
+    with pytest.raises(pyrepsys.errors.ConfigurationError):
+        simulator._reputation_strategy.get_local_config("param_not_in_config")
+    
+    assert simulator._improvement_handler.local_config is not None
+    assert simulator._improvement_handler.get_local_config("limit") == 2
+    assert simulator._improvement_handler._next_handler.local_config is None
+    with pytest.raises(pyrepsys.errors.ConfigurationError):
+        simulator._improvement_handler._next_handler.get_local_config("any_param")
+    
+    assert simulator.agents[0].distort_strategy.local_config is not None
+    assert simulator.agents[0].distort_strategy.get_local_config("ds_test_param") is False
+    with pytest.raises(pyrepsys.errors.ConfigurationError):
+        assert simulator.agents[0].distort_strategy.get_local_config("ds_test_param2")
+    assert simulator.agents[0].rating_strategy.local_config is None
+    with pytest.raises(pyrepsys.errors.ConfigurationError):
+        simulator.agents[0].rating_strategy.get_local_config("any_param")
+    
+    assert simulator.agents[1].distort_strategy.local_config is not None
+    assert simulator.agents[1].distort_strategy.get_local_config("ds_test_param") is True
+    assert simulator.agents[1].distort_strategy.get_local_config("ds_test_param2") == 12
+    assert simulator.agents[1].rating_strategy.local_config is not None
+    assert simulator.agents[1].rating_strategy.get_local_config("rs_test_param") is False

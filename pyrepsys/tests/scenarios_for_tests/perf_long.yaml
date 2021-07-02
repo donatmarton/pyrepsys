@@ -1,7 +1,4 @@
 improvement_handlers:
-  # in order of the chain from top to bottom
-  # i.e. the topmost is the entry handler
-#  - "Aging"
   - "Weights"
   - "StakeBasedReputation"
 agents:

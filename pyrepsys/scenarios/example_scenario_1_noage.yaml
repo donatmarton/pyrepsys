@@ -2,7 +2,8 @@ reputation_strategy: "ReputationWeightedAverage"
 improvement_handlers:
   # in order of the chain from top to bottom
   # i.e. the topmost is the entry handler
-  #- "Aging"
+#  - name: "Aging"
+#    limit: 2 # 0 to only allow from current round, 1 to allow from one before too ...
   - "Weights"
   - "StakeBasedReputation"
 agents:

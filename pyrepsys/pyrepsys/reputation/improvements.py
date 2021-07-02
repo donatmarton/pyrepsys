@@ -9,7 +9,7 @@ config = pyrepsys.config.getConfigurator()
 
 class Aging(AbstractHandler):
     def handle(self, agents):
-        aging_limit = config.get("AGING_LIMIT")
+        aging_limit = self.get_local_config("limit")
         for agent in agents:
             for claim in copy.copy( agent.claims ):
                 if helpers.current_sim_round - claim.round_timestamp > aging_limit:

@@ -2,5 +2,5 @@ reputation_strategy:
   - "ReputationWeightedAverage"
   - "BasedOnAvgDifferenceOfClaimsAndReviews"
 improvement_handlers:
-  - ["Aging", "Weights", "StakeBasedReputation"]
+  - [{name: "Aging", limit: 6}, "Weights", "StakeBasedReputation"]
   - ["Weights", "StakeBasedReputation"]

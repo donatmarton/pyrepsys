@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
 import random
 
-#
-
 from pyrepsys.agent import Claim
+from pyrepsys.helper_types import LocalConfig
 
 
-class BehaviorStrategy(ABC):
+class BehaviorStrategy(ABC, LocalConfig):
     @abstractmethod
     def execute(self, executor_agent, data, random_seed=None):
         pass

@@ -78,13 +78,18 @@ class Configurator:
         metrics_cfg = self.get("metrics")
         results_processor.deactivate_all_metrics()
         if metrics_cfg is not None:
-            for metric_cfg in metrics_cfg:
-                if not results_processor.has_metric(metric_cfg):
-                    metric = self.instantiator.create_metric(metric_cfg)
+            metric_names, metric_configs = self._unpack_extended_config_list(metrics_cfg)
+            for name in metric_names:
+                if not results_processor.has_metric(name):
+                    metric = self.instantiator.create_metric(name)
                     logger.debug("Created metric '{}'".format(metric))
+                    metric.local_config = metric_configs.get(name)
                     results_processor.add_metric(metric)
-                results_processor.activate_metric(metric_cfg)
-        logger.info("Enabled metrics: {}".format(metrics_cfg))           
+                elif results_processor.has_metric(name) and name in metric_configs:
+                    logger.warning("metric '{}' has configs but was already instantiated earlier, configs have no effect".format(name))
+                results_processor.activate_metric(name)
+            logger.info("Enabled metrics: {}".format(metric_names))           
+        else: logger.info("No metrics enabled")
 
     def configure_system(self, system):
         logger.debug("Configuring system")
@@ -95,21 +100,28 @@ class Configurator:
 
     def _configure_system_reputation_strategy(self, system):
         cfg_reputation_strategy = self.get("reputation_strategy")
-        reputation_strategy = self.instantiator.create_reputation_strategy(cfg_reputation_strategy)
-        system.reputation_strategy = reputation_strategy
+        if cfg_reputation_strategy is not None:
+            rs_name, rs_config = self._unpack_extended_config_entry(cfg_reputation_strategy)
+            reputation_strategy = self.instantiator.create_reputation_strategy(rs_name)
+            reputation_strategy.local_config = rs_config
+            system.reputation_strategy = reputation_strategy
+        else:
+            raise ConfigurationError("no reputation strategy found")
 
     def _configure_system_improvement_handlers(self, system):
         cfg_improvement_handlers = self.get("improvement_handlers")
         if cfg_improvement_handlers is not None:
+            handler_names, handler_configs = self._unpack_extended_config_list(cfg_improvement_handlers)
             improvement_handlers = []
-            for cfg_handler in cfg_improvement_handlers:
-                handler = self.instantiator.create_improvement_handler(cfg_handler)
+            for name in handler_names:
+                handler = self.instantiator.create_improvement_handler(name)
+                handler.local_config = handler_configs.get(name)
                 improvement_handlers.append(handler)
             for idx, handler in enumerate(improvement_handlers):
                 if idx < len(improvement_handlers)-1:
                     handler.set_next(improvement_handlers[idx+1])
             logger.info("Improvement handler chain found: {}".format(
-                " > ".join([h for h in cfg_improvement_handlers])
+                " > ".join([h for h in handler_names])
             ))
             system.improvement_handler = improvement_handlers[0]
         else:
@@ -149,8 +161,12 @@ class Configurator:
                 raise ConfigurationError("'amount' must be an integer > 0")
             cfg_rate_strategy = fetch_agent_cfg_entry("rate_strategy")
             cfg_distort_strategy = fetch_agent_cfg_entry("distort_strategy")
-            ds = self.instantiator.create_distort_strategy(cfg_distort_strategy)
-            rs = self.instantiator.create_rating_strategy(cfg_rate_strategy)
+            ds_name, ds_config = self._unpack_extended_config_entry(cfg_distort_strategy)
+            ds = self.instantiator.create_distort_strategy(ds_name)
+            ds.local_config = ds_config
+            rs_name, rs_config = self._unpack_extended_config_entry(cfg_rate_strategy)
+            rs = self.instantiator.create_rating_strategy(rs_name)
+            rs.local_config = rs_config
             claim_probability = fetch_agent_cfg_entry("claim_probability")
             rate_probability = fetch_agent_cfg_entry("rate_probability")
             claim_range = fetch_agent_cfg_entry("claim_range")
@@ -173,6 +189,29 @@ class Configurator:
                 rate_probability,
                 claim_truth_assessment_inaccuracy, 
                 amount)
+
+    def _unpack_extended_config_list(self, config_entries_list):
+        names_in_list = []
+        configs = {}
+        for entry in config_entries_list:
+            if type(entry) is str:
+                names_in_list.append(entry)
+            else:
+                try: name = entry.pop("name")
+                except KeyError: raise ConfigurationError("config item extended with settings but no 'name' param")
+                else:
+                    names_in_list.append(name)
+                    configs[name] = entry
+        return names_in_list, configs
+
+    def _unpack_extended_config_entry(self, config_entry):
+        name_in_list, config_in_dict = self._unpack_extended_config_list( [config_entry] )
+        name = name_in_list[0]
+        config = config_in_dict.get(name)
+        return name, config
+
+
+
 
 _configurator = None
 def getConfigurator():

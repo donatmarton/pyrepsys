@@ -1,27 +1,17 @@
 from abc import ABC, abstractmethod
 
-#
-
-#
+from pyrepsys.helper_types import LocalConfig
 
 
-class ReputationStrategy(ABC):
+class ReputationStrategy(ABC, LocalConfig):
     @abstractmethod
     def calculate_reputations(self, agents):
         pass
 
-
-class Handler(ABC):
-    @abstractmethod
-    def set_next(self, handler):
-        pass
-
-    @abstractmethod
-    def handle(self, request):
-        pass
-
-class AbstractHandler(Handler):
-    _next_handler = None
+class AbstractHandler(ABC, LocalConfig):
+    def __init__(self):
+        super().__init__()
+        self._next_handler = None
     
     def set_next(self, handler):
         self._next_handler = handler
