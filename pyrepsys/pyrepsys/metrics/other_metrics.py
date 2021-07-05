@@ -3,6 +3,7 @@ import os
 
 from matplotlib import pyplot as plt
 
+from pyrepsys.errors import ConfigurationError
 from .metrics_base import Metric, ScenarioDataPoints
 from pyrepsys.helper_types import SimulationEvent
 import pyrepsys.config
@@ -106,6 +107,49 @@ class AvgTotClaimInaccuracyAndReputationScatter(Metric):
                 self.scenarios_data[-1].record_data_point(avg_tot_claim_hon, rep)
 
     def draw(self, target_dir):
+        # avoid ConfigError for backwards compatibility
+        try: join_with_subplots = self.get_local_config("join_with_subplots")
+        except ConfigurationError: join_with_subplots = False
+
+        if join_with_subplots:
+            self._draw_joined(target_dir)
+        else:
+            self._draw_individual(target_dir)
+
+    def _draw_joined(self, target_dir):
+        nrows = self.get_local_config("nrows")
+        ncols = self.get_local_config("ncols")
+
+        if nrows*ncols != len(self.scenarios_data):
+            raise ConfigurationError("different number of subplots and scenarios")
+        
+        min_rating = config.get("MIN_RATING")
+        max_rating = config.get("MAX_RATING")
+        min_reputation = min_rating
+        max_reputation = max_rating
+
+        fig = plt.figure()
+        #fig, axs = plt.subplots( nrows=nrows, ncols=ncols)
+
+        fig.suptitle(self.name)
+        #fig.supxlabel("Average Total Claiming Inaccuracy")
+        #fig.supylabel("Reputation")
+
+        for idx, scenario in enumerate(self.scenarios_data):
+            ax = fig.add_subplot(nrows, ncols, 1+idx)
+            
+            ax.set_xlim(0, max_rating - min_rating)
+            ax.set_ylim(min_reputation, max_reputation)
+            ax.set_xticklabels([])
+            ax.set_yticklabels([])
+            
+            ax.scatter(scenario.x, scenario.y, s=1)
+
+        figfile = os.path.join(target_dir, type(self).__name__ + "_joined")
+        fig.savefig(figfile, bbox_inches="tight")
+
+
+    def _draw_individual(self, target_dir):
         fig, ax = plt.subplots()
         
         min_rating = config.get("MIN_RATING")
