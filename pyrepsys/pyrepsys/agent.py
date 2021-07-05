@@ -61,8 +61,8 @@ class Agent:
             self,
             measured_claim_score_ae,
             rng.random())
-        distorted_claim_ae = helpers.convert_resolution(distorted_claim_ae, helpers.ResolutionDomain.REVIEW)
         distorted_claim_ae = helpers.force_agent_exposed_bounds(distorted_claim_ae)
+        distorted_claim_ae = helpers.convert_resolution(distorted_claim_ae, helpers.ResolutionDomain.REVIEW)
         distorted_claim_i = helpers.a2i(distorted_claim_ae)
 
         if distorted_claim_i > self.claim_limits.max or distorted_claim_i < self.claim_limits.min:
@@ -83,8 +83,8 @@ class Agent:
     
     def __rate_claim(self, claim, rng):
         review_score_ae = self.rating_strategy.execute(self, claim, rng.random())
-        review_score_ae = helpers.convert_resolution(review_score_ae, helpers.ResolutionDomain.REVIEW)
         review_score_ae = helpers.force_agent_exposed_bounds(review_score_ae)
+        review_score_ae = helpers.convert_resolution(review_score_ae, helpers.ResolutionDomain.REVIEW)
         review = Review(weakref.ref(self), helpers.a2i(review_score_ae))
         claim.add_review(review)
         self.reviews.append(review)
@@ -162,7 +162,7 @@ class Claim:
     def __str__(self):
         return "c{}a{}-{}".format(self.author_review.value, self.round_timestamp, 
             " ".join([str(r)+"w"+str(round(r.author().weight,2)) for r in self.reviews]))
-            
+
 
 class Review:
     def __init__(self, author, rating_score_i):
