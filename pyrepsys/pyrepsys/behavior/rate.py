@@ -33,3 +33,15 @@ class RateFromOwnExperience(RateStrategy):
 class RateDoNothing(RateStrategy):
     def rate_claim(self, rater, claim, random_seed=None):
         return claim.author_review.value
+
+class RateLinearManipulation(RateStrategy):
+    def rate_claim(self, rater, claim, random_seed=None):
+        a = self.get_local_config("a")
+        b = self.get_local_config("b")
+        return b + a * claim.author_review.value        
+
+class RateInvertedSlope(RateStrategy):
+    def rate_claim(self, rater, claim, random_seed=None):
+        max_rating = config.get("MAX_RATING")
+        min_rating = config.get("MIN_RATING")
+        return -1 * claim.author_review.value + max_rating + min_rating

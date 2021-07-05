@@ -10,5 +10,7 @@ from .rate import (
     RateHigherHalfRandom,
     RateNearClaimScore,
     RateFromOwnExperience,
-    RateDoNothing
+    RateDoNothing,
+    RateInvertedSlope,
+    RateLinearManipulation
 )
