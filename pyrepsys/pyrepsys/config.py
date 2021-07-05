@@ -197,7 +197,7 @@ class Configurator:
             if type(entry) is str:
                 names_in_list.append(entry)
             else:
-                try: name = entry.pop("name")
+                try: name = entry["name"]
                 except KeyError: raise ConfigurationError("config item extended with settings but no 'name' param")
                 else:
                     names_in_list.append(name)
