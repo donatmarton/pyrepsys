@@ -102,10 +102,10 @@ class ScenarioSimulator:
 
     def log_agents(self):
         logger.info("There are " + str(len(self.agents)) + " agents")
-        logger.info("{:^10} {:^30} {:^30} {:^16} {:^6} {:>6} {:^6}".format(
+        logger.debug("{:^10} {:^30} {:^30} {:^16} {:^6} {:>6} {:^6}".format(
             "#","DISTORT STRATEGY", "RATING STRATEGY", "claim limits", "claim%", "rate%", "CTAI"))
         for agent in self.agents:
-            logger.info(str(agent))
+            logger.debug(str(agent))
 
     def log_resolutions(self):
         tolog = [
