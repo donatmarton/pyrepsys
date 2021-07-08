@@ -108,8 +108,7 @@ class AvgTotClaimInaccuracyAndReputationScatter(Metric):
 
     def draw(self, target_dir):
         # avoid ConfigError for backwards compatibility
-        try: join_with_subplots = self.get_local_config("join_with_subplots")
-        except ConfigurationError: join_with_subplots = False
+        join_with_subplots = self.get_local_config("join_with_subplots", raise_missing=False, return_default=False)
 
         if join_with_subplots:
             self._draw_joined(target_dir)
@@ -119,12 +118,15 @@ class AvgTotClaimInaccuracyAndReputationScatter(Metric):
     def _draw_joined(self, target_dir):
         nrows = self.get_local_config("nrows")
         ncols = self.get_local_config("ncols")
+        show_ideal = self.get_local_config("show_ideal", raise_missing=False, return_default=False)
 
         if nrows*ncols != len(self.scenarios_data):
             raise ConfigurationError("different number of subplots and scenarios")
         
         min_rating = config.get("MIN_RATING")
         max_rating = config.get("MAX_RATING")
+        min_inaccuracy = 0
+        max_inaccuracy = max_rating - min_rating
         min_reputation = min_rating
         max_reputation = max_rating
 
@@ -136,24 +138,44 @@ class AvgTotClaimInaccuracyAndReputationScatter(Metric):
         #fig.supylabel("Reputation")
 
         for idx, scenario in enumerate(self.scenarios_data):
+            in_first_col = True if idx % ncols == 0 else False
+            in_last_row = True if idx >= len(self.scenarios_data) - ncols else False
+
             ax = fig.add_subplot(nrows, ncols, 1+idx)
-            
-            ax.set_xlim(0, max_rating - min_rating)
-            ax.set_ylim(min_reputation, max_reputation)
-            ax.set_xticklabels([])
-            ax.set_yticklabels([])
-            
+
             ax.scatter(scenario.x, scenario.y, s=1)
+            if show_ideal: 
+                ax.axline(
+                    (min_inaccuracy, max_reputation), (max_inaccuracy, min_reputation),
+                    color='0.5', linestyle='--', linewidth='0.5')
+
+            ax.grid()
+            ax.grid(which='minor',alpha=0.2)
+            ax.set_xlim(min_inaccuracy, max_inaccuracy)
+            ax.set_ylim(min_reputation, max_reputation)
+            ax.set_xticks([min_inaccuracy,min_inaccuracy+(max_inaccuracy-min_inaccuracy)/2,max_inaccuracy])
+            ax.set_yticks([min_reputation,min_reputation+(max_reputation-min_reputation)/2,max_reputation])
+            ax.minorticks_on()
+            if not in_last_row: 
+                ax.set_xticklabels([])
+                ax.tick_params(which='both', bottom=False)
+            if not in_first_col: 
+                ax.set_yticklabels([])
+                ax.tick_params(which='both', left=False)
 
         figfile = os.path.join(target_dir, type(self).__name__ + "_joined")
         fig.savefig(figfile, bbox_inches="tight")
 
 
     def _draw_individual(self, target_dir):
+        show_ideal = self.get_local_config("show_ideal", raise_missing=False, return_default=False)
+        
         fig, ax = plt.subplots()
         
         min_rating = config.get("MIN_RATING")
         max_rating = config.get("MAX_RATING")
+        min_inaccuracy = 0
+        max_inaccuracy = max_rating - min_rating
         min_reputation = min_rating
         max_reputation = max_rating
         
@@ -163,11 +185,15 @@ class AvgTotClaimInaccuracyAndReputationScatter(Metric):
             ax.set_xlabel("Average Total Claiming Inaccuracy")
             ax.set_ylabel("Reputation")
             
-            ax.set_xlim(0, max_rating - min_rating)
+            ax.set_xlim(min_inaccuracy, max_inaccuracy)
             ax.set_ylim(min_reputation, max_reputation)
             ax.grid()
 
             ax.scatter(scenario.x, scenario.y)
+            if show_ideal: 
+                ax.axline(
+                    (min_inaccuracy, max_reputation), (max_inaccuracy, min_reputation),
+                    color='0.5', linestyle='--', linewidth='0.5')
         
             figfile = os.path.join(target_dir, type(self).__name__ + "_" + scenario.name)
             fig.savefig(figfile)
