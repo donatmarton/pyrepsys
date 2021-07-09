@@ -1,5 +1,6 @@
 from .behavior_base import RateStrategy
 import pyrepsys.config
+from pyrepsys.errors import ConfigurationError
 
 config = pyrepsys.config.getConfigurator()
 
@@ -38,10 +39,45 @@ class RateLinearManipulation(RateStrategy):
     def rate_claim(self, rater, claim, random_seed=None):
         a = self.get_local_config("a")
         b = self.get_local_config("b")
-        return b + a * claim.author_review.value        
+        return b + a * claim.author_review.value
 
 class RateInvertedSlope(RateStrategy):
     def rate_claim(self, rater, claim, random_seed=None):
         max_rating = config.get("MAX_RATING")
         min_rating = config.get("MIN_RATING")
         return -1 * claim.author_review.value + max_rating + min_rating
+
+class Flatten(RateStrategy):
+    def rate_claim(self, rater, claim, random_seed=None):
+        max_rating = config.get("MAX_RATING")
+        min_rating = config.get("MIN_RATING")
+        mid = (max_rating - min_rating) * 0.5 + min_rating
+        a = self.get_local_config("a")
+        return a * (claim.author_review.value - mid) + mid
+
+class LinearBreakpointed(RateStrategy):
+    def rate_claim(self, rater, claim, random_seed=None):
+        dir = self.get_local_config("dir")
+        a = self.get_local_config("a")
+        b = self.get_local_config("b")
+        brpoint = self.get_local_config("brpoint")
+        brpointval = self.get_local_config("brpointval")
+        if dir == "incr":
+            return brpointval if claim >= brpoint else b + a * claim
+        elif dir == "decr":
+            return brpointval if claim <= brpoint else b + a * claim
+        else:
+            raise ConfigurationError
+
+class SecondOrderPolynomial(RateStrategy):
+    def rate_claim(self, rater, claim, random_seed=None):
+        a = self.get_local_config("a")
+        b = self.get_local_config("b")
+        c = self.get_local_config("c")
+        dir = self.get_local_config("dir")
+        if dir == "incr":
+            return claim + (c + b * claim + a * claim * claim)
+        elif dir == "decr":
+            return claim - (c + b * claim + a * claim * claim)
+        else:
+            raise ConfigurationError
