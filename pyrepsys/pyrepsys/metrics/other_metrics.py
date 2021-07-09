@@ -134,8 +134,8 @@ class AvgTotClaimInaccuracyAndReputationScatter(Metric):
         #fig, axs = plt.subplots( nrows=nrows, ncols=ncols)
 
         fig.suptitle(self.name)
-        #fig.supxlabel("Average Total Claiming Inaccuracy")
-        #fig.supylabel("Reputation")
+        #fig.supxlabel("more aging -->")
+        #fig.supylabel("<-- more malicious raters")
 
         for idx, scenario in enumerate(self.scenarios_data):
             in_first_col = True if idx % ncols == 0 else False
@@ -159,9 +159,13 @@ class AvgTotClaimInaccuracyAndReputationScatter(Metric):
             if not in_last_row: 
                 ax.set_xticklabels([])
                 ax.tick_params(which='both', bottom=False)
+            if in_last_row:
+                ax.set_xlabel("Avg Total Claiming Inaccuracy", fontsize='x-small')
             if not in_first_col: 
                 ax.set_yticklabels([])
                 ax.tick_params(which='both', left=False)
+            if in_first_col:
+                ax.set_ylabel("Reputation", fontsize='x-small')
 
         figfile = os.path.join(target_dir, type(self).__name__ + "_joined")
         fig.savefig(figfile, bbox_inches="tight")
