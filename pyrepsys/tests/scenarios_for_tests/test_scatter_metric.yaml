@@ -5,8 +5,7 @@ improvement_handlers:
   # i.e. the topmost is the entry handler
 #  - name: "Aging"
 #    limit: 20
-  - "Weights"
-  - "StakeBasedReputation"
+#  - "Weights"
 seed: #leave empty for random
 agents:
   - amount: 10

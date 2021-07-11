@@ -1,0 +1,12 @@
+reputation_strategy: "BasedOnAvgDifferenceOfClaimsAndReviews"
+improvement_handlers:
+  - "Weights" # having weights improv strat enabled should make no diff as repstrat without w support ignores it
+seed: "pyrepsys_random_seed"
+agents:
+  - amount: 10
+    base_behavior: "HonestClaimer"
+    rate_strategy: "RateFromOwnExperience"
+    rate_probability: 1
+metrics:
+  - "ReputationsByRoundsData"
+SIM_ROUND_MAX: 5

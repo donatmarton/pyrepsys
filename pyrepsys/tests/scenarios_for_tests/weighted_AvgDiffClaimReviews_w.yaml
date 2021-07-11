@@ -1,0 +1,12 @@
+reputation_strategy: "BasedOnAvgDifferenceOfClaimsAndReviewsWithWeight"
+improvement_handlers:
+#  - "Weights" # compare the repstrat with weight support but weights disabled with the no-w-support version
+seed: "pyrepsys_random_seed"
+agents:
+  - amount: 10
+    base_behavior: "HonestClaimer"
+    rate_strategy: "RateFromOwnExperience"
+    rate_probability: 1
+metrics:
+  - "ReputationsByRoundsData"
+SIM_ROUND_MAX: 5

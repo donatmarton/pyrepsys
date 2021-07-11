@@ -1,7 +1,8 @@
 from .reputations import (
     ReputationAverageStrategy,
     ReputationWeightedAverage,
-    BasedOnAvgDifferenceOfClaimsAndReviews
+    BasedOnAvgDifferenceOfClaimsAndReviews,
+    BasedOnAvgDifferenceOfClaimsAndReviewsWithWeight
 )
 from .improvements import (
     Aging,
