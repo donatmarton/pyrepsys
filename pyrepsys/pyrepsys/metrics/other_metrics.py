@@ -43,8 +43,8 @@ class AvgAccuracyPerRound(Metric):
 
         self.scenarios_data[-1].record_data_point(round_number, avg_accuracy)
 
-    def draw(self, target_dir):
-        logger.debug("AvgAccuracyPerRound draw to {}".format(target_dir))
+    def export(self, target_dir):
+        logger.debug("AvgAccuracyPerRound export to {}".format(target_dir))
         fig, ax = plt.subplots()
         ax.set_title(self.name)
         ax.set_xlabel("Round")
@@ -75,8 +75,8 @@ class AvgAccuracyPerScenario(Metric):
     def calculate(self, **data):
         logger.debug("AvgAccuracyPerScenario was called")
 
-    def draw(self, target_dir):
-        logger.debug("AvgAccuracyPerScenario draw")
+    def export(self, target_dir):
+        logger.debug("AvgAccuracyPerScenario export")
 
 class AvgTotClaimInaccuracyAndReputationScatter(Metric):
     def __init__(self):
@@ -106,7 +106,7 @@ class AvgTotClaimInaccuracyAndReputationScatter(Metric):
 
                 self.scenarios_data[-1].record_data_point(avg_tot_claim_hon, rep)
 
-    def draw(self, target_dir):
+    def export(self, target_dir):
         # avoid ConfigError for backwards compatibility
         join_with_subplots = self.get_local_config("join_with_subplots", raise_missing=False, return_default=False)
 

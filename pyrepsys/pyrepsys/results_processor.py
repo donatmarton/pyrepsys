@@ -51,14 +51,11 @@ class ResultsProcessor:
 
         if call_event is SimulationEvent.END_OF_SIMULATION:
             logger.info("Started drawing & exporting metrics")
-            self.draw_all_metrics()
+            self.export_all_metrics()
         else:
             for metric in self.active_metrics_by_events[call_event]:
                 metric.notify(call_event, **event_details)
 
     def export_all_metrics(self):
-        raise NotImplementedError #TODO
-
-    def draw_all_metrics(self):
         for metric in self.metric_instances.values():
-            metric.draw(self.artifacts_directory)
+            metric.export(self.artifacts_directory)

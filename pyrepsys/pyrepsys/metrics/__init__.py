@@ -7,3 +7,6 @@ from .debug_metrics import (
     AvgAccuracyPerRound_Another,
     MetricBothRoundAndScenario
 )
+from .data_metrics import (
+    ReputationsByRoundsData
+)
