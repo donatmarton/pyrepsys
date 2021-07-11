@@ -19,8 +19,8 @@ class AvgAccuracyPerRound_Another(Metric):
     def calculate(self, **data):
         logger.debug("AvgAccuracyPerRound_Another was called")
 
-    def draw(self, target_dir):
-        logger.debug("AvgAccuracyPerRound_Another draw")
+    def export(self, target_dir):
+        logger.debug("AvgAccuracyPerRound_Another export")
 
 class MetricBothRoundAndScenario(Metric):
     def __init__(self):
@@ -34,5 +34,5 @@ class MetricBothRoundAndScenario(Metric):
     def calculate(self, **data):
         logger.debug("MetricBothRoundAndScenario was called")
 
-    def draw(self, target_dir):
-        logger.debug("MetricBothRoundAndScenario draw")
+    def export(self, target_dir):
+        logger.debug("MetricBothRoundAndScenario export")

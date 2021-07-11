@@ -32,11 +32,8 @@ class Metric(ABC, LocalConfig):
     def calculate(self, **data):
         pass
     
-    def export(self, target_dir):
-        raise NotImplementedError #TODO
-
     @abstractmethod
-    def draw(self, target_dir):
+    def export(self, target_dir):
         pass
 
 
@@ -71,8 +68,9 @@ class MetricNameHere(Metric):
         # TODO: implement method called on added events of interest
         logger.debug("MetricNameHere was called")
 
-    def draw(self, target_dir):
-        # TODO: implement method to draw and saves the metric
-        logger.debug("MetricNameHere draw")
+    def export(self, target_dir):
+        # TODO: implement method to assemble, draw and save the metric
+        # called at the very end of the simulation
+        logger.debug("MetricNameHere export")
 
 """
