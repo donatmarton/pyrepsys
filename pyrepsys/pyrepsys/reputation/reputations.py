@@ -61,6 +61,8 @@ class BasedOnAvgDifferenceOfClaimsAndReviews(ReputationStrategy):
                     # must note that review score means:
                     # that "this claim should have been an x"
                     # and not "this claim quality is x out of 9"
+                    # and also review also not a review of the claimer itself
+                    # i.e. both claim (=author review) and review judge the quality behind a claim
                     differences.append(diff)
 
             if differences:
