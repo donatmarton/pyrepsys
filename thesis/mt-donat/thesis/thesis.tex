@@ -1,4 +1,4 @@
-%---------------------------------------%
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 %           P R E A M B L E             %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 
@@ -68,6 +68,7 @@
 \RequirePackage{microtype}          % improved kerning, layout
 \RequirePackage{hyperref}           % clickable references
 \RequirePackage{booktabs}           % professional tables
+\RequirePackage{multirow}
 \RequirePackage{caption}
 
 
@@ -128,14 +129,24 @@
 	name={claiming probability},
 	description={A percent likelihood determining whether an agent initiates a claiming process if given an opportunity. Specified in scenarios for each agent.}
 }
+\newglossaryentry{rate_probability}
+{
+	name={rating probability},
+	description={A percent likelihood determining whether an agent leaves a review on a claim if given an opportunity. Specified in scenarios for each agent.}
+}
 \newglossaryentry{main_rng_chain}
 {
 	name={main random chain},
 	description={TODO}
 }
+\newglossaryentry{branchoff_rng_chain}
+{
+	name={branch-off random chain},
+	description={TODO}
+}
 \newglossaryentry{measured_claim_score}
 {
-	name={measured claim score},
+	name={measured claim quality},
 	description={TODO}
 }
 \newglossaryentry{claim_range}
@@ -158,7 +169,26 @@
 	name={distorted claim quality},
 	description={TODO a value produced by the distort strategy from the measured claim q}
 }
-
+\newglossaryentry{rating_span}
+{
+	name={rating~span},
+	description={The size of the rating range, calculated as the difference of the maximum and minimum review values.}
+}
+\newglossaryentry{i_representation}
+{
+	name={internal representation},
+	description={Refers to storing values in the [0,1] range by Pyrepsys. Meant for internal use in data structures. See \gls{ae_representation}, sec.~\ref{sec:i_ae_reprepentation}}
+}
+\newglossaryentry{ae_representation}
+{
+	name={agent-exposed representation},
+	description={Refers to storing values in the configured rating range [minimum~rating,~maximum~rating] in Pyrepsys. This is what agents and users see. See \gls{i_representation}, sec.~\ref{sec:i_ae_reprepentation}}
+}
+\newglossaryentry{artifacts_dir}
+{
+	name={artifacts directory},
+	description={Directory in which the logfile and simulation results from metrics are saved. Located in the \texttt{simulation\_artifacts} directory. Named after the date and time Pyrepsys was invoked.}
+}
 
 
 % glossary and acro usage
@@ -681,22 +711,6 @@ New agent behaviors, metrics, reputation calculation and imporvement methods can
 
 
 
-
-
-Pyrepsys is a one-stop solution for simulating, comparing and evaluating reputation schemes.
-Simulation of scenarios is performed on a round-by-round basis.
-Shared configuration among scenarios, simulating batches of scenarios in succession and controlled random number generation help compare different scenarios.
-Evaluation is aided by metrics.
-These can automatically generate graphs and export data from simulations.
-
-
-
-Miscallaneous supportive functionalities are also discussed in this chapter.
-A scenario configuration creator can be used to make a batch of scenarios with variations along selected configuration parameters.
-Extensive automated self-testing can verify the integrity of the simulation framework if any changes are made.
-Finally, profiling and benchmarking tests are provided to identify simulation bottlenecks and measure performance.
-
-
 \subsection{Scenarios}\label{sec:scenario}
 A \gls{scenario} is the description of a complete simulation environment including reputation schemes and agents with various behaviors.
 All parameters that are followed during the simulation are part of the scenario.
@@ -725,69 +739,7 @@ This is described along the implementation in chapter~\ref{chap:implementation}.
 For all conceptual discussions, a scenario refers to all the simulation environment fully specified, regardless of where they come from in the implementation.
 
 
-\subsection{Simulation Flow}
-Simulation in Pyrepsys is built around \glspl{scenario}.
-Each invocation consists of simulating one or more scenarios after each other.
-At the beginning, the default scenario configuration is fetched.
-Then Pyrepsys reads and applies the individual configuration for each scenario.
-The scenario is simulated after these preparations.
-Once all scenarios are finished, the results processor module exports collected data and draws graphs based on the selected metrics.
-The simulation part's schematic flow is shown in figure~\ref{fig:simulation_flow}.
-
-Scenario simulation is performed on a round basis.
-The number of rounds is part of the scenario configuration.
-Each round consists of four distinct phases:
-
-\begin{enumerate}
-	\item claiming
-	\item rating of new claims
-	\item applying reputation improvements
-	\item reputation calculation
-\end{enumerate}
-
-\subsubsection{claiming}
-Claiming is the part where agents can make new \glspl{claim}.
-During this phase, all agents get an opportunity to make one new claim.
-Whether an agent ends up publishing a claim or not depends on multiple factors.
-
-First of these is the agent's \gls{claim_probability}.
-This represents the likelihood of them attempting a claim if given an opportunity.
-A more consumer-type agent would have a lower probability and thus claim rarely if ever.
-On the other hand, producer-type agents would tend toward higher probabilities, and claim more often.
-The random check whether agents attempt a claim or not is performed on the \gls{main_rng_chain}.
-
-If the agent passes this check, a claiming process begins.
-First, a claim is generated containing a random \gls{gr_truth}. 
-The ground truth is not directly accessible for the agent.
-It can however be measured, which is the second step of the claiming process.
-Measurement results in the \gls{measured_claim_score}, which represents an approximation of the claim's true quality.
-How good this approximation is, depends on the agent's ability to assess claims.
-Further details of measuring claims is described in section~\ref{sec:approach_measure_claim}.
-
-With the measured truth, the agent executes its \gls{distort_strategy}.
-It essentially applies one of the distortion methods found in section~\ref{sec:distort_strategies}.
-The resulting value is the \gls{distorted_claim_quality}.
-
-At this point the agent checks whether the distorted quality falls in the agent's \gls{claim_range}.
-Claim range serves as a minimum and maximum limit as to what claims an agent is willing to publish.
-If the distorted claim quality falls outside these limits, the claim is discarded and claiming is aborted.
-In this case, the agent will not claim in this round.
-
-If the limits are not violated, the new claim will be published.
-As a last step, the agent creates an \gls{author_review}.
-\Glspl{author_review} are special \glspl{review} appended to each claim by the claiming agent, the author.
-The review value is always the distorted claim quality from the previous step.
-
-- idea of author review
-- what each thing represents
-  - accuracy is the agents competency "expertness" / unwilling inaccuracy
-  - distortion is honesty / willing inaccuracy
-  - author review is a declaration on what the claimer thinks his claim is worth
-
-TODO continute from here
-
-\gls{claim_range}
-\begin{figure}[]
+\begin{figure}[tbp]
   \begin{center}
         \includegraphics[width=1\linewidth]	{../images/claim_rate_process-crop.pdf}
     \caption{
@@ -806,7 +758,7 @@ TODO continute from here
 
 
 
-\begin{figure}[]
+\begin{figure}[tbp]
   \begin{center}
         \includegraphics[width=0.75\linewidth]	{../uml/simulation_flow.pdf}
     \caption{
@@ -822,24 +774,70 @@ TODO continute from here
 \end{figure}
 
 
+
+
+
+
+- idea of author review
+- what each thing represents
+  - accuracy is the agents competency "expertness" / unwilling inaccuracy
+  - distortion is honesty / willing inaccuracy
+  - author review is a declaration on what the claimer thinks his claim is worth
+
+
+\Glspl{author_review} are special \glspl{review} appended to each claim by the claiming agent, the author.
+
 \subsection{Claims}
 describe claims and what means what
 
 \subsection{Reviews}
 describe reviews and what means what
 
-\subsection{Random Number Generation}
-reproducability: rng
-main chain
-sub chains for cases where
-- dont know if they need a random
-- they need and dont know how many
-- they need and dont know what kind (distribution, range etc)
-see notes
-
-
 \subsection{Measuring Claims}\label{sec:approach_measure_claim}
 measuring claims
+
+
+\subsection{Resolution}\label{sec:approach_resolution}
+TODO THIS INTRO...
+Resolution gives control over what values are accepted at various parts of the simulation.
+
+Used together with the rating range, resolution defines what values are possible in the system.
+For example, if reviews have a resolution of 1 and the minimum and maximum values are 1 and 9, then the result of ratings can be integers from 1 to 9.
+
+There are two main uses for resolution during simulation.
+One of them is the already mentioned review resolution.
+It applies to any review made, and its purpose is to force review values to follow the wished reputation scheme.
+With separate resolution handling, rate and distort schemes remain independent of the exact selection of allowed values they are expected to produce.
+This means they do not need to be customized along this, their results will simply be changed to the nearest resolution step.
+
+The other use is with measured claim quality values.
+Measured claim resolution effectively limits how finely grained agents can assess claim ground truths.
+For example, let review resolution be 1 and measurement resolution be 0.5.
+Here, reviews are strictly integers.
+But when agents assess a claim's quality by measurement, they may get a value between two integers too.
+For example, a measurement of 2.5 signifies the agent thinks the claim is better than 2 and worse than 3.
+The agent will still not be able to publish a review of 2.5 because the review resolution is 1.
+However, the information is there, what the agent does with it is left for the agent to decide.
+
+The idea behind limiting measured claims in this way is the following.
+When thinking of what quality a content (claim) has, it is often not possible to exactly determine it.
+For example, in the 5-star scheme, one could think something is around 3 or 4 out of 5, but not give a more exact estimate.
+Measuring claims is the implemented representation of this thought process.
+If it would return for example 3.4562 in this case, there is no uncertainty where exactly the quality falls.
+If resolution is at 0.5, measurement can only return either 3, 3.5 or 4, or even other values if the agent has a huge inaccuracy as per \gls{ctai}.
+A similar but slightly better claim would also measure at the same values.
+This is more realistic when agents represent people judging content freely.
+On the other hand, a more fine-grained resolution could be used when the scenario works with an algorithmic reputation environment.
+Where agents are machines and there is a way to algorithmically assess a claim, it is reasonable to allow more freedom for claim measurements.
+
+A third resolution domain could also be created for reputations.
+This could limit the granularity of global reputations.
+The reason this was not included is that reputation calculation strategies serve as a single source of reputation values.
+They can adhere to specific resolution limits as part of their calculation if it is needed.
+For example, if a reputation strategy is build to rate in the 5-star system, it is implemented to give integers [1,5] anyway.
+On the other side, a scenario can have many different kind of behavior strategies for agents.
+Designing different versions of each with different resolutions unreasonable, hence the review resolution domain.
+
 
 % --------------------------------------------------------------
 \section{Reputation Calculation}\label{sec:approach_reputation_calculation}
@@ -914,7 +912,7 @@ Pyrepsys is a one-stop solution for simulating, comparing and evaluating reputat
 Simulation of scenarios is performed on a round-by-round basis.
 Shared configuration among scenarios, simulating batches of scenarios in succession and controlled random number generation help compare different scenarios.
 Evaluation is aided by metrics.
-These can automatically generate graphs and export data from simulations.
+They are data processors that automatically generate graphs and export data from simulations.
 
 Flexibility and extendability are among the main design objectives of pyrepsys.
 Variables can be altered in scenario configuration files.
@@ -931,77 +929,994 @@ For a description of the pyrepsys command-line interface, refer to Appendix~\ref
 A complete list and explanation of possible scenario configuration parameters are found in Appendix~\ref{appendix:scenarios}.
 % Finally, information regarding the scenario creator 
 
-TODO: prerequisites, dependencies, tested versions, environment
+% TODO: prerequisites, dependencies, tested versions, environment
+% TODO: reference table~\ref{tab:pyrepsys_modules}
 
 
-
-
+\begin{table}[tbp]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Name} & \textbf{Notable Classes} & \textbf{Responsibility}    \\ \midrule
+agent               & \emph{Agent}, \emph{Claim}, \emph{Review} &Define agents with the simulation data structure \\
+behavior            &  &Submodule. Define agent rate and distort strategies \\
+config              & \emph{Configurator} &Scenario configuration related. Read, parse, provide configs. Prepare other classes. \\
+errors              &  &Custom exceptions \\
+helper\_types        & \emph{SimulationEvent}, \emph{ResolutionDomain}, \emph{LocalConfig}& Accessory type definitions \\
+helpers             &  &Accessory function definitions. Resolution handling, Internal-Agent-Exposed conversion \\
+instantiator        & \emph{Instantiator} & Creation of metric, reputation strategy, behavior strategy and improvement handler instances \\
+main                &  &Program entry point, preparation of logging and directories, coordination of simulation \\
+metrics             &  &Submodule. Defines data export and graph drawer metrics \\
+paths               &  &Directory paths \\
+reputation          &  &Submodule. Define improvement handler and reputation strategy classes \\
+results\_processor   & \emph{ResultsProcessor} &Containment and coordination of metrics \\
+scenario\_creator    &  &scenario creator utility \\
+scenario\_simulator  & \emph{ScenarioSimulator} &Simulate one single scenario. Aka System \\
+\bottomrule
+\end{tabular}
+\caption{
+	Modules making up Pyrepsys.
+	Modules \texttt{behavior}, \texttt{reputation} and \texttt{metrics} form submodules.
+	TODO FIX THE TABLE PARTS ARE OUT OF THE WORLD
+}
+\label{tab:pyrepsys_modules}
+\end{table}
 
 % --------------------------------------------------------------
 \section{Simulation Flow}\label{sec:impl_simulation}
 % --------------------------------------------------------------
 
-general simulation flow +flow diag
-claiming process
-rating process
-measuring claims
-improvement handling process
-reputation calculation (for completeness' sake)
+Simulation in Pyrepsys is built around \glspl{scenario}.
+Each invocation consists of simulating one or more scenarios after each other.
+At the beginning, the default scenario configuration is fetched.
+Then Pyrepsys reads and applies the individual configuration for each scenario.
+The scenario is simulated after these preparations.
+Conducting the simulation is the responsibility of the \emph{ScenarioSimulator} class.
+Once all scenarios are finished, the results processor module exports collected data and draws graphs based on the selected metrics.
+The simulation part's schematic flow is shown in figure~\ref{fig:simulation_flow}.
 
-extendable strategies: distort, rate, reputation + metric (adding new ones too?)
+Scenario simulation is performed on a round basis.
+The number of rounds is part of the scenario configuration.
+Each round consists of four distinct phases:
+
+\begin{enumerate}
+	\item claiming
+	\item rating new claims
+	\item applying reputation improvements
+	\item reputation calculation
+\end{enumerate}
+
+\subsection{Claiming}
+Claiming is the part where agents can make new \glspl{claim}.
+During this phase, all agents get an opportunity to make one new claim.
+Whether an agent ends up publishing a claim or not depends on multiple factors.
+
+First of these is the agent's \gls{claim_probability}.
+This represents the likelihood of them attempting a claim if given an opportunity.
+A more consumer-type agent would have a lower probability and thus claim rarely if ever.
+On the other hand, producer-type agents would tend toward higher probabilities, and claim more often.
+The random check whether agents attempt a claim or not is performed on the \gls{main_rng_chain}.
+
+If the agent passes this check, a claiming process begins.
+First, a claim is generated containing a random \gls{gr_truth}. 
+The ground truth is not directly accessible for the agent.
+It can however be measured, which is the second step of the claiming process.
+Measurement results in the \gls{measured_claim_score}, which represents an approximation of the claim's true quality.
+How good this approximation is, depends on the agent's ability to assess claims.
+Further details of measuring claims is described in section~\ref{sec:approach_measure_claim}.
+
+With the measured truth, the agent executes its \gls{distort_strategy}.
+It essentially applies one of the distortion methods found in section~\ref{sec:distort_strategies}.
+The resulting value is the \gls{distorted_claim_quality}.
+
+At this point the agent checks whether the distorted quality falls in the agent's \gls{claim_range}.
+Claim range serves as a minimum and maximum limit as to what claims an agent is willing to publish.
+If the distorted claim quality falls outside these limits, the claim is discarded and claiming is aborted.
+In this case, the agent will not claim in this round.
+
+If the limits are not violated, the agent prepares the claim for publishing.
+The \gls{author_review} is created and appended to the claim.
+Its value is always the distorted claim quality from the previous step.
+Finally, the agent appends the claim to the list of his claims, and so the claim is published.
+The claimin process is illustrated on figure~\ref{fig:claim_rate_process}.
+
+
+\subsection{Rating}
+
+Rating stage is when agents can rate claims published in the current round.
+Each new claim made in the previous section is put up for rating.
+For each of these claims, every agent other than the claimer is given an opportunity to rate it.
+The maximum possible number of \glspl{review} made during one round is show in equation~\ref{eq:max_reviews}.
+
+\begin{equation}\label{eq:max_reviews}
+	\mathrm{max}(N^r_{reviews}) = N^r_{claims} (N_{agents}-1)
+\end{equation}
+Where $ N^r_{claims} $ and $ N^r_{reviews} $ are the number of claims and reviews made in the current round $r$.
+$ N_{agents} $ is the number of agents in the current scenario.
+
+Similarly to claiming, agents are given opportunities to rate a claim.
+Whether or not they take it and leave a review depends on the agent's \gls{rate_probability}.
+This percent chance represents each agent's willingness to rate encountered claims.
+A low rating probability means the agent is passive and rates seldom.
+A higher chance to rate represents an enthusiastic agent that often makes reviews of claims.
+Each time an agent is given a chance to rate, a check is performed on the \gls{main_rng_chain}.
+
+If this check is passed, the agent makes a review.
+The schematic process of rating is shown on figure~\ref{fig:claim_rate_process}.
+It consists of executing the agent's \gls{rate_strategy} with the claim under review as input.
+This is done to enable a wide range of rating methods.
+The claim's other reviews, the author's review, the author's identity or the rater's own measurement of the claim \gls{gr_truth} may all play a role in determining the review value.
+
+Once the review value is ready, a review object is created.
+It is appended to the review list on the claim and also to the rater agent's list of own reviews.
+With this, the review is published and the agent has finished the claiming process.
+The same agent can possibly make a review in the same round again, but only when rating another claim.
+
+
+\subsection{Applying Improvements}
+
+Improvements are the third main step of rounds.
+At this phase, all claims and reviews of the current round have been published.
+These were added to their appropriate places into the data structure formed by the list of agents.
+As discussed in detail in section~\ref{sec:impl_data}, it contains all simulation data from the current scenario.
+This is passed to the selected improvement methods by the \emph{ScenarioSimulator} for processing.
+All modifications are done on this mutable list of agents.
+
+Improvement methods are implemented as separate handler classes.
+These handlers form a handler chain as per the \emph{chain of responsibility} software design pattern.
+See figure~\ref{fig:improvement_handlers} for an UML model.
+Each handler is formed by inheriting from \emph{reputation::AbstractHandler}.
+This abstract class defines the interface improvement handlers need to adhere to.
+It also gives the default behavior for the handlers.
+The method \texttt{handle(request)} is the default behavior of calling the next handler in the cain if any, or simply returning if the current handler is the last in the chain.
+This behavior is meant to be executed at the end of all concrete improvement subclass \texttt{handle()} calls like this: \lstinline{return super().handle(agents)}.
+\emph{AbstractHandler}'s second method \texttt{set\_next(handler)} is used to build the handler chain by giving which handler comes after this one is finished.
+Normally this is done by the configuration module during scenario preparation.
+
+Organizing the improvements as a handler chain has multiple benefits.
+Firstly, improvements remain modular and flexible.
+Separate handlers can be added to or removed from simulations.
+The order of handling is free to change.
+Implementing new improvements is easily done by inheriting from the abstract handler class.
+Furthermore, the client code calling the handlers does not depend on which handlers are active.
+This means \emph{ScenarioSimulator} is independent of improvements.
+Apart from a simple structure, this allows changing the order or composition of the chain during runtime.
+Although this is not currently supported, implementing this feature is simple.
+Finally, by putting improvement methods in a class, they are encapsulated.
+As such, there is a clear distinction between data and methods related to improvements and other parts of the system.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=1\linewidth]	{../uml/improvement_handlers.pdf}
+    \caption{
+	UML class diagram of improvement handlers. 
+	\emph{Configurator} creates instances of the required improvement handlers via the \emph{Instantiator} and sets the handler chain's entry point in \emph{ScenarioSimulator}.
+	When improvements are due, \emph{ScenarioSimulator} calls the first handler with the agents data, which includes all claims and reviews.
+	\emph{LocalConfig} provides custom configuration for each individual improvement handler.
+	This is discussed in section~\ref{sec:local_config} in detail.
+    }
+    \label{fig:improvement_handlers}
+  \end{center}
+\end{figure}
+
+\subsection{Reputation Calculation}\label{sec:impl_reputation_calculation}
+
+After improvements have finished, the fourth and final step of a simulation round is calculating agent reputations.
+Reputation calculation methods are implemented with the \emph{strategy} software design pattern.
+Each reputation scheme is implemented as a class that inherits from a common abstract parent class, \emph{reputation::ReputationStrategy}.
+This class provides a simple interface containing the method \texttt{calculate\_reputations(agents)} which concrete strategies must implement.
+
+After improvements have finished, \emph{ScenarioSimulator} starts reputation calculation by calling this method on the reputation strategy it stores.
+The method takes the mutable list of all agents of the scenario as input.
+Then the reputation strategy's single responsibility is calculating agent reputations based on whatever method it employs and updating each agent's \texttt{global\_reputation} attribute with it.
+This holds the agent's latest public reputation score.
+Before the first reputation calculation takes place, it holds an initial reputation set according to configuration before the first round.
+
+Using the strategy pattern allows modularity and flexibility, much of the same advantages with improvement handlers.
+New reputation strategies are easy to add to pyrepsys by creating a subclass of \emph{reputation::ReputationStrategy} in the \emph{reputation} subpackage and putting the classname on the import list.
+Strategies are independent of the client class, \emph{ScenarioSimulator}.
+This means they are simple to exchange.
+
+Additionally, encapsulating reputation schemes into classes makes them self-contained and forms a clear structure.
+Figure~\ref{fig:reputation_strategy} shows the UML model of reputation strategies.
+implemented with the strategy pattern
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=1\linewidth]	{../uml/reputation_strategy.pdf}
+    \caption{
+	UML class diagram of reputation strategies.
+	\emph{Configurator} creates an instance of the selected reputation strategy via the \emph{Instantiator} and gives it to \emph{ScenarioSimulator}.
+	At reputation calculation, \emph{ScenarioSimulator} calls its reputation strategy object with the agents data, which includes all claims and reviews.
+	\emph{LocalConfig} provides custom configuration for strategy instances.
+	This is discussed in section~\ref{sec:local_config} in detail.
+    }
+    \label{fig:reputation_strategy}
+  \end{center}
+\end{figure}
+
+
+
+% --------------------------------------------------------------
+\section{Agents}\label{sec:impl_agent}
+% --------------------------------------------------------------
+
+\subsection{Behavior Strategies}
+Behavior strategies serve as the implementation of agent's rating or distortion methods.
+The \emph{behavior} subpackage contains related classes.
+Both rating and distortion strategies are implemented very similarly to reputation strategies as described in section~\ref{sec:impl_reputation_calculation}.
+
+The involved classes are shown in the UML diagram in figure~\ref{fig:behavior_strategies}.
+Both behavior strategy types share a common abstract ancestor called \emph{BehaviorStrategy}.
+This class serves two main purposes.
+First, it describes a common interface for both rate and distort strategies.
+This consists of the \lstinline{execute()} function, which takes as parameter the calling agent, some data that is needed for the rating or distortion method, and an optional random seed.
+Second, the common ancestor provides shared functionality for random number generation with the \lstinline{rng()} method.
+This can be used by behaviors to start a \gls{branchoff_rng_chain} and generate random numbers.
+
+Distortion and rating diverge with their own abstract adapter classes \emph{DistortStrategy} and \emph{RateStrategy}.
+Both are child classes of the common ancestor class.
+Their main purpose is to enable the same random chain functionality while also providing a different interface for both behavior types.
+\emph{DistortStrategy} provides \texttt{distort()}, \emph{RateStrategy} provides \texttt{rate\_claim()}.
+Both classes wrap \texttt{execute()} calls to their respective behavior calls.
+Additionally, the adapter makes a preemptive check on the input data.
+\emph{RateStrategy} allows \emph{Claim} objects to be passed, while \emph{DistortStrategy} allows \gls{measured_claim_score} values: integer and float.
+
+Finally, concrete strategies of both types derive from the abstract adapter parents.
+\emph{Configurator} creates the concrete behavior strategy instances via \emph{Instantiator} and assigns them to each agent according to scenario settings.
+Agents then call upon their behavior strategies during simulation through the \texttt{execute()} interface.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=1\linewidth]	{../uml/behavior_strategies.pdf}
+    \caption{
+	UML class diagram of agent behavior strategies.
+	The abstract class \emph{behavior::BehaviorStrategy} serves as a common base for both distort and rate strategies.
+	Two interface classes \emph{behavior::RateStrategy} and \emph{behavior::DistortStrategy} both inherit from it.
+	Concrete strategies are descendants of these two classes.
+	\emph{Configurator} creates behavior concrete strategy instances via the \emph{Instantiator} and sets them on the agent using it.
+	When rating or distorting, the agent calls \lstinline{execute()} on the appropriate behavior strategy.
+	\emph{LocalConfig} provides custom configuration for strategy instances, discussed in section~\ref{sec:local_config} in detail.
+    }
+    \label{fig:behavior_strategies}
+  \end{center}
+\end{figure}
+
+
+\subsection{Measuring Claims}
+Measuring a claim is the representation of trying out a product or content and making an opinion of what its qualitya could be.
+In more concrete terms, measuring is taking an approximation on the hidden true quality, or the \gls{gr_truth} of a claim.
+It results in a value that is comparable to the ground truth or any review on the claim.
+This is the \gls{measured_claim_score}.
+
+Since assessing the quality of a claim depends on the assessing agent's know-how, experience or expertise, this is reflected in claim measurement as well.
+Agents have the attribute called \gls{ctai} for this.
+This represents the accuracy the agents can guess a claim's ground truth.
+\Gls{ctai} is given for each agent in the scenario configuration.
+The value of \gls{ctai} is the maximum error an agent can make when assessing a ground truth in each direction.
+This is represented in equation~\ref{eq:ctai}.
+
+\begin{equation}\label{eq:ctai}
+C_{gr~truth} - \mathrm{\acrshort{ctai}} <= \mathrm{measured~quality} <= C_{gr~truth} + \mathrm{\acrshort{ctai}}
+\end{equation}
+
+Whenever an agent needs to measure a claim, it calls its method \lstinline{measure_claim()}
+This takes as argument the claim to be measured and a random number generator.
+Since claims are measured on-demand, the generator is always a \gls{branchoff_rng_chain}.
+The measurement error is created as a random value with uniform distribution between [-\acrshort{ctai},~\acrshort{ctai}].
+This is then added to the claim's true quality.
+
+\begin{equation}\label{eq:measure_claim1}
+\mathrm{measurement~error = rng.uniform(-\acrshort{ctai}, \acrshort{ctai})}
+\end{equation}
+\begin{equation}\label{eq:measure_claim2}
+\mathrm{measured~quality} = C_{gr~truth} + \mathrm{measurement~error}
+\end{equation}
+
+The above equations summarize how claim measurements are made.
+Theoretically, an agent could find out the true quality of a claim by making multiple measurements.
+This is prevented by doing measurements inside the \emph{Agent} class before any other parts of the code are called where the measured quality is needed.
+Currently only one such case exists.
+Measured quality is used as input to distortion.
+The distort strategy does not get the whole \emph{Claim} object containing the ground truth.
+Instead, the measurement is made before calling distortion, and passed on as argument instead of the claim's object.
+
+A disadvantage of using a simple uniform distribution to randomize measurements is exactly its simplicity.
+A uniform error can be seen as a kind of simple noise.
+Other kind of random distributions or even more elaborate models of assessing the quality of a claim might be needed.
+On these occasions, a viable way could be implementing a strategy pattern similar to agent behaviors and reputation strategies.
+
+Depending on what approach a simulation takes, it might not want claims measured.
+Claim measurement can be seen as involuntary distortion on the agent's part.
+On the other hand, distortion represent willful manipulation of the claim's quality in the author review.
+This is the default approach.
+However, the claim measurement functionality is not needed when distortion strategies model all manipulation happening between spawning and publishing a claim.
+For these cases, it can be turned off.
+This is achieved by setting the \gls{ctai} of all agents to 0.
+Every measurement will simply return the claim's original ground truth in this case.
+Simulation results reflect this as if agents would operate with the ground truth itself when distorting.
+
 
 
 % --------------------------------------------------------------
 \section{Data Handling}\label{sec:impl_data}
 % --------------------------------------------------------------
-data structures: agents, claims, reviews (classes) + metrics (as they will)
-internal vs ae data storage
-precision/resolution domains handling
+
+
+\subsection{Simulation Data Structure}
+Pyrepsys keeps simulation data in memory during simulation.
+The principle is that data is stored in hierarchical classes that represent the agents, claims and reviews.
+The top level owner of all simulation data of a scenario is \emph{ScenarioSimulator}.
+The structure is shown in figure~\ref{fig:agents_data_structure}.
+
+The list of created agents is stored by \emph{ScenarioSimulator} in a list called \texttt{agents}.
+Every agent is represented by an \emph{Agent} class instance.
+Agents store their own claims they made in a list called \texttt{claims}.
+Claims are instances of the \emph{Claim} class.
+
+When claims are made, the claimer agent always appends an \gls{author_review} to their claim.
+This is a \emph{Review} instance and is stored in the claim object as \texttt{author\_review}.
+Reviews made by agents other than the claimer after the claim is published are also \emph{Review} instances.
+They are stored at two locations.
+For once, they are appended to the claims they are a review of, in the \emph{Claim} object's \texttt{reviews} variable.
+Second, every \emph{Agent} object stores the reviews that agent ever made in a list called \texttt{reviews}.
+Although the the \emph{Review} object of a review is referenced at two locations, Python's handling of variables ensures the review object exists only once.
+The drawback of this is that when removing a claim, it has to be removed from two places.
+The advantage is, it is much faster and easier to find all the review a specific agent has ever made.
+This is useful for some improvement methods, or possibly for rate or reputation strategies.
+
+Both claims and reviews also store a weak reference back to their author.
+Weak references are provided by Python's \texttt{weakref} module.
+This adds minimal overhead but big benefits.
+When traversing backwards from claim or review to author, the unpacking?? of weakref needs to be done.
+However, were weakref not used, agents, claims and reviews would be referencing each other in a circle.
+This would prevent them to be destroyed (collected) properly once the simulation is done and ScenarioSimulator empties the agents list.
+Weak references prevent this, since they are not counted as references when looking for whether an object is still linked from anywhere.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=1\linewidth]	{../uml/agents_data_structure.pdf}
+    \caption{
+	UML class diagram detailing how data is stored during simulation.
+	\emph{Agent} instances representing agents in the scenario are held in a list in \emph{ScenarioSimulator}.
+	Each agent holds a number of claims made by that agent.
+	Claims have exactly one \gls{author_review} attached to them.
+	Other reviews are held in a list in \emph{Claim}.
+	Agents also hold the reviews made by them in a list of their own.
+	Claims and reviews link back to their authors with weak references.
+    }
+    \label{fig:agents_data_structure}
+  \end{center}
+\end{figure}
+
+\subsubsection{Passing the Data}
+All data reflects the latest state during simulation.
+Improvements act on this data and modify it accordingly.
+For example, the aging improvement removes old claims directly from the live agents list stored in \emph{ScenarioSimulator}.
+
+This approach has disadvantages with certain improvements that make only temporary changes to claims or reviews.
+For example, an outlier filtering removes extreme opinions.
+Once majority opinion shifts toward the opinions previously deemed an outlier, they need to be re-added since they are no longer outlier.
+With the approach used, it has to remove reviews from the two lists in agent and claim, and then store them until they are to be re-added.
+This is not an issue in itself, because improvement handlers are implemented as classes and can store data.
+
+Another drawback shows itself at the end of the simulation.
+Here, the original unimproved state of the data that includes removed or disabled parts is not available for processing and evaluation.
+Metrics solve this issue however.
+This way partly the reason for how metrics were implemented as they are, called on various points of the simulation.
+At each simulation event where metrics are called, they export the needed data.
+
+The advantage of keeping the data structure always in the live state is that it remains free of clutter.
+Apart from this, simulation time is not increased by having to iterate through and check for inactive or removed objects.
+
+\subsubsection{Alternative Storage Approaches}
+
+Some alternative approaches were also considered.
+One alternative would have been storing the effects of improvements within the data structure with flags.
+For example, aging would add a flag \lstinline{counted=False} to claims deemed too old.
+This would be good for improvements like outlier filtering, that take objects out of consideration and possibly re-add it later.
+Outlier filtering would only need to change a flag back to \lstinline{True} to re-enable a review or claim.
+
+One drawback of this would be that all the temporarily removed data objects would still remain in the live data lists.
+They would be iterated over many times during rounds, increasing simulation time.
+To prevent this, removed objects could also be stored in separate lists.
+In this case however, the approach is mostly identical to what was implemented anyway.
+
+Another drawback is that the simulator needs to check for the various flags introduced.
+There can be many flags, like \lstinline{counted}, \lstinline{removed}, \lstinline{boosted}, \lstinline{weakened} etc.
+Once checks for flags are built into Pyrepsys, improvements would no longer be modular, because code specifically tailored to them would remain in the simulator constantly.
+
+\vspace{6pt}
+
+Another approach to organize the data would have been storing different states of the data.
+For example, also store a version without any modification by improvements, just the raw data that was generated by agents.
+In parallel, the actively improved version is also stored.
+
+Generally, such data duplication is disadvantageous.
+It takes more memory and is harder to manage.
+Processing time also increases.
+Apart from this, the unimproved raw data would tell a false picture.
+For example, it would store all claims for all rounds, without telling some claims were removed by aging.
+Or store all reviews for all rounds, even though a couple of them would have been filtered inactive for some rounds.
+Improvements also have a feedback effect on the data generated in subsequent rounds.
+For example, a review of a claim removed by filtering can possibly change how another agent rates the claim.
+Only seeing the raw data that includes the filtered review, the decision (rating) process of the other agent could not be reconstructed properly.
+
+So the two datasets could be analyzed strictly together only.
+This would be problematic, since the live view would hold the data from the last round only.
+There is no information about what happened when in rounds before the last.
+
+\subsubsection{Data in Metrics}
+Metrics are a special case of data storage.
+As mentioned above, one of the reasons they came to be was that data often needs to be saved along the time domain.
+An example is following the change of reputations in every round.
+For this purpose, metrics are hooked into points of simulation like the end of rounds and end of scenarios.
+These are called simulation events.
+With this, any snapshot of the data is possible.
+
+Metrics get access to simulation data structure discussed above.
+Specifically, they receive the list of agents stored by \emph{ScenarioSimulator}.
+From it, they are free to take and store data as they wish.
+Because metrics are implemented as classes, they can store data of their own.
+
+The drawback of this approach is that data is stored multiple times after all, in the metrics.
+This takes up some additional memory.
+However, metrics rarely store a copy of the raw data only.
+Most often they do some kind of (pre)processing already at storage.
+For example, calculate an average of something per round, or make aggregates of agent data, etc.
+This justifies their separate data storing.
+When time-based raw data does need to be stored by metrics, it is only done on a need basis.
+Meaning when that metric is not needed, it is turned off and the system is no longer strained by holding unneeded data.
+
+
+\subsection{Internal and Agent-Exposed Values}\label{sec:i_ae_reprepentation}
+Reviews, claim qualities and reputationscan take up any value depending on the reputation scheme.
+The simplest case is when reviews are either positive or negative.
+This might be represented as 0 and 1.
+In other cases, discrete values are needed, like \emph{good}, \emph{ok} and \emph{bad}.
+Finally another common case is when values are integers in a range.
+For example, the 5-star system using 1, 2, 3, 4 and 5 as possible values is common.
+By default, Pyrepsys also uses this approach with values between 1 and 9.
+This is however, decided by the scenario configuration.
+
+The need for flexibility in reputation schemes necessitates a generic storage solution of values in Pyrepsys.
+This is the reason values are stored differently internally than they are displayed and used by agents.
+\Gls{ae_representation} is when a value is in the state facing the agents, the reputation system and display or export functions.
+This is what is mentioned in examples above.
+\Gls{i_representation} is the way Pyrepsys stores values in the internal data structures.
+
+Internally stored values are in the range [0,~1].
+Agent-exposed values are controlled by scenario settings.
+The scenario configuration parameters \emph{MIN\_RATING} and \emph{MAX\_RATING} determine the possible range.
+In the code, whenever a variable stores internal values, it end with '\texttt{\_i}', while variables of agent-exposed values end with '\texttt{\_ae}'.
+
+Every time a value is fetched from or is saved to another state of representation, it is converted.
+Conversion is done by two functions in the \texttt{helpers} module. 
+These are \lstinline{agent_to_internal()} and \lstinline{internal_to_agent()}.
+Both have a shorter alias in the form of \lstinline{a2i()} and \lstinline{i2a()}.
+These functions take a single value $v$ as input and return the converted equivalent in the other representation. 
+Conversion follows equations \ref{eq:a2i} and \ref{eq:i2a}.
+\begin{equation}\label{eq:a2i}
+v_{internal} = \frac{v_{ae} - \mathrm{minimum~rating}}{\mathrm{\gls{rating_span}}}
+\end{equation}
+\begin{equation}\label{eq:i2a}
+v_{agent~exposed} = (\mathrm{minimum~rating}) + (\mathrm{\gls{rating_span}}) * v_{i}
+\end{equation}
+
+Used together with resolution, it is possible to reproduce schemes like the example ones at the beginning of this section.
+See sections \ref{sec:approach_resolution} and \ref{sec:impl_resolution} for details on resolution handling.
+Table~\ref{tab:rating_scheme_examples_pyrepsys_config} shows how the scenario should be configured for common schemes.
+Agent-exposed representation gives numeric values even when they are meant as labels or other non-numeric choices.
+In these cases, behavior and reputation strategies and metrics have to take care of interpreting them as such.
+
+\begin{table}[tbp]
+\centering
+\begin{tabular}{@{}llccll@{}}
+\toprule
+\multirow{2}{*}[-0.2em]{\textbf{Scheme}} & \multirow{2}{*}[-0.2em]{\textbf{Rate Values}} & \multicolumn{2}{c}{\textbf{Rating Settings}} & \multicolumn{2}{c}{\textbf{Representations}} \\ \cmidrule(lr){3-4} \cmidrule(lr){5-6} 
+                        &                                  & \textbf{Range}    & \textbf{Resolution} & \textbf{Internal}    & \textbf{External}   \\ \midrule
+Binary          & +, -                     & {[}0,1{]}                & 1               & 0, 1 & 0, 1           \\
+Labels & good, ok, bad       & {[}1,3{]}                & 1               & 0, 0.5, 1 & 1, 2, 3          \\
+5-star          & 1, 2, 3, 4, 5            & {[}1,5{]}                & 1               & 0, 0.25, 0.5, 0.75, 1 & 1, 2, 3, 4, 5            \\ 
+Precise & 1, 1.1 ... 4.9, 5 & {[}1,5{]}                & 0.1         & 0, 0.025 ... 0.975, 1 & 1, 1.1 ... 4.9, 5         \\
+\bottomrule
+\end{tabular}
+\caption{
+	Example rating schemes and Pyrepsys scenario configuration implementing them.
+	The last two columns show how possible values are represented in the system.
+	Using rating range and review resolution all common schemes can be configured.
+	External refers to agent-exposed representation.
+}
+\label{tab:rating_scheme_examples_pyrepsys_config}
+\end{table}
+
+
+\subsection{Resolution}\label{sec:impl_resolution}
+
+Resolution settings control what exact values are allowed for select variables during simulation.
+This section discusses implementation details.
+See section~\ref{sec:approach_resolution} for conceptual discussion of resolutions.
+
+\subsubsection{Domains and Conversion Points}
+Pyrepsys defines two resolution domains.
+Each of these represent a resolution constraint for a part of the claiming, rating or reputation process.
+When a value that is part of a process enters a domain, it is converted to the configured resolution.
+Figure~\ref{fig:resolution_domains} shows which domains apply to what parts of the claiming and rating processes.
+
+Domains determine the smallest allowed step for selected variable values.
+The two scenario parameters that control the two domains are \texttt{REVIEW\_RESOLUTION} for reviews and \texttt{MEASURED\_CLAIM\_RESOLUTION} for measurements.
+Both of these expect the value of the smallest allowed step given in \gls{ae_representation}.
+
+There are three transformation points as also seen on figure~\ref{fig:resolution_domains}.
+\begin{enumerate}
+    \item on the result of a claim quality measurement, before the agent sees the measurement in its rating or distort strategy
+    \item after the execution of a rating strategy on the returned review, before publishing the review
+    \item after the execution of a distort strategy on the returned distorted quality, before publishing as author's review
+\end{enumerate}
+
+Reviews and distorted qualities are results of the customizable behavior strategies of agents. 
+Conversion of these results is done without any punishment for agents that do not prepare their values for the configured review resolution.
+All reviews are saved with this resolution, whether an agent's review or a claimer's author review.
+
+Code implementing resolution handling is found in the \texttt{helpers} module.
+
+\subsubsection{Resolution Conversion}
+
+When a value that is part of a process enters a domain, it is converted to the configured resolution.
+The main function for converting between resolution domains is \lstinline{convert_resolution()}.
+It expects two arguments.
+First, \texttt{number} holds the value to be converted.
+Second, \texttt{target\_resolution\_domain} gives which resolution it should convert to.
+This is given in the form of an enum defined in \texttt{helper\_types}.
+The purpose of \lstinline{convert_resolution()} is to call the \lstinline{find_nearest_step()} with the appropriate arguments to find which step the value to convert falls nearest to.
+
+The function \lstinline{find_nearest_step()} accepts \texttt{number} holding the value to be converted and \texttt{steps\_sorted\_list}, a list sorted by ascending order and containing all the allowed steps of the chosen resolution domain.
+It is this function's job to effectively convert to the new resolution by selecting a possible step from the list based on the value of \texttt{number}.
+For this, it uses a bisection algorithm \lstinline{bisect_left} from Python's \texttt{bisect} module.
+
+Left bisection efficiently searches for an element in a sorted list.
+Originally it is meant to be used for efficiently inserting new items into a sorted list.
+Given a sorted list and a new item, bisect returns the index where the item should be inserted into the list to keep it sorted.
+Since it uses binary search for finding this, its efficiency is $O(logN)$.
+The difference between left or right bisection is if the element to insert is already in the list, should the returned insertion index be left or right of the existing equivalent element(s).
+
+With the point of a would-be insertion found, \lstinline{find_nearest_step()} decides on the returned resolution step.
+The index returned by left bisection is denoted by \lstinline{i}.
+If the input \texttt{number} coincides with resolution step \lstinline{steps_sorted_list[i]}, that is returned.
+If not, then \texttt{number} is between \lstinline{steps_sorted_list[i]} and \lstinline{steps_sorted_list[i-1]}.
+The distances from both are calculated as seen below.
+
+\begin{lstlisting}
+diff_left = round(abs( steps_sorted_list[i-1] - number ), 8)
+diff_right = round(abs( steps_sorted_list[i] - number ), 8)
+\end{lstlisting}
+
+Rounding is needed to correct small floating-point errors that can result from working with small numbers.
+The step with the smaller distance is returned.
+If the distances are equal, the larger, right-neighboring step is returned.
+
+\subsubsection{Creating Resolution Steps}\label{sec:impl_create_steps}
+
+Ordered lists of possible resolution steps are created for every resolution domain.
+These are called step lists or resolution ladders.
+The step lists are sorted by ascending order and are created during scenario configuration by the function \lstinline{_configure_system_resolutions()} in the \lstinline{helpers} module.
+The method is simply starts with the smallest value, increments it with the resolution's step and adds it to the step ladder.
+This is repeated until the maximum allowed value is reached.
+Each step list is stored in a module-level variable in \lstinline{helpers}.
+
+The function \lstinline{_configure_system_resolutions()} is an exception from all others related to configuration, which are located in the \lstinline{config} module in the \emph{Configurator} class.
+The reason for putting this function in \lstinline{helpers} instead of \lstinline{config} is to avoid a circular import dependency between the two modules.
+An alternative solution was to keep the functionality in the \emph{Configurator} class.
+In this case, the resolution steps would have to be requested via the \lstinline{get()} method of \emph{Configurator}, or with a similar call.
+This adds an overhead, and since resolution conversion is a very common operation, so it can build up to a noticable factor.
+Because of this, the resolution ladders are kept locally in \lstinline{helpers}.
+
+To allow (re-)calculation of the resolution steps every time the scenario configuration changes, \emph{Configurator} must let the \lstinline{helpers} module know when this happens.
+This is solved with callbacks from \emph{Configurator}.
+The fuction for calculating resolution ladders is registered with \emph{Configurator}, which calls it every time the scenario configuration is updated.
+For more discussion on configuration updated callbacks, see section~\ref{sec:config_update_callbacks}.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=1\linewidth]	{../images/resolution_domains-crop.pdf}
+    \caption{
+    Resolution domains in various stages of rating (top) and claiming (bottom).
+    (a) Ground truths have no limitation and can take up any value within the \gls{rating_span}, stored as \gls{i_representation}.
+    (b) Claim quality measurements are produced in the \emph{measured claim resolution domain}.
+    (c) In their distorting or rating strategies, agents can compute an output without regard to resolution constraints.
+    (d) Once the produced values are published, they are converted into the \emph{review resolution domain}.
+    }
+    \label{fig:resolution_domains}
+  \end{center}
+\end{figure}
+
 
 
 % --------------------------------------------------------------
 \section{Random Number Generation}\label{sec:impl_rng}
 % --------------------------------------------------------------
 
+Python's \lstinline{random} module is used for generating random numbers.
+Many parts of Pyrepsys uses random numbers for simulation.
+These include:
+\begin{itemize}
+	\item Ground truth of new claims
+	\item Random error on claim quality measurements
+	\item Checks against an agent's claim or rate probability
+	\item Some agent behavior strategies
+\end{itemize}
 
+In order to facilitate comparability and repeatability of simulations, Pyrepsys implements repeatable random number generation.
+Python's \lstinline{random} rolls its internal state every time a random number is taken from it.
+If the state of the generator is known and can be restored, random number sequences can be recreated.
+Such sequence of random numbers are called random chains here.
 
-% --------------------------------------------------------------
-\section{Results Processing}\label{sec:impl_results_processing}
-% --------------------------------------------------------------
-After the simulation is finished, Pyrepsys processes the collected data and exports it as graphs or tables.
-Collection during sim
-events
+Repeating the chain of a random number generator is possible by seeding it.
+Scenarios provide a configuration parameter called \lstinline{seed} for this purpose.
+The class \emph{ScenarioSimulator} owns an instance of the random number generator created with the \lstinline{random} Python module.
+Before simulation of a scenario, the generator is seeded with the above parameter.
+This generator provides the so-called \gls{main_rng_chain}.
+It serves random values for checks and uses where the same number and type of random value is needed regardless of what execution path the simulation takes.
+These are for example checks whether agents will claim or not, provide a review or not, and providing random seeds for throwaway random chains.
 
-artifacts
-metrics
-  graph
-  data 
-reproc
-event based subscribe-notify + uml
+\Glspl{branchoff_rng_chain} or throwaway chains are supplementary random number sequences.
+These are used when it is not known in advance how many or what type of random values are needed, or whether any will be needed at all.
+Such cases are claiming and rating randoms, or agent behavior strategies.
+
+Throwaway chains are made by branching-off the main chain.
+That means a random value is rolled from the main generator, and used as seed for the throwaway chain.
+To provide a constant usage of the main chain, every time there is a possibility that a branch-off chain will be needed, a random number will be generated for its seed.
+This way the chain is used equally regardless of the scenario's settings.
+
+An example illustrating the purpose of the two random chains is claiming.
+Caliming requires three random values: 
+\begin{itemize}
+	\item one for the claim probability check to see if the agent will attempt a claim
+	\item one for generating a ground truth (quality) in the new claim
+	\item one for the measurement error when the agent assesses the claim's quality
+\end{itemize}
+The first one of these must be generated whether the agent claims or not.
+The second two only if the check to claim succeeds and claiming is attempted.
+Changing the number of agents or agent's claim probabilities would modify which agents enter the the claiming process, and so the agents claiming afterward the shift would get different random values than before.
+To prevent this, each claim opportunity uses exactly two random values off the main chain: one for the probability check, and another as a seed for the branch-off random chain.
+If the agent passes the probability check, the generated seed is used to create the branch-off random sequence.
+The random values for the new claim's quality and the measurement error are taken from this throwaway chain, which is destroyed after the claiming.
+In this manner, all agents receive the same inputs from the simulator even between scenarios, provided that the order of the agents stays the same.
+
 
 
 % --------------------------------------------------------------
 \section{Configuration}\label{sec:impl_config}
 % --------------------------------------------------------------
-configuration (process)
-	where are configs are stored (responsibilities) (config.get, local caches, local configs)
-	reading in
-	2-leveled: default and active config
-	config updated callbacks
-	base behaviors
-	extended entries / entries extended with settings
-CHECK: all big config options covered
 
-mention: scenario creator, link appendix
+This section discusses topics related to configuration in Pyrepsys.
+It also covers some scenario parameters, but not all.
+For a usage-oriented description of every possible scenario parameter, see appendix~\ref{appendix:scenarios} instead.
+
+
+\subsection{Scenario Definition}
+Scenarios are expected as \texttt{.yaml} files located in the \texttt{scenarios} folder.
+Each file contains a list of parameters in yaml format, telling what the scenario is about.
+Parameters include the reputation strategy, used improvement handlers, agents, enabled metrics, resolution, rating range, the initial seed and other settings.
+
+Scenario files can either be fully or partially defined.
+Full definition requires the scenario give an explicit value for all possible parameters.
+Partially defined scenarios contain only a subset of all settings.
+
+Scenario files can fill two different roles when running Pyrepsys.
+First, regular scenarios are the separate simulation units that will be simulated after each other.
+These are given as a list to simulate, typically more than one per invocation.
+Second, the default scenario is used as a fallback for parameters while simulating the list of regular scenarios.
+Only one scenario file can be given as default scenario every Pyrepsys invocation.
+The two kinds of scenarios form a two-level system.
+Whenever a regular scenario is simulated and a parameter is requested, the system checks among the parameters from the scenario file.
+This is called the active configuration.
+If a parameter is not defined there because the scenario is not fully defined, then the default scenario serves as fallback.
+The requested parameter is returned from the default configuration.
+For this reason, the scenarios used as default scenario must always be fully defined.
+
+Defining scenarios with this two-level configuration system is simpler.
+Usually only one or at most a few parameters are varied between scenarios to see the isolated effect of the changes.
+Here, the default scenario should contain the baseline values for scenario parameters, fully defined.
+Then, each specific simulated scenario can be partially defined only containing parameters that differ from the default configuration.
+Pyrepsys provides a scenario creator utility, which uses the same approach to create scenarios with combinations of given parameter values.
+See appendix~\ref{appendix:sc} for documentation.
+
+\subsection{Reading Scenario Files}
+Reading configuration from scenario files to memory is done by the \emph{Configurator} class.
+It provides two separate methods for reading active and default scenarios.
+Both are wrappers for the same class method responsible for reading scenario files, named \lstinline{_config_from_file_to_memory()}.
+After opening and reading the file contents, it calls on the third party \texttt{pyyaml} module to read the contents into a dictionary.
+A name for the scenario is added to the dictionary by taking the filename without the \texttt{.yaml} extension.
+The function also generated the hash of the scenario file it just read using the sha256 algorithm.
+This will be logged to provide a quick check whether two scenarios of the same name contain the same settings.
+
+\subsection{Configuration Storage Locations}
+Multiple locations are responsible for storing configurations in Pyrepsys.
+\emph{Configurator} is the main source of settings.
+Apart from that, locally stored config collections also exists, and there is one local configuration cache.
+
+\subsubsection{Configurator}
+\emph{Configurator} is located in the \texttt{config} module and is responsible for most configuration-related functionality.
+Its main tasks are reading scenario files, preparing other modules and classes for simulation, and providing configuration parameters when requested.
+
+The class method \lstinline{get()} can be used to request config values from \emph{Configurator}.
+It takes an argument with the name of the config parameter.
+This function implements the two-level configuration retrieval.
+First the active config is checked, and then the default if the active configuration does not contain the requested parameter.
+
+\emph{Configurator}'s storage of active scenario settings is changed between scenarios, while the default config remains the same for the whole duration of a Pyrepsys run.
+
+\subsubsection{Local Configuration of Strategies and Handlers}\label{sec:local_config}
+Some behavior or reputation strategies, improvement handlers or even metrics are parametrized and so can have configuration values attached to them.
+An example for how these are defined in scenario files is found below.
+\begin{lstlisting}
+improvement_handlers:
+  - name: "Aging"
+    limit: 6
+  - "Weights"
+\end{lstlisting}
+Here, aging is defined with one parameter called \texttt{limit}.
+When configuration is attached in this way, the original param value is replaced with a dictionary, and the \texttt{name} param is used to hold what was just a string before.
+For comparison, the \texttt{Weights} improvement handler uses no parameters in the above example, so only the implementig class' name is needed as a string.
+
+Strategies, handlers or metrics that are extended with parameters like this are interpreted by the \emph{Configurator} class in a method called \lstinline{_unpack_extended_config_list()}.
+After an instance of the appropriate class is created, it receives a dictionary containing its parameters if there are any.
+The storage solution is the class \emph{LocalConfig}, from which all strategies, handlers and metrics inherit.
+This class provides a method similar to \emph{Configurator}'s \lstinline{get()} for accessing the local config.
+These are then accessible from within the class methods of strategies, handlers or metrics.
+
+Storing these parameters with the class instances instead of a central repository like \emph{Configurator} allows instantiation of different versions of the same class.
+Simply the local config needs to be specified with different values.
+
+\subsubsection{Configuration Caches}
+There is one occasion where a Pyrepsys module uses a local cache for scenario configuration that normally would be requested from \emph{Configurator}.
+This caching appears in the \texttt{helpers} module.
+Before its introduction, the conversion functions between \gls{i_representation} and \gls{ae_representation} made multiple config param requests each.
+These are very frequently used funtions, because they are called every time an internally stored value is fetched, or when an agent-generated value is stored.
+While \emph{Configurator}'s \lstinline{get()} is fast, the sheer amount of calls made incurred a noticable overhead.
+When this local cache was introduced, it resulted around 70\% improvement in the cumulative time spent in the function that converts from internal to agent-exposed representation.
+This can mean around minute that was shaved off. 
+Other functions in helpers also benefit from speed improvement, albeit to a lesser degree.
+
+Caching works by storing needed configuration parameters and precalculated values in the \texttt{helpers} module.
+Module functions can then access the cache dictionary instead of making a reuqest from the \texttt{config} module.
+\emph{Configurator} updates the cache via a callback each time the scenario configuration is modified.
+
+
+\subsection{Update Callbacks}\label{sec:config_update_callbacks}
+\emph{Configurator} allows registering callbacks for configuration changes.
+These are called every time the default or active scenario configuration changes.
+Other parts of Pyrepsys can use this to be notified of changes in configuration.
+
+The method to register the callback functions is \lstinline{register_config_updated_callback()}.
+Every time a new scenario file was read and parsed, \emph{Configurator} executes all registered callbacks.
+Update callbacks are used by the local config cache in \texttt{helpers} and the resolution step ladder creator method.
+Refer to section~\ref{sec:impl_create_steps} for why resolution handling is solved this way.
+
+
+\subsection{Setting Up Simulations}
+The \texttt{main} module serves as an entry point and coordinates the Pyrepsys classes to perform simulations.
+After preparatory tasks like logging setup and creating the output folder, instances of \emph{ScenarioSimulator}, \emph{ResultsProcessor} and \emph{Instantiator} are created.
+The system-wide \emph{Configurator} instance is also requested.
+The \texttt{config} package provides \lstinline{getConfigurator()}, which returns the same instance of \emph{Configurator} every time it is called.
+\emph{ScenarioSimulator} receives \emph{ResultsProcessor}, the configurator gets the \emph{Instantiator} instance and the output directory path.
+
+Now, the scenario files can be read and the objects can be configured.
+First, the default scenario settings are read.
+Then, for each scenario, its file is read, \emph{ScenarioSimulator} is configured, \emph{ResultsProcessor} is configured, then begins the simulation.
+This repeats until all scenarios were simulated.
+
+The scenario simulator's setup is divided into three parts: improvement handlers, reputation strategy and agents.
+
+\subsubsection{Reputation Strategy and Improvement Handlers}
+Reputation strategy and improvements have a similar setup.
+First, the params storing them are requested.
+Then, a method called \lstinline{_unpack_extended_config_entry()} parses parameters that are extended with local configuration described in section~\ref{sec:local_config}.
+\emph{Instantiator} is used to create reputation and improvement handler object instances.
+The instances receive their local config is any was set for them, and they are assigned to the \emph{ScenarioSimulator}.
+For the improvement handlers, the improvement chain is tied together in order of appearance in the scenario file, and the scenario simulator only receives the first handler.
+
+\subsubsection{Agents}
+For setting up agents, the agent base behavior definitions also need to be parsed first.
+Base behaviors are template settings for agent definitions, defined in scenario files under the parameter \lstinline{agent_base_behaviors}.
+Each of them must contain all possible agent parameters, along with the base behavior's name.
+For example:
+\begin{lstlisting}
+agent_base_behaviors:
+  - name: 				"HonestAccurateRater"
+    distort_strategy: 	"DistortDoNothingStrategy"
+    rate_strategy: 		"RateFromOwnExperience"
+    claim_range: 		[0, 1]
+    claim_probability: 	0
+    rate_probability: 	1
+    claim_truth_assessment_inaccuracy: 0.0625
+\end{lstlisting}
+Base behaviors can then be used when defining agents. Below, the above definition is used to define two agent types. Both of them will have 10 agents created of the type. The second type overwrites the base behavior's \lstinline{claim_probability} of 0 with 0.2.
+\begin{lstlisting}
+agents:
+  - amount: 			10
+  	base_behavior: 		"HonestAccurateRater"
+  - amount: 			10
+  	base_behavior: 		"HonestAccurateRater"
+  	claim_probability: 	0.2    # overwrite claim% from the base behavior
+\end{lstlisting}
+The typical usage method for base behaviors is defining a set of base behaviors in the default scenario's file, and then using these definitions in other scenario files that will be simulated.
+Otherwise, \lstinline{agent_base_behaviors} also adheres to the two-level configuration system.
+If it is re-defined in an active scenario's file, that definition overwrites the one in the default scenario settings.
+
+Each agent type's rate and distort strategies are created in a similar manner to reputation strategies and improvement handlers.
+The local config parameter extensions are parsed, then instances are created.
+With the agent's configuration parameters and behavior strategies ready, the \emph{Agent} instances are created.
+
+This is done by \emph{ScenarioSimulator}, with its method for this task called \lstinline{create_agents()}.
+Agent objects are saved by scenario simulator into the agents list.
+
+\subsubsection{Metrics and ResultsProcessor}
+Metric instances are special in the regard that they are persistent between all simulated scenarios of a Pyrepsys invocation.
+This is because metrics usually compare multiple scenarios, and they need to be able to collect and store data from each of them.
+\emph{ResultsProcessor} stores metric instances for this reason.
+
+During configuration, \emph{Configurator} checks if \emph{ResultsProcessor} already stores instances of the listed metrics of scenarios.
+If not yet, the same process from earlier sections involving local configs and the \emph{Instantiatior} is used to create the missing metric instances.
+\emph{ResultsProcessor} receives them and will keep them until Pyrepsys terminates.
+
+Including or excluding a metric from data collection during a scenario is determined by the \lstinline{metrics} parameter in scenario files.
+The two-level system of default and active configurations applies to it like to any other parameter.
+The typical useage is listing metrics used in the default scenario's file, and not defining any metrics in the simulated scenarios.
+This results in the same default metrics being used for all scenarios.
+If any scenario defines the \lstinline{metrics} parameter, \emph{only the metrics found in this definition} will be used for the scenario, since it completely overwrites the one in the default.
+To add an extra metric along the defaults to a scenario, it needs to be listed explicitly with the default metrics as well.
+To exclude one compared to the default definition, all other not-excluded metrics need to be listed.
+
+
+
+% --------------------------------------------------------------
+\section{Results Processing}\label{sec:impl_results_processing}
+% --------------------------------------------------------------
+Pyrepsys offers optional built-in results processing to form a full pipeline from simulation to data analysis and visualization.
+The \lstinline{results_processor} and \lstinline{metrics} modules can collect, process and export simulation data as graphs or tables.
+\emph{Metric} classes define what data is collected, and how it is processed and exported.
+\emph{ResultsProcessor} contains the metrics, notifies them of events and funnels simulation data to them.
+Together, metrics and \emph{ResultsProcessor} form a publish-subscribe architecture.
+The UML diagram of these classes is found in figure~\ref{fig:reproc_metrics}.
+
+
+\subsection{Simulation Events}
+
+Pyrepsys defines four simulation events as listed in table~\ref{tab:simulation_events}.
+Each time execution reaches one, the event is triggered by notifying the results processor of it.
+Then, \emph{ResultsProcessor} notifies the metrics of events that concerns them.
+
+Two events have fixed consequences.
+The \lstinline{BEGIN_SCENARIO} event calls every active metric's \lstinline{prepare_new_scenario()} method, which is used to make preparations before the scenario starts.
+\lstinline{END_OF_SCENARIO} calls the \lstinline{export()} method of active metrics, which is used to make post-processing on the data, assemble graphs or tables, and export them into files.
+
+The two other events are \lstinline{END_OR_ROUND} and \lstinline{END_OR_SCENARIO}.
+Each activated metric subscribes to none, just one or both of these two.
+Whenever these events trigger, the \lstinline{calculate()} method of subscribed metrics is called by \emph{ResultsProcessor}.
+This is the time metrics can save data from the simulation system and do pre-processing on it.
+
+Which of the two events a metric subscribes to is determined by what kind of reporting the metric does.
+In any case, simulation data is passed for \lstinline{calculate()} for both events in the form of the agents list, the same one saved by \emph{ScenarioSimulator}.
+Depending on which event it is, the just ended round's number or the ended scenario's name is also passed.
+
+\begin{table}[tbp]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Event}        & \textbf{Called Metric Method} \\ \midrule
+BEGIN\_SCENARIO       & \texttt{prepare\_new\_scenario() } \\
+END\_OF\_ROUND        & \texttt{calculate()} if registered \\
+END\_OF\_SCENARIO     & \texttt{calculate()} if registered \\
+END\_OF\_SIMULATION   &  \texttt{export()} \\
+\bottomrule
+\end{tabular}
+\caption{
+	Simulation events in Pyrepsys.
+	\emph{ResultsProcessor} is notified of events from other parts of the code.
+	It notifies metrics based on what event was triggered and which metrics are active.
+	The second column shows which methods of active metrics are called.
+}
+\label{tab:simulation_events}
+\end{table}
+
+
+\subsection{Metrics}
+
+Generally there are two types of metrics: data exporters and graph plotters.
+The distinction is not strict however, and metrics can even have both functions at the same time.
+It makes sense to divide metrics along what kind of reporting they do.
+When a metric calculates a specific kind of value, statistic or aggregate, it can make sense to produce graphs and data exports from the same metric, since the data is available anyway.
+
+Every metric is defined as a child of the abstract \emph{metrics::Metric} class, as seen in figure~\ref{fig:reproc_metrics}.
+Then, selecting metrics for usage is done through the scenario configuration by giving its classname.
+The initialization method contains a metric's name and its events of interests.
+Additionally, every metric implements at least the three previously discussed functions.
+Graph plotting metrics in Pyrepsys use \texttt{matplotlib}, while data exporters use Python's \texttt{csv} module.
+Exported files are saved to an invocation-specific output directory called the \gls{artifacts_dir} by default.
+
+Using metrics with Pyrepsys is optional.
+The costs of using them is the extra memory needed for storing collected data, and the additional processing time for dealing with the data and creating the export formats.
+The memory footprint obviously depends on how big of a simulation data is amassed and how many separate metrics store parts from it.
+Processing time spent on metrics was observed to be tens of seconds when simulation takes a few minutes.
+
+The benefit of metrics is the convenience of automatic reports and graphs exported based on simulation data.
+Flexibility and extendability is also fulfilled.
+Adding new metrics is as easy as with any other behavior or reputation strategy, or improvement handler.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=1\linewidth]	{../uml/reproc_metrics.pdf}
+    \caption{
+	UML class diagram of the results processor and metrics.
+	Metric instances are created by \emph{Configurator} via \emph{Instantiator}.
+	\emph{ResultsProcessor} registers metrics according to what event they are listening to.
+	\emph{ScenarioSimulator} and the \lstinline{main} package trigger events on the results processor.
+	Metrics are notified of events that interest them.
+	\emph{LocalConfig} provides custom configuration for each individual metric.
+	This is discussed in section~\ref{sec:local_config}.
+    }
+    \label{fig:reproc_metrics}
+  \end{center}
+\end{figure}
+
 
 
 % --------------------------------------------------------------
 \section{Other Facilities}\label{sec:impl_misc}
 % --------------------------------------------------------------
 
-Automated Self-Testing
-performance
-other facilities (logging, error handling, helpers, paths?)
+\subsection{Automated Self-Testing}
+Pyrepsys contains an automated testing suite.
+It can be used to verify the integrity of functionality under the test coverage.
+Tests can also be added to perform sanity checks of specific components, like metrics.
+Such tests contain scenario configuration that is known to produce an expected and explainable results.
+Finally, the test suite contains tests that profile and benchmark the simulator.
+Using these the most time-consuming parts of the simulation can be identified.
+
+Testautomation is provided by Pytest.
+Tests reside in the \texttt{tests} directory in Python files.
+Each of them is a function and are found automatically by Pytest.
+To allow some control over what tests to run, Pyrepsys uses Pytest's mark feature.
+Some tests are marked with the identifiers found in table~\ref{tab:pytest_marks}.
+
+\begin{table}[tbp]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Mark}        & \textbf{Meaning} \\ \midrule
+perf       & Test does profiling or is a benchmark \\
+manual     & Test needs manual evaluation of results \\
+long       & Test takes a longer time than most others \\
+\bottomrule
+\end{tabular}
+\caption{
+	Pytest test markers in Pyrepsys.
+	Relevant tests are flagged with them.
+	Marks can be used to select which tests to run or exclude from running.
+}
+\label{tab:pytest_marks}
+\end{table}
+
+
+\subsection{Logging}
+Pyrepsys logs notable events and information in a logfile saved to the \gls{artifacts_dir}.
+This is implemented using Python's \lstinline{logging} module.
+
+Logging is set up by \texttt{pyrepsys.main}.
+Messages are logged into the logfile called \texttt{simulation.log}.
+They are also displayed on the console in a shortened format.
+Each Pyrepsys module gets its own logger with the \lstinline{logging.getLogger()} method.
+It returns the logger after the \texttt{name} parameter provided to it, which is chosen as the name of each Pyrepsys module.
+
+Messages of different severity are loggied, including debug, info, warning and error.
+By default, only info level messages or more severe are displayed.
+If debug messages are needed, the default level can be overwritten in the \texttt{pyrepsys.main} module.
+It is also possible to change the severity of selected Pyrepsys modules only.
+This is beneficial when debugging a specific module.
+
+
 
 
 % CHAPTER ######################################################################

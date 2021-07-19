@@ -656,7 +656,7 @@
 	    breaklines=true, 
 	    breakatwhitespace=true,
 	    postbreak=\postbreak,
-	    keywordstyle=\bfseries\color{tum_blue_dark},
+	    keywordstyle=\bfseries\color{sec_blue_dark},
 	    commentstyle=\color{col_lst_comment},
 	    stringstyle=\color{col_lst_string},
 	    captionpos = t,

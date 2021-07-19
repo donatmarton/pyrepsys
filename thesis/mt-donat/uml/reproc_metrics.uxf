@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>410</x>
+      <y>400</y>
+      <w>100</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>80.0;60.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>280</x>
+      <y>520</y>
+      <w>320</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+Configurator
+--
++configure_results_processor(results_processor)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>280</x>
+      <y>300</y>
+      <w>240</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+for metrics to activate:
+    if not exists:
+        instantiator.create_metric()
+        result_processor.add_metric()
+    result_processor.activate_metric()
+    </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>280</x>
+      <y>180</y>
+      <w>300</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+for metric in active_metrics_by_events[event]:
+    metric.notify(event, **event_details)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>280</x>
+      <y>120</y>
+      <w>300</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+for event in metric.events_of_interest:
+    active_metrics_by_events[event] &lt;-- metric</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>360</x>
+      <y>40</y>
+      <w>130</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+ScenarioSimulator</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>600</x>
+      <y>40</y>
+      <w>250</w>
+      <h>200</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+ResultsProcessor
+--
++artifacts_directory
++metric_instances
++active_metrics_by_events
+--
++__init__(artifacts_directory)
++activate_metric(metric_classname)
++deactivate_all_metrics()
++has_metric(metric_classname)
++add_metric(metric_object)
++process(call_event, **event_details)
++export_all_metrics()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>650</x>
+      <y>280</y>
+      <w>110</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+/metrics::Metric/</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>640</x>
+      <y>350</y>
+      <w>230</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+metrics::ConcreteMetrics
+--
+events_of_interest
+--
++__init__()
++prepare_new_scenario(scenario)
++calculate(**data)
++export(target_dir)
+bg=white
+transparency=0
+group=1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>650</x>
+      <y>360</y>
+      <w>230</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>metrics::ConcreteMetrics
+--
+events_of_interest
+--
++__init__()
++prepare_new_scenario(scenario)
++calculate(**data)
++export(target_dir)
+layer=0
+group=1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>670</x>
+      <y>520</y>
+      <w>180</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+Instantiator
+--
++create_metric(classname)
+...</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>740</x>
+      <y>470</y>
+      <w>110</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+&lt;&lt;instantiate&gt;&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>590</x>
+      <y>550</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>80.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>440</x>
+      <y>230</y>
+      <w>220</w>
+      <h>310</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>200.0;10.0;10.0;290.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>570</x>
+      <y>140</y>
+      <w>50</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;30.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>480</x>
+      <y>50</y>
+      <w>140</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>570</x>
+      <y>200</y>
+      <w>50</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>30.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>700</x>
+      <y>230</y>
+      <w>30</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>700</x>
+      <y>310</y>
+      <w>50</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;30.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>790</x>
+      <y>280</y>
+      <w>90</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>style=autoresize
+LocalConfig</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>750</x>
+      <y>290</y>
+      <w>60</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>40.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+</diagram>
