@@ -35,7 +35,7 @@
 
 \doctype{Master's Thesis}
 \professor{Prof. Dr. phil. nat. Sebastian Steinhorst}
-\advisor{Adam Advisor}
+\advisor{Emanuel Regnath}
 \coadvisor{Corinna Coadvisor}
 \submitdate{\today}
 
@@ -635,7 +635,7 @@ outlier filtering makes sense only if you know that significant (extreme) differ
 
 
 
-differenciate based on how many ratings contributed to a final reputation score, i.e. confidence. like if a new entrant gets a default of 4, and another has 4 based on a 1000 ratings, this difference should be noticable and agents should be able to make decisions based on that
+differenciate based on how many ratings contributed to a final reputation score, i.e. confidence. like if a new entrant gets a default of 4, and another has 4 based on a 1000 ratings, this difference should be noticeable and agents should be able to make decisions based on that
 
 \subsection{Outlier Filtering based on Majority Opinion}
 %other name: filtering approaches, extreme outlier filtering
@@ -693,7 +693,7 @@ Overall requirements and unique approaches warranted the inception of a new repu
 These are among others:
 \begin{itemize}
     \item domain-independence
-    \item the use of one or more reputation imporvement methods
+    \item the use of one or more reputation improvement methods
     \item ability to represent \glspl{claim}
     \item possibility of second-order rating schemes like stakes
     \item full simulation of agents
@@ -704,10 +704,10 @@ These are among others:
 
 \subsection{Design Goals}
 \subsubsection{asd}
-Flexibility and extendability are among the main design objectives of pyrepsys.
+Flexibility and extendability are among the main design objectives of Pyrepsys.
 Variables can be altered in scenario configuration files.
 The size and composition of the agent population is customizable.
-New agent behaviors, metrics, reputation calculation and imporvement methods can be easily added.
+New agent behaviors, metrics, reputation calculation and improvement methods can be easily added.
 
 
 
@@ -904,8 +904,8 @@ individual vs collusion scenarios
 % ##############################################################################
 %Implementation: If you did one, explain all the details here: hardware (chips, buses), OS, compiler, libraries, data structures and their field sizes.
 
-Simulations are done with a custom-made python simulation framework named pyrepsys.
-This chapter gives the implementation-specific details of pyrepsys. 
+Simulations are done with a custom-made python simulation framework named Pyrepsys.
+This chapter gives the implementation-specific details of Pyrepsys. 
 For a conceptual description, see Section~\ref{sec:approach_evaluation_framework}.
 
 Pyrepsys is a one-stop solution for simulating, comparing and evaluating reputation schemes.
@@ -914,30 +914,30 @@ Shared configuration among scenarios, simulating batches of scenarios in success
 Evaluation is aided by metrics.
 They are data processors that automatically generate graphs and export data from simulations.
 
-Flexibility and extendability are among the main design objectives of pyrepsys.
+Flexibility and extendability are among the main design objectives of Pyrepsys.
 Variables can be altered in scenario configuration files.
 The size and composition of the agent population is customizable.
-New agent behaviors, metrics, reputation calculation and imporvement methods can be easily added.
+New agent behaviors, metrics, reputation calculation and improvement methods can be easily added.
 
-Miscallaneous supportive functionalities are also discussed in this chapter.
+Miscellaneous supportive functionalities are also discussed in this chapter.
 A scenario configuration creator can be used to make a batch of scenarios with variations along selected configuration parameters.
 Extensive automated self-testing can verify the integrity of the simulation framework if any changes are made.
 Finally, profiling and benchmarking tests are provided to identify simulation bottlenecks and measure performance.
 
 Additional references for using Pyrepsys are provided outside this chapter.
-For a description of the pyrepsys command-line interface, refer to Appendix~\ref{appendix:cli_invocation}.
+For a description of the Pyrepsys command-line interface, refer to Appendix~\ref{appendix:cli_invocation}.
 A complete list and explanation of possible scenario configuration parameters are found in Appendix~\ref{appendix:scenarios}.
 % Finally, information regarding the scenario creator 
 
 % TODO: prerequisites, dependencies, tested versions, environment
 % TODO: reference table~\ref{tab:pyrepsys_modules}
-
+% TODO: also describe concrete implementations of behavior and reputation strategies, improvement handlers ?
 
 \begin{table}[tbp]
 \centering
 \begin{tabular}{@{}lll@{}}
 \toprule
-\textbf{Name} & \textbf{Notable Classes} & \textbf{Responsibility}    \\ \midrule
+\textbf{Module} & \textbf{Notable Classes} & \textbf{Responsibility}    \\ \midrule
 agent               & \emph{Agent}, \emph{Claim}, \emph{Review} &Define agents with the simulation data structure \\
 behavior            &  &Submodule. Define agent rate and distort strategies \\
 config              & \emph{Configurator} &Scenario configuration related. Read, parse, provide configs. Prepare other classes. \\
@@ -1018,7 +1018,7 @@ If the limits are not violated, the agent prepares the claim for publishing.
 The \gls{author_review} is created and appended to the claim.
 Its value is always the distorted claim quality from the previous step.
 Finally, the agent appends the claim to the list of his claims, and so the claim is published.
-The claimin process is illustrated on figure~\ref{fig:claim_rate_process}.
+The claiming process is illustrated on figure~\ref{fig:claim_rate_process}.
 
 
 \subsection{Rating}
@@ -1068,7 +1068,7 @@ See figure~\ref{fig:improvement_handlers} for an UML model.
 Each handler is formed by inheriting from \emph{reputation::AbstractHandler}.
 This abstract class defines the interface improvement handlers need to adhere to.
 It also gives the default behavior for the handlers.
-The method \texttt{handle(request)} is the default behavior of calling the next handler in the cain if any, or simply returning if the current handler is the last in the chain.
+The method \texttt{handle(request)} is the default behavior of calling the next handler in the chain if any, or simply returning if the current handler is the last in the chain.
 This behavior is meant to be executed at the end of all concrete improvement subclass \texttt{handle()} calls like this: \lstinline{return super().handle(agents)}.
 \emph{AbstractHandler}'s second method \texttt{set\_next(handler)} is used to build the handler chain by giving which handler comes after this one is finished.
 Normally this is done by the configuration module during scenario preparation.
@@ -1113,7 +1113,7 @@ This holds the agent's latest public reputation score.
 Before the first reputation calculation takes place, it holds an initial reputation set according to configuration before the first round.
 
 Using the strategy pattern allows modularity and flexibility, much of the same advantages with improvement handlers.
-New reputation strategies are easy to add to pyrepsys by creating a subclass of \emph{reputation::ReputationStrategy} in the \emph{reputation} subpackage and putting the classname on the import list.
+New reputation strategies are easy to add to Pyrepsys by creating a subclass of \emph{reputation::ReputationStrategy} in the \emph{reputation} subpackage and putting the classname on the import list.
 Strategies are independent of the client class, \emph{ScenarioSimulator}.
 This means they are simple to exchange.
 
@@ -1184,7 +1184,7 @@ Agents then call upon their behavior strategies during simulation through the \t
 
 
 \subsection{Measuring Claims}
-Measuring a claim is the representation of trying out a product or content and making an opinion of what its qualitya could be.
+Measuring a claim is the representation of trying out a product or content and making an opinion of what its quality could be.
 In more concrete terms, measuring is taking an approximation on the hidden true quality, or the \gls{gr_truth} of a claim.
 It results in a value that is comparable to the ground truth or any review on the claim.
 This is the \gls{measured_claim_score}.
@@ -1267,11 +1267,13 @@ This is useful for some improvement methods, or possibly for rate or reputation 
 
 Both claims and reviews also store a weak reference back to their author.
 Weak references are provided by Python's \texttt{weakref} module.
+Objects linked with weak references are not kept alive when the all references to them are weak.
 This adds minimal overhead but big benefits.
-When traversing backwards from claim or review to author, the unpacking?? of weakref needs to be done.
+When traversing backwards from claim or review to author, the author weakref is called to retrieve the referred \emph{Agent} object.
 However, were weakref not used, agents, claims and reviews would be referencing each other in a circle.
 This would prevent them to be destroyed (collected) properly once the simulation is done and ScenarioSimulator empties the agents list.
-Weak references prevent this, since they are not counted as references when looking for whether an object is still linked from anywhere.
+Weak references prevent this, because they do not count as references when looking for whether an object is still linked from anywhere.
+When only weak references remain referring to an object, garbage collection will destroy it.
 
 \begin{figure}[tbp]
   \begin{center}
@@ -1370,7 +1372,7 @@ Meaning when that metric is not needed, it is turned off and the system is no lo
 
 
 \subsection{Internal and Agent-Exposed Values}\label{sec:i_ae_reprepentation}
-Reviews, claim qualities and reputationscan take up any value depending on the reputation scheme.
+Reviews, claim qualities and reputations can take up any value depending on the reputation scheme.
 The simplest case is when reviews are either positive or negative.
 This might be represented as 0 and 1.
 In other cases, discrete values are needed, like \emph{good}, \emph{ok} and \emph{bad}.
@@ -1508,12 +1510,12 @@ The function \lstinline{_configure_system_resolutions()} is an exception from al
 The reason for putting this function in \lstinline{helpers} instead of \lstinline{config} is to avoid a circular import dependency between the two modules.
 An alternative solution was to keep the functionality in the \emph{Configurator} class.
 In this case, the resolution steps would have to be requested via the \lstinline{get()} method of \emph{Configurator}, or with a similar call.
-This adds an overhead, and since resolution conversion is a very common operation, so it can build up to a noticable factor.
+This adds an overhead, and since resolution conversion is a very common operation, so it can build up to a noticeable factor.
 Because of this, the resolution ladders are kept locally in \lstinline{helpers}.
 
 To allow (re-)calculation of the resolution steps every time the scenario configuration changes, \emph{Configurator} must let the \lstinline{helpers} module know when this happens.
 This is solved with callbacks from \emph{Configurator}.
-The fuction for calculating resolution ladders is registered with \emph{Configurator}, which calls it every time the scenario configuration is updated.
+The function for calculating resolution ladders is registered with \emph{Configurator}, which calls it every time the scenario configuration is updated.
 For more discussion on configuration updated callbacks, see section~\ref{sec:config_update_callbacks}.
 
 \begin{figure}[tbp]
@@ -1569,7 +1571,7 @@ To provide a constant usage of the main chain, every time there is a possibility
 This way the chain is used equally regardless of the scenario's settings.
 
 An example illustrating the purpose of the two random chains is claiming.
-Caliming requires three random values: 
+Claiming requires three random values: 
 \begin{itemize}
 	\item one for the claim probability check to see if the agent will attempt a claim
 	\item one for generating a ground truth (quality) in the new claim
@@ -1673,14 +1675,14 @@ Simply the local config needs to be specified with different values.
 There is one occasion where a Pyrepsys module uses a local cache for scenario configuration that normally would be requested from \emph{Configurator}.
 This caching appears in the \texttt{helpers} module.
 Before its introduction, the conversion functions between \gls{i_representation} and \gls{ae_representation} made multiple config param requests each.
-These are very frequently used funtions, because they are called every time an internally stored value is fetched, or when an agent-generated value is stored.
-While \emph{Configurator}'s \lstinline{get()} is fast, the sheer amount of calls made incurred a noticable overhead.
+These are very frequently used functions, because they are called every time an internally stored value is fetched, or when an agent-generated value is stored.
+While \emph{Configurator}'s \lstinline{get()} is fast, the sheer amount of calls made incurred a noticeable overhead.
 When this local cache was introduced, it resulted around 70\% improvement in the cumulative time spent in the function that converts from internal to agent-exposed representation.
 This can mean around minute that was shaved off. 
 Other functions in helpers also benefit from speed improvement, albeit to a lesser degree.
 
 Caching works by storing needed configuration parameters and precalculated values in the \texttt{helpers} module.
-Module functions can then access the cache dictionary instead of making a reuqest from the \texttt{config} module.
+Module functions can then access the cache dictionary instead of making a request from the \texttt{config} module.
 \emph{Configurator} updates the cache via a callback each time the scenario configuration is modified.
 
 
@@ -1763,7 +1765,7 @@ If not yet, the same process from earlier sections involving local configs and t
 
 Including or excluding a metric from data collection during a scenario is determined by the \lstinline{metrics} parameter in scenario files.
 The two-level system of default and active configurations applies to it like to any other parameter.
-The typical useage is listing metrics used in the default scenario's file, and not defining any metrics in the simulated scenarios.
+The typical usage is listing metrics used in the default scenario's file, and not defining any metrics in the simulated scenarios.
 This results in the same default metrics being used for all scenarios.
 If any scenario defines the \lstinline{metrics} parameter, \emph{only the metrics found in this definition} will be used for the scenario, since it completely overwrites the one in the default.
 To add an extra metric along the defaults to a scenario, it needs to be listed explicitly with the default metrics as well.
@@ -1910,7 +1912,7 @@ They are also displayed on the console in a shortened format.
 Each Pyrepsys module gets its own logger with the \lstinline{logging.getLogger()} method.
 It returns the logger after the \texttt{name} parameter provided to it, which is chosen as the name of each Pyrepsys module.
 
-Messages of different severity are loggied, including debug, info, warning and error.
+Messages of different severity are logged, including debug, info, warning and error.
 By default, only info level messages or more severe are displayed.
 If debug messages are needed, the default level can be overwritten in the \texttt{pyrepsys.main} module.
 It is also possible to change the severity of selected Pyrepsys modules only.
