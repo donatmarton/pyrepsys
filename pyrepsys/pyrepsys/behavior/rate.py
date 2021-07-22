@@ -62,10 +62,11 @@ class LinearBreakpointed(RateStrategy):
         b = self.get_local_config("b")
         brpoint = self.get_local_config("brpoint")
         brpointval = self.get_local_config("brpointval")
+        c_val = claim.author_review.value
         if dir == "incr":
-            return brpointval if claim >= brpoint else b + a * claim
+            return brpointval if c_val >= brpoint else b + a * c_val
         elif dir == "decr":
-            return brpointval if claim <= brpoint else b + a * claim
+            return brpointval if c_val <= brpoint else b + a * c_val
         else:
             raise ConfigurationError
 
@@ -75,9 +76,18 @@ class SecondOrderPolynomial(RateStrategy):
         b = self.get_local_config("b")
         c = self.get_local_config("c")
         dir = self.get_local_config("dir")
+        c_val = claim.author_review.value
         if dir == "incr":
-            return claim + (c + b * claim + a * claim * claim)
+            return c_val + (c + b * c_val + a * c_val * c_val)
         elif dir == "decr":
-            return claim - (c + b * claim + a * claim * claim)
+            return c_val - (c + b * c_val + a * c_val * c_val)
         else:
             raise ConfigurationError
+
+class RandomBigError(RateStrategy):
+    def rate_claim(self, rater, claim, random_seed=None):
+        chance = self.get_local_config("chance")
+        if self.rng(random_seed).random() >= chance:
+            return config.get("MAX_RATING")
+        else:
+            return rater.measure_claim(claim)
