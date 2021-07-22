@@ -70,7 +70,7 @@
 \RequirePackage{booktabs}           % professional tables
 \RequirePackage{multirow}
 \RequirePackage{caption}
-
+\RequirePackage{amsmath}
 
 % use \emph{} for special terms, use \texttt{} for general code variables, and \lstinline{} for code.
 % use \textbf{} for heading cells in tables
@@ -658,8 +658,14 @@ regarding recommender systems:
 \section{Attacks and Exploits}\label{sec:attacks}
 % --------------------------------------------------------------
 
+Seller sells most products with high quality, but some with low quality for benefit. The honest bad reputation report from victim may be submerged, or be mistakenly regarded as unfair rating. \cite{ping_xu_rating_2005}
 
-
+\cite{yu_detecting_2003} has the four static in the graph..
+static:
+"pessimistic" rater (rates in the lower range) bad mouthing
+"optimistic" rater (rates in the higher range) ballot stuffing
+inverted rating (rates good as bad and vice versa)
+random rater (rates random all the time)
 
 
 
@@ -675,6 +681,11 @@ regarding recommender systems:
 %    Architecture/Model: Fully describe your approach on a conceptual level without giving details that belong to only one possible implementation.
 %    Example: Write “We need a hash function with the following properties.” NOT “We need/use SHA-256”
 
+% approach can have 3 types of content:
+%    selecting what you used from a larger group of many ideas
+%    changing existing ideas, why and how
+%    completely new ideas, while saying xyz requirements r not fulfilled by previous ones
+
 
 %TODO somewhere in this chapter, discuss how in ecom or other domains its a problem that not many ratings are given, while in fully machine populated it can be mandated to leave a review. then again its a question of who's in sensing distance e.g. in the intersection management case
 
@@ -685,9 +696,6 @@ the idea behind creating this model
 
 approach: how can u evaluate different rep techniques
 
-% unused figures:
-% figure~\ref{improvement_aging.pdf}
-% figure~\ref{improvement_weights.pdf}
 
 
 % --------------------------------------------------------------
@@ -779,7 +787,7 @@ The closest agents may get to it is by the above mentioned measurement of the cl
 
 \subsubsection{Author's Review}
 An \gls{author_review} is a valuation that models what a claim's author says the quality of the content is.
-It is a sort of self-appraisal of those who provide content.
+It is a sort of self-appraisal, a declaration of what the claimer thinks its claim is worth.
 Modeling the author's opinion is a somewhat unusual approach, since this is usually not explicitly part of reputation systems.
 
 Because of this, author reviews can be interpreted in multiple ways.
@@ -846,8 +854,8 @@ This method simply collects every review on all claims an agent has.
 The average of these received reviews becomes the agent's reputation.
 Collecting and averaging is repeated separately for all agents.
 
-This method is irregular in how it interprets reviews.
-Section~\ref{sec:approach_reviews} discussed previously how reviews are meant to give feedback on claims, not the claimer agents themselves.
+The specialty in simple averaging of reviews is in the different interpretation of reviews.
+Section~\ref{sec:approach_reviews} discussed previously how reviews are meant to give feedback on claims, not on the claimer agents.
 Simple review averaging turns this around and makes reviews behave as rating the claimers themselves.
 
 This is best seen through an example.
@@ -871,48 +879,213 @@ For this reason, the use of this method was mostly neglected in favor of the oth
 
 
 % --------------------------------------------------------------
-\section{Distortion Strategies}\label{sec:distort_strategies}
+\section{Improving Reputation}\label{sec:approach_improvements}
+% --------------------------------------------------------------
+TODO
+% unused figures:
+figure~\ref{fig:improvement_aging}
+figure~\ref{fig:improvement_weights}
+
+idea: aging for reviews
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=1\linewidth]	{../images/improvement_aging-crop.pdf}
+    \caption{
+    Schematic showing the adaptation of aging as improvement technique.
+    Aging maintains a window of time in which recent claims fall.
+    These remain active and counted.
+    Every claim older than the limit is removed.
+    }
+    \label{fig:improvement_aging}
+  \end{center}
+\end{figure}
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=1\linewidth]	{../images/improvement_weights-crop.pdf}
+    \caption{
+    Schematic showing the adaptation of weights as improvement technique.
+    Whichever method is used to calculate \emph{Agent N}'s reputation, it also takes the weights of the raters into account.
+    Their reviews are represented according to their weights.
+    How agents get their weights can differ.
+    Here, weights simply reflect the agent's reputation.
+    }
+    \label{fig:improvement_weights}
+  \end{center}
+\end{figure}
+
+
+
+% --------------------------------------------------------------
+\section{Distortion}\label{sec:distort_strategies}
 % --------------------------------------------------------------
 % other name: Attack Strategies
 
-place of distort in claiming process ... figure~\ref{fig:simulation_flow}
-
 Distortion models the conscious and willing efforts of claimers to influence other's perception of their content quality.
-In a more broader picture, 
+It fits in the model as part of making new claims, seen in figure~\ref{fig:claim_rate_process}.
+When an agent $A$ makes a new claim $C_A$, that agent has some valuation of what the claim's quality is.
+This is called the measured quality $Q_{m,A,C_{A}}$ as per section~\ref{sec:approach_measure_claim}.
+The claimer agent $A$ needs to make an author's review $R_{author A, C_{A}}$ about its new claim $C_A$.
+Distortion basically defines how the agent comes up with the author review from the known the measured quality of the claim.
+\begin{equation}
+\mathrm{distort_{A}}(Q_{m,A,C_{A}}) = R_{author A, C_{A}}
+\end{equation}
 
-\cite{yu_detecting_2003} has the four static in the graph..
-static:
-"pessimistic" rater (rates in the lower range) bad mouthing
-"optimistic" rater (rates in the higher range) ballot stuffing
-inverted rating (rates good as bad and vice versa)
-random rater (rates random all the time)
+Distortion is one vector for agents to attack and exploit the reputation system, namely from the provider's side.
+The most honest approach is to do no distortion at all.
+Here, the author's review contains exactly the claimer's valuation of the claim quality.
+Less honest agents can either state a higher or lower value than their own estimate.
+To what extent and how often they do it depends on the distortion method they use.
 
-user tendentially rating extreme
-... conservative
-random error rater (occasionally makes a significantly inaccurate rating, most ratings honest to a degree of noise, i.e. not perfect!)
-	big inaccuracy e.g. erroneous measurement,sensor
-	
-Seller sells most products with high quality, but some with low quality for benefit. The honest bad reputation report from victim may be submerged, or be mistakenly regarded as unfair rating. \cite{ping_xu_rating_2005}
-
-	
-	
-dynamic:
-build up honest reputation and attack after that
-single out an agent and distort their rating only, honest otherwise
-mayb combine negative and positive attacks in collusion scenario, where attackers uprate each other and downrate their target
-mayb make difference bw. targeted attack on someone or group and just wrecking havoc on all
-
-individual vs collusion scenarios
+%More complex distort schemes are the dynamic methods.
 
 
 
 % --------------------------------------------------------------
-\section{Rating Strategies}\label{sec:approach_rating_strategies}
+\section{Rating}\label{sec:approach_rating_strategies}
 % --------------------------------------------------------------
+
+Rating models the feedback agents leave on content they used.
+When an Agent $A$ rates a claim $C_B$ made by another agent $B$, a regular review $R_{A,C_{B}}$ is produced.
+
+\begin{equation}
+\mathrm{rate_{A}}(C_B) = R_{A, C_{B}}
+\end{equation}
 
 Rating is analogous to distortion in that both end up producing a kind of review.
 The difference is that rating produces regular reviews on published claims, while distortion is used for author reviews.
-Also, rating can use a mich larger amount of input data, including 
+
+Apart from this, rating may use a much larger amount of input data, everything that is part of or connected to the rated claim $C_B$.
+This includes not only the measured quality, but also the other reviews of $C_B$, data of the author agent $B$ like $B$'s reputation, other claims of $B$ and their review and so on.
+This allows modeling elaborate methods of feedback behavior.
+
+Such amount of data is often not reasonable to utilize at once.
+Therefore, models of rating usually select one valuation related to the claim, and then apply some manipulation to this value.
+This input represents some numeric quality of the claim, like the author review, the quality as measured by the rater agent $A$, the average of other reviews, etc.
+Comparing how well these perform can be a task of its own.
+No specific value is assumed while discussing methods below.
+The general notation $X$ is used instead.
+
+Rating is the attack vector of those on the consumer side of transactions.
+Many attacks and exploits found in related works can be modeled as rating methods, because reviews are usually the most important factor in calculating reputation.
+
+
+\subsection{Simple Rate Methods}
+
+Simple rating methods are characterized by using only one or a few input values and they can be described as a static transfer function.
+The modeled ones are shown in figure~\ref{fig:simple_rate_strategies}.
+Every transfer function can have parameters and an input $X$.
+
+The two commonly considered attacked methods \emph{promotion} and \emph{slandering} can be modeled with linear or breakpointed linear methods, as in equations \ref{eq:rate_linear} and \ref{eq:rate_linear_brpoint}. Breakpointed can go both ways, setting a low or a high limit for a constant value before or after that respectively. Parameters: $a$, $b$, \emph{direction}, \emph{breakpoint} and \emph{breakpoint value}.
+\begin{equation}\label{eq:rate_linear}
+\mathrm{rate_{linear}}(C_B) = aX+b
+\end{equation}
+\begin{equation}\label{eq:rate_linear_brpoint}
+\mathrm{rate_{breakpointed}}(C_B) = 
+    \begin{cases}
+      aX+b & \text{if $X$ within \emph{breakpoint}} \\
+      \text{\emph{breakpoint value}} & \text{otherwise}\\
+    \end{cases}
+\end{equation}
+
+Second order polinomial ratings described by (\ref{eq:rate_so}) are included from \cite{yu_detecting_2003}, where they are called exaggerated positive and negative.
+Parameters: $a$, $b$, $c$ and \emph{direction}, the latter influencing if the polinomial is added or substracted.
+\begin{equation}\label{eq:rate_so}
+\mathrm{rate_{second order}}(C_B) = X \pm (aX^2+bX+c)
+\end{equation}
+
+Invert rating is also adapted from the above cited work.
+\begin{equation}\label{eq:rate_invert}
+\mathrm{rate_{invert}}(C_B) = -X + \mathrm{max}(X) + \mathrm{min}(X)
+\end{equation}
+
+Flattening was introduced to model the often-seen behavior of people avoiding strong opinions, tending toward the safe middle values.
+It reduces the more extreme values towards the middle range.
+The strength of flattening is given by parameter $a < 1$.
+
+\begin{equation}\label{eq:rate_flatten}
+\begin{aligned}
+&\mathrm{rate_{flatten}}(C_B) = a(X-mid)+mid \\
+\mathrm{where~}&mid = 0.5\big(\mathrm{max}(X) - \mathrm{min}(X) \big) + \mathrm{min}(X)
+\end{aligned}
+\end{equation}
+
+Flattening can be seen as conservative rating.
+The opposite of flattening is when the transfer function amplifies toward extremes.
+Flatten rating in (\ref{eq:rate_flatten}) can do this with a multiplier $a > 1$.
+This can be a model for agents that mostly have strong opinions, either very high or very low.
+
+Finally, the simplest of all rating methods is when nothing is done.
+This means some quality $X$ of the claim is returned without altering.
+An example is the method that simply repeated the author's review of the rated claim.
+
+\begin{figure}[tbp]
+  \begin{center}
+    \includegraphics[width=0.74\linewidth]{../images/simple_rate_strategies2.pdf}
+    \caption{
+    Transfer functions of simple rating methods.
+    The dashed line is the input without transformation.
+    It can be any single value from the rated claim, for example its author review, or measured quality.
+    Rating methods show example parametrizations, these can of course change.
+    Both the input and ratings are selected to be within $[1,9]$.
+    }
+    \label{fig:simple_rate_strategies}
+  \end{center}
+\end{figure}
+
+
+\subsection{Random Rate Methods}
+Random error rating is a method where sometimes a significantly inaccurate rating is made.
+	It can model a sensor's rare erroneous data.
+Also, agents whose attack approach is rate normal most of the time to build reputation and occasionally insert a malicious rating.
+The malicious rating may carry more weight due to the rater's otherwise good reputation.
+The method is modeled as per (\ref{eq:rate_random_error}).
+Parameters: \emph{chance}.
+\begin{equation}\label{eq:rate_random_error}
+\mathrm{rate_{random~error}}(C_B) = 
+\begin{cases}
+random & \text{if $chance$ is taken by coincidence} \\
+X & \text{otherwise}
+\end{cases}
+\end{equation}
+
+Various other random ratings can be used to model actors who want to weak havoc or are completely ignorant.
+Random, lower half, and higher half random all give a random value within the whole or part of the rating range.
+\begin{equation}\label{eq:rate_random}
+\mathrm{rate_{random}}(C_B) = \text{random value in $\big[\mathrm{min}(X), \mathrm{max}(X)\big]$}
+\end{equation}
+\begin{equation}\label{eq:rate_random_higher_half}
+\mathrm{rate_{random~higher~half}}(C_B) = \text{random value in $\left[\frac{\mathrm{min}(X)}{2}, \mathrm{max}(X)\right]$}
+\end{equation}
+\begin{equation}\label{eq:rate_random_lower_half}
+\mathrm{rate_{random~lower~half}}(C_B) = \text{random value in $\left[\mathrm{min}(X), \frac{\mathrm{max}(X)}{2}\right]$}
+\end{equation}
+
+
+\subsection{Rate Methods of Collectives}
+Collaborating agents working towards a common goal can form collectives.
+Such groups are common in real online reputation systems.
+Producers often have a loyal following among consumers, who will promote the producer's content with higher ratings.
+Some marketing or other agencies take clients to improve their online reputation by a coordinated promotion attack.
+Producers might also initiate slandering-type attacks against competitors.
+This is sometimes done by organized or spontaneous mobs, leaving baseless bad reviews on businesses or sellers for various reasons.
+
+A main distinction is whether the collective promotes or slanders.
+Slandering is typically aimed towards an agent outside the collective.
+Promotion on the other hand can target members of the collective.
+As also mentioned before, a collective can build up the reputation of its members by promoting each other, so that a later planned slander attack carrier more weight.
+
+\subsection{Experience-Based Rate Methods}
+Experience-based rating is when a consumer judges a content based on personal experience with it.
+An agent's own experience is modeled by measuring claims, discussed in section~\ref{sec:approach_measure_claim}.
+When an agent $A$ measures the claim $C_B$ made by agent $B$, it results in the measured quality $Q_{m,A,C_{B}}$.
+
+Technically any of the discussed rate methods can be experience-based, if $X$ is chosen as $Q_{m,A,C_{B}}$.
+Still, explicitly defining such a rate method is worth it because rating from own opinion is common.
+\begin{equation}\label{eq:rate_own_experience}
+\mathrm{rate_{own~experience}}(C_B) = Q_{m,A,C_{B}}
+\end{equation}
 
 
 
@@ -922,44 +1095,46 @@ Also, rating can use a mich larger amount of input data, including
 % aka. Simulation System
 % putting together all the above
 
-check how to implement these
-can use existing eval frameworks? or need own one in python
-if latter, what components
-a diagram can be good also for the presentation
+%check how to implement these
+%can use existing eval frameworks? or need own one in python
+%if latter, what components
+%a diagram can be good also for the presentation
 
-
-
-The Pyrepsys Reputation System was designed in order to allow simulation, comparison and evaluation of selected reputation schemes with various environment conditions. 
-This chapter gives a conceptual introduction for Pyrepsys, including main design goals, simulation flow and core features.
-For a description of the concrete implementation of Pyrepsys, see Chapter~\ref{chap:implementation}.
-
-Overall requirements and unique approaches warranted the inception of a new reputation simulation framework. 
-These are among others:
+There have been many reputation evaluation frameworks made in the past, as surveyed in chapter~\ref{chap:related_work}.
+The first approach was to find one of these suitable for use, for which a few general requirements were applied.
+These are:
 \begin{itemize}
+    \item available source code
     \item domain-independence
-    \item the use of one or more reputation improvement methods
-    \item ability to represent \glspl{claim}
-    \item possibility of second-order rating schemes like stakes
-    \item full simulation of agents
-    \item flexible review values (to support custom integer ranges)
-    \item extendability and ease of modification for fast prototyping
+    \item preferrably widely accepted
+    \item extendability and ease of modification
+    \item flexibility with simulation parameters and components
+    \item preferrably some common reputation schemes already implemented
 \end{itemize}
 
+Most of these are needed to accomodate unique approaches and fulfill specific requirements, such as:
+\begin{itemize}
+    \item the use of one or more reputation improvement methods
+	\item ability to implement custom reputation schemes
+    \item flexible review values (custom integer ranges)
+    \item second-order rating schemes (like stakes)
+    \item ability to represent \glspl{claim} in some form
+    \item full simulation of all agents
+\end{itemize}
 
-\subsection{Design Goals}
-\subsubsection{asd}
-Flexibility and extendability are among the main design objectives of Pyrepsys.
-Variables can be altered in scenario configuration files.
-The size and composition of the agent population is customizable.
-New agent behaviors, metrics, reputation calculation and improvement methods can be easily added.
+None of the examined evaluation frameworks satisfied all needs.
+Overall requirements and unique approaches warranted the inception of a new reputation simulation framework.
+
+Because of this, a custom system was designed to simulate, compare and evaluate selected reputation schemes under various environmental conditions.
+This section gives a conceptual introduction, including components and core features.
+For a description of the concrete Python implementation, see Chapter~\ref{chap:implementation}.
 
 
 
 \subsection{Scenarios}\label{sec:scenario}
-A \gls{scenario} is the description of a complete simulation environment including reputation schemes and agents with various behaviors.
-All parameters that are followed during the simulation are part of the scenario.
-Some of the most important are listed below.
-
+A \gls{scenario} is the description of a complete reputation environment including the reputation schemes and agents with various behaviors.
+All parameters that are needed during simulation are part of the scenario.
+Some of the most important are:
 \begin{itemize}
 	\item how reputation values are calculated
 	\item which reputation improvement methods are applied
@@ -972,28 +1147,45 @@ Some of the most important are listed below.
 \end{itemize}
 
 In this way, a scenario encapsulates all that is in a single simulation.
-This helps organizing combinations of simulation parameters and comparing them.
+This helps organize combinations of simulation parameters, and compare them.
 For example, when the goal is to see what effect malicious agents have, one could draft separate scenarios with varying percentage of malicious agents ranging from 0\% to 100\% in each.
 
-In the Pyrepsys implementation, it is possible to describe scenarios without a full specification.
-This means not all needed parameters are listed, just some selected ones.
-In this case, the missing parameters are taken from a default scenario configuration.
-This is useful when the effect of one or more parameter changes are needed, since those can be simply listed alone in their scenario configuration.
-This is described along the implementation in chapter~\ref{chap:implementation}.
-For all conceptual discussions, a scenario refers to all the simulation environment fully specified, regardless of where they come from in the implementation.
 
+\subsection{Measuring Claims}\label{sec:approach_measure_claim}
+Measuring claims is the term used for when an agent assesses the quality of a claim.
+This models when a consumer upon receiving a content, tries it out and leaves feedback based on first-hand experience.
+Additionally, an agent can also measure its own claim.
+%Measuring a claim is the representation of trying out a product or content and making an opinion of what its quality could be.
+
+The measured quality $Q_{m,A,C_{B}}$ denotes agent $A$'s assessment of claim $C_B$.
+With the model's assumption on the existence of a ground truth, measuring a claim can be seen as an agent trying to guess this hidden quality valuation.
+Agents are modeled here with various levels of expertise, which affects how close or how reliably they can measure the ground truth.
+Know-how, experience, expertise or inside knowledge are among the possible factors playing a role.
+This can vary between implementations.
+Pyrepsys uses \acrlong{ctai} for this.
+It is a parameter of agents representing the maximum inaccuracy they can make when measuring.
+
+As discussed in section~\ref{sec:appr_claim_rate_process}, making a new claim has two main stages: measuring the ground truth and distorting.
+The measurement serves as input for distortion.
+Distortion models conscious actions, honesty or willing manipulation.
+Measuring claims is also a sort of distortion, albeit not under the control of the agent.
+While distortion is \emph{intent}, measurment represents \emph{competence}.
+
+
+\subsection{Claiming and Rating}\label{sec:appr_claim_rate_process}
+Claiming (figure~\ref{fig:claim_rate_process}, above) spawns a new claim $C_A$ without any reviews, containing a \gls{gr_truth}.
+The claimer agent $A$ measures this hidden quality and distorts it, resulting in a value representing the clamer's opinion of his own claim.
+This is attached as an \gls{author_review} $R_{authorA,C_{A}}$ to the claim to be published.
+
+Rating (figure~\ref{fig:claim_rate_process}, below) takes an existing published claim $C_A$ by agent $A$.
+The rater agent $B$ takes all data relevant to claim $C_A$ and produces a \gls{review} $R_{B,C_{A}}$.
+This is then appended to the other reviews on claim $C_A$.
 
 \begin{figure}[tbp]
   \begin{center}
         \includegraphics[width=1\linewidth]	{../images/claim_rate_process-crop.pdf}
     \caption{
-    Schematic representation of claiming (above) and rating (below) processes with the involved claims and reviews.
-	\emph{Claiming} (above) spawns a new claim without any reviews, containing a random \gls{gr_truth}.
-	The claimer agent measures this hidden quality and distorts it, resulting in a value representing the clamer's opinion of his own claim.
-	This is attached as an \gls{author_review} to the claim to be published.
-	\emph{Rating} (below) takes an existing published claim.
-	The rater agent takes all data relevant to the claim and produces a \gls{review}.
-	This is then appended to the other reviews on the same claim.
+    Schematic representation of claiming (above) and rating (below) processes, with the involved claims and reviews.
     }
     \label{fig:claim_rate_process}
   \end{center}
@@ -1001,48 +1193,11 @@ For all conceptual discussions, a scenario refers to all the simulation environm
 
 
 
-
-\begin{figure}[tbp]
-  \begin{center}
-        \includegraphics[width=0.75\linewidth]	{../uml/simulation_flow.pdf}
-    \caption{
-    Simulation flow in Pyrepsys.
-    A single simulation unit is the \gls{scenario}.
-    Each \gls{scenario} is simulated independently after one another.
-    Rounds make up the simulation within a \gls{scenario}.
-    Each round consists of four distinct phases: claiming, rating, improvement and reputation calculation.
-    The number of rounds is specified in the configuration.
-    }
-    \label{fig:simulation_flow}
-  \end{center}
-\end{figure}
-
-
-
-
-
-
-- idea of author review
-- what each thing represents
-  - accuracy is the agents competency "expertness" / unwilling inaccuracy
-  - distortion is honesty / willing inaccuracy
-  - author review is a declaration on what the claimer thinks his claim is worth
-
-
-\Glspl{author_review} are special \glspl{review} appended to each claim by the claiming agent, the author.
-
-\subsection{Measuring Claims}\label{sec:approach_measure_claim}
-measuring claims
-
-
 \subsection{Resolution}\label{sec:approach_resolution}
-TODO THIS INTRO...
-Resolution gives control over what values are accepted at various parts of the simulation.
+Resolution determines what values are allowed in various parts of the model.
+For example, if reviews are constrained by a resolution of 1, and minimum and maximum values are 1 and 9, then the result of ratings can be integers from 1 to 9, i.e. $\forall R$: $R\in\mathbb{Z}$ and $1 \le R \le 9$.
 
-Used together with the rating range, resolution defines what values are possible in the system.
-For example, if reviews have a resolution of 1 and the minimum and maximum values are 1 and 9, then the result of ratings can be integers from 1 to 9.
-
-There are two main uses for resolution during simulation.
+There are two main uses for resolution.
 One of them is the already mentioned review resolution.
 It applies to any review made, and its purpose is to force review values to follow the wished reputation scheme.
 With separate resolution handling, rate and distort schemes remain independent of the exact selection of allowed values they are expected to produce.
@@ -1060,25 +1215,20 @@ However, the information is there, what the agent does with it is left for the a
 The idea behind limiting measured claims in this way is the following.
 When thinking of what quality a content (claim) has, it is often not possible to exactly determine it.
 For example, in the 5-star scheme, one could think something is around 3 or 4 out of 5, but not give a more exact estimate.
-Measuring claims is the implemented representation of this thought process.
-If it would return for example 3.4562 in this case, there is no uncertainty where exactly the quality falls.
-If resolution is at 0.5, measurement can only return either 3, 3.5 or 4, or even other values if the agent has a huge inaccuracy as per \gls{ctai}.
+Measuring claims models this thought process.
+If measurement would give 3.4562 in this case, there is no uncertainty where exactly the quality falls.
+If resolution is at 0.5, measurement can only return either 3, 3.5 or 4, or even other values if the agent has a huge inaccuracy.
 A similar but slightly better claim would also measure at the same values.
 This is more realistic when agents represent people judging content freely.
 On the other hand, a more fine-grained resolution could be used when the scenario works with an algorithmic reputation environment.
 Where agents are machines and there is a way to algorithmically assess a claim, it is reasonable to allow more freedom for claim measurements.
 
-A third resolution domain could also be created for reputations.
-This could limit the granularity of global reputations.
-The reason this was not included is that reputation calculation strategies serve as a single source of reputation values.
-They can adhere to specific resolution limits as part of their calculation if it is needed.
+A third resolution domain could also be created for reputations, limiting the granularity of global reputations.
+The reason this was not included is that reputation calculation methods serve as a single source of reputation values.
+They can adhere to specific resolution limits as part of their calculation if needed.
 For example, if a reputation strategy is build to rate in the 5-star system, it is implemented to give integers [1,5] anyway.
-On the other side, a scenario can have many different kind of behavior strategies for agents.
-Designing different versions of each with different resolutions unreasonable, hence the review resolution domain.
-
-
-
-
+On the other side, a scenario can have many different kind of behaviors for agents.
+Designing multiple versions of each with different resolutions unreasonable, hence the review resolution domain.
 
 
 
@@ -1203,6 +1353,21 @@ The \gls{author_review} is created and appended to the claim.
 Its value is always the distorted claim quality from the previous step.
 Finally, the agent appends the claim to the list of his claims, and so the claim is published.
 The claiming process is illustrated on figure~\ref{fig:claim_rate_process}.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../uml/simulation_flow.pdf}
+    \caption{
+    Simulation flow in Pyrepsys.
+    A single simulation unit is the \gls{scenario}.
+    Each \gls{scenario} is simulated independently after one another.
+    Rounds make up the simulation within a \gls{scenario}.
+    Each round consists of four distinct phases: claiming, rating, improvement and reputation calculation.
+    The number of rounds is specified in the configuration.
+    }
+    \label{fig:simulation_flow}
+  \end{center}
+\end{figure}
 
 
 \subsection{Rating}
@@ -1368,8 +1533,7 @@ Agents then call upon their behavior strategies during simulation through the \t
 
 
 \subsection{Measuring Claims}
-Measuring a claim is the representation of trying out a product or content and making an opinion of what its quality could be.
-In more concrete terms, measuring is taking an approximation on the hidden true quality, or the \gls{gr_truth} of a claim.
+Measuring is taking an approximation on the hidden true quality, or the \gls{gr_truth} of a claim.
 It results in a value that is comparable to the ground truth or any review on the claim.
 This is the \gls{measured_claim_score}.
 
@@ -1781,10 +1945,15 @@ For a usage-oriented description of every possible scenario parameter, see appen
 
 
 \subsection{Scenario Definition}
-Scenarios are expected as \texttt{.yaml} files located in the \texttt{scenarios} folder.
+\Glspl{scenario} are expected as \texttt{.yaml} files located in the \texttt{scenarios} folder.
 Each file contains a list of parameters in yaml format, telling what the scenario is about.
 Parameters include the reputation strategy, used improvement handlers, agents, enabled metrics, resolution, rating range, the initial seed and other settings.
 
+%Pyrepsys allows describing scenarios without a full specification.
+%This means not all needed parameters are listed, just some selected ones.
+%The missing parameters are taken from a default scenario configuration.
+%This is useful when the effect of one or more parameter changes are needed, since those can be simply listed alone in their scenario configuration.
+%For all conceptual discussions, a scenario refers to all the simulation environment fully specified, regardless of where they come from in the implementation.
 Scenario files can either be fully or partially defined.
 Full definition requires the scenario give an explicit value for all possible parameters.
 Partially defined scenarios contain only a subset of all settings.
