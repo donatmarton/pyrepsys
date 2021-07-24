@@ -16,7 +16,7 @@ class AvgAccuracyPerRound(Metric):
     def __init__(self):
         super().__init__()
         self.add_event_of_interest(SimulationEvent.END_OF_ROUND)
-        self.name = "Average Inaccuracy of Raters Per Rounds"
+        self.name = "Average Cumulative Inaccuracy of Raters Per Rounds"
         self.scenarios_data = []
 
     def prepare_new_scenario(self, scenario):
@@ -63,20 +63,178 @@ class AvgAccuracyPerRound(Metric):
         figfile = os.path.join(target_dir,type(self).__name__)
         fig.savefig(figfile)
 
-class AvgAccuracyPerScenario(Metric):
+class AvgAccuracyPerRoundNotCumulative(Metric):
     def __init__(self):
         super().__init__()
-        self.add_event_of_interest(SimulationEvent.END_OF_SCENARIO)
-        self.name = "Average Accuracy Per Scenarios"
-    
+        self.add_event_of_interest(SimulationEvent.END_OF_ROUND)
+        self.name = "Average Inaccuracy of Raters Per Rounds"
+        self.scenarios_data = []
+
     def prepare_new_scenario(self, scenario):
-        logger.debug("AvgAccuracyPerScenario scenario preparation: {}".format(scenario))
+        logger.debug("AvgAccuracyPerRound scenario preparation: {}".format(scenario))
+        self.scenarios_data.append( ScenarioDataPoints(scenario) )
 
     def calculate(self, **data):
-        logger.debug("AvgAccuracyPerScenario was called")
+        logger.debug("AvgAccuracyPerRound was called")
+        agents_data = data["agents_data"]
+        round_number = data["round_number"]
+
+        #avg( | estimated - claim ground truth | ) for claims in current round of all agents
+        agent_accuracies =  []
+        for agent in agents_data:
+            for claim in agent.claims:
+                if len(claim.reviews) > 0 and claim.round_timestamp == round_number:
+                    review_scores = []
+                    for review in claim.reviews:
+                        review_scores.append(review.value)
+                    review_avg = sum(review_scores) / len(review_scores)
+                    accuracy = abs( claim.ground_truth - review_avg )
+                    agent_accuracies.append(accuracy)
+        avg_accuracy = sum(agent_accuracies) / len(agent_accuracies)
+
+        self.scenarios_data[-1].record_data_point(round_number, avg_accuracy)
 
     def export(self, target_dir):
-        logger.debug("AvgAccuracyPerScenario export")
+        logger.debug("AvgAccuracyPerRound export to {}".format(target_dir))
+        fig, ax = plt.subplots()
+        ax.set_title(self.name)
+        ax.set_xlabel("Round")
+        ax.set_ylabel("Average inaccuracy")
+
+        for scenario in self.scenarios_data:
+            ax.plot(
+                scenario.x,
+                scenario.y,
+                'o',
+                label=scenario.name)
+
+        ax.legend()
+        ax.grid()
+        
+        figfile = os.path.join(target_dir,type(self).__name__)
+        fig.savefig(figfile)
+
+class ReputationsPerRounds(Metric):
+    class ScenarioData:
+        def __init__(self, scenario_name):
+            self.name = scenario_name
+            self.rounds = []
+            self.agent_reputations = {}
+    
+    def __init__(self):
+        super().__init__()
+        self.add_event_of_interest(SimulationEvent.END_OF_ROUND)
+        self.name = "Agent Global Reputations"
+        self.scenarios_data = []
+
+    def prepare_new_scenario(self, scenario):
+        self.scenarios_data.append( self.ScenarioData(scenario) )
+
+    def calculate(self, **data):
+        agents_data = data["agents_data"]
+        round_number = data["round_number"]
+
+        data = self.scenarios_data[-1]
+        
+        if round_number == 0:
+            data.rounds.append(-1)
+            for agent in agents_data:
+                try:
+                    agent_reps_list = data.agent_reputations[agent.ID]
+                except KeyError:
+                    agent_reps_list = []
+                    data.agent_reputations[agent.ID] = agent_reps_list
+                agent_reps_list.append(config.get("INITIAL_REPUTATION"))
+
+        data.rounds.append(round_number)
+        for agent in agents_data:
+            try:
+                agent_reps_list = data.agent_reputations[agent.ID]
+            except KeyError:
+                agent_reps_list = []
+                data.agent_reputations[agent.ID] = agent_reps_list
+            agent_reps_list.append(agent.global_reputation)
+
+    def export(self, target_dir):
+        join_with_subplots = self.get_local_config("join_with_subplots")
+
+        if join_with_subplots:
+            self._draw_joined(target_dir)
+        else:
+            self._draw_individual(target_dir)
+
+    def _draw_joined(self, target_dir):
+        nrows = self.get_local_config("nrows")
+        ncols = self.get_local_config("ncols")
+        if nrows*ncols != len(self.scenarios_data):
+            raise ConfigurationError("different number of subplots and scenarios")
+        
+        min_reputation = config.get("MIN_RATING")
+        max_reputation = config.get("MAX_RATING")
+
+        fig = plt.figure()
+        #fig, axs = plt.subplots( nrows=nrows, ncols=ncols)
+
+        fig.suptitle(self.name)
+
+        for idx, scenario in enumerate(self.scenarios_data):
+            in_first_col = True if idx % ncols == 0 else False
+            in_last_row = True if idx >= len(self.scenarios_data) - ncols else False
+
+            ax = fig.add_subplot(nrows, ncols, 1+idx)
+
+            for agent_ID, reputations in scenario.agent_reputations.items():
+                ax.plot(
+                    scenario.rounds,
+                    reputations,
+                    color="0.5",
+                    linewidth=0.75,
+                    label=agent_ID)
+            
+            ax.set_ylim(min_reputation, max_reputation)
+            ax.set_xticks([0,(scenario.rounds[-1]+1)/2,scenario.rounds[-1]+1])
+            ax.set_yticks([min_reputation,min_reputation+(max_reputation-min_reputation)/2,max_reputation])
+            ax.grid()
+            ax.grid(which='minor',alpha=0.2)
+            ax.minorticks_on()
+            
+            if not in_last_row: 
+                ax.set_xticklabels([])
+                ax.tick_params(which='both', bottom=False)
+            if in_last_row:
+                ax.set_xlabel("Round", fontsize='x-small')
+            if not in_first_col: 
+                ax.set_yticklabels([])
+                ax.tick_params(which='both', left=False)
+            if in_first_col:
+                ax.set_ylabel("Reputation", fontsize='x-small')
+
+        figfile = os.path.join(target_dir, type(self).__name__ + "_joined")
+        fig.savefig(figfile, bbox_inches="tight")
+
+    def _draw_individual(self, target_dir):
+        min_reputation = config.get("MIN_RATING")
+        max_reputation = config.get("MAX_RATING")
+        fig, ax = plt.subplots()
+        ax.set_title(self.name)
+        ax.set_xlabel("Round")
+        ax.set_ylabel("Reputation")
+
+        for scenario in self.scenarios_data:
+            for agent_ID, reputations in scenario.agent_reputations.items():
+                ax.plot(
+                    scenario.rounds,
+                    reputations,
+                    color="0.5",
+                    linewidth=0.75,
+                    label=agent_ID)
+            
+            ax.set_ylim(min_reputation, max_reputation)
+            ax.grid()
+        
+            figfile = os.path.join(target_dir,type(self).__name__ + "_" + scenario.name)
+            fig.savefig(figfile)
+            ax.clear()
 
 class AvgTotClaimInaccuracyAndReputationScatter(Metric):
     def __init__(self):

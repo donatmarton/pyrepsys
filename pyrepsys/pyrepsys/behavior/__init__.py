@@ -2,7 +2,8 @@ from .distort import (
     DistortDoNothingStrategy,
     DistortUpByOneAlways,
     DistortUpByOneRandom,
-    DistortHugeUpRandom
+    DistortHugeUpRandom,
+    MaxSometimes
 )
 from .rate import (
     RateRandomStrategy,
@@ -11,6 +12,14 @@ from .rate import (
     RateNearClaimScore,
     RateFromOwnExperience,
     RateDoNothing,
+    RateLinearManipulation,
     RateInvertedSlope,
-    RateLinearManipulation
+    Flatten,
+    LinearBreakpointed,
+    SecondOrderPolynomial,
+    RandomBigError,
+    LinearFromClaimerReputation,
+    RateBetweenAuthorReviewAndExperience,
+    LowrateHonestClaimers,
+    LowrateAll
 )

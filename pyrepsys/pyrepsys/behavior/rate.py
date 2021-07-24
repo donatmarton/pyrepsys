@@ -53,7 +53,8 @@ class Flatten(RateStrategy):
         min_rating = config.get("MIN_RATING")
         mid = (max_rating - min_rating) * 0.5 + min_rating
         a = self.get_local_config("a")
-        return a * (claim.author_review.value - mid) + mid
+        measured = rater.measure_claim(claim, self.rng(random_seed))
+        return a * (measured - mid) + mid
 
 class LinearBreakpointed(RateStrategy):
     def rate_claim(self, rater, claim, random_seed=None):
@@ -87,7 +88,38 @@ class SecondOrderPolynomial(RateStrategy):
 class RandomBigError(RateStrategy):
     def rate_claim(self, rater, claim, random_seed=None):
         chance = self.get_local_config("chance")
-        if self.rng(random_seed).random() >= chance:
-            return config.get("MAX_RATING")
+        rng = self.rng(random_seed)
+        if rng.random() >= chance:
+            return config.get("MIN_RATING")
         else:
-            return rater.measure_claim(claim)
+            return rater.measure_claim(claim, rng)
+
+class LinearFromClaimerReputation(RateStrategy):
+    def rate_claim(self, rater, claim, random_seed=None):
+        max_rep = config.get("MAX_RATING")
+        min_rep = config.get("MIN_RATING")
+        limit = self.get_local_config("limit")
+        limit_adjustment = max_rep - limit
+        claimer_rep = claim.author().global_reputation
+        ratio = (limit_adjustment + claimer_rep - min_rep) / (max_rep - min_rep)
+        return ratio * rater.measure_claim(claim, self.rng(random_seed))
+
+class RateBetweenAuthorReviewAndExperience(RateStrategy):
+    def rate_claim(self, rater, claim, random_seed=None):
+        rng = self.rng(random_seed)
+        meas = rater.measure_claim(claim, rng)
+        c_val = claim.author_review.value
+        
+        smaller = meas if meas < c_val else c_val
+        return smaller + rng.random() * abs(c_val - meas)
+
+class LowrateHonestClaimers(RateStrategy):
+    def rate_claim(self, rater, claim, random_seed=None):
+        if type(claim.author().distort_strategy).__name__ == "DistortDoNothingStrategy":
+            return 1
+        else:
+            return 9
+
+class LowrateAll(RateStrategy):
+    def rate_claim(self, rater, claim, random_seed=None):
+        return 1

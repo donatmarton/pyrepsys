@@ -27,7 +27,7 @@ class DistortHugeUpRandom(DistortStrategy):
 class MaxSometimes(DistortStrategy):
     def distort(self, distorter, measured_truth, random_seed=None):
         chance = self.get_local_config("chance")
-        if self.rng(random_seed).random() >= chance:
+        if self.rng(random_seed).random() <= chance:
             return config.get("MAX_RATING")
         else:
             return measured_truth
