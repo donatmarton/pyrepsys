@@ -90,90 +90,85 @@
 
 % glossary entries
 % -------------------------------------------------------------------
-\newglossaryentry{ex}
-{
-	name={sample},
-	description={an example}
-}
 \newglossaryentry{scenario}
 {
 	name={scenario},
-	description={Description of a complete simulation environment for Pyrepsys. Specifies the reputation scheme, improvement methods, agents, possible review values etc. See section~\ref{sec:scenario} for details.}
+	description={Description of a complete simulation environment for Pyrepsys. Specifies the reputation scheme, improvement methods, agents, possible review values etc. See section~\ref{sec:scenario} for details}
 }
 \newglossaryentry{claim}
 {
 	name={claim},
-	description={TODO}
+	description={The representation of a content provided by an agent. See sec.~\ref{sec:approach_claims}}
 }
 \newglossaryentry{review}
 {
 	name={review},
-	description={TODO}
+	description={Represents a quality valuation of a content (claim). Also called regular review. See sec.~\ref{sec:approach_reviews}}
 }
 \newglossaryentry{author_review}
 {
 	name={author review},
-	description={TODO}
+	description={A claimer's quality valuation of its own content. See sec.~\ref{sec:approach_author_review}}
 }
 \newglossaryentry{gr_truth}
 {
 	name={ground truth},
-	description={TODO}
+	description={The real and hidden objective quality of a content. Unknown to agents. See sec.~\ref{sec:approach_gr_truth}}
 }
 \newglossaryentry{score}
 {
 	name={score},
-	description={TODO}
+	description={Refers to a reputation, regular rating or author rating's value}
 }
 \newglossaryentry{claim_probability}
 {
 	name={claiming probability},
-	description={A percent likelihood determining whether an agent initiates a claiming process if given an opportunity. Specified in scenarios for each agent.}
+	description={A percent likelihood determining whether an agent initiates a claiming process if given an opportunity. Specified in scenarios for each agent}
 }
 \newglossaryentry{rate_probability}
 {
 	name={rating probability},
-	description={A percent likelihood determining whether an agent leaves a review on a claim if given an opportunity. Specified in scenarios for each agent.}
+	description={A percent likelihood determining whether an agent leaves a review on a claim if given an opportunity. Specified in scenarios for each agent}
 }
 \newglossaryentry{main_rng_chain}
 {
 	name={main random chain},
-	description={TODO}
+	description={Top-level sequence of random numbers. See sec.~\ref{sec:impl_rng}}
 }
 \newglossaryentry{branchoff_rng_chain}
 {
 	name={branch-off random chain},
-	description={TODO}
+	description={A secondary sequence of random numbers that is thrown away after it is used. Seeded with a random value from the main chain. See sec.~\ref{sec:impl_rng}}
 }
 \newglossaryentry{measured_claim_score}
 {
 	name={measured claim quality},
-	description={TODO}
+	description={An agent's approximation of a claim's ground truth. See sec.~\ref{sec:approach_measure_claim}}
 }
 \newglossaryentry{claim_range}
 {
 	name={claim range},
-	description={TODO}
+	description={Claim author reviews, reviews, ground truths, measured qualities and reputations fall within this range}
 }
 \newglossaryentry{distort_strategy}
 {
 	name={distortion strategy},
-	description={TODO}
+	description={Claimers calculation method of author review values. See sec.~\ref{sec:distort_strategies}}
 }
 \newglossaryentry{rate_strategy}
 {
 	name={rating strategy},
-	description={TODO}
+	description={Agents calculation method of review values. See sec.~\ref{sec:approach_rating_strategies}}
 }
 \newglossaryentry{distorted_claim_quality}
 {
 	name={distorted claim quality},
-	description={TODO a value produced by the distort strategy from the measured claim q}
+	description={The value produced by the distort strategy from the measured claim quality}
 }
 \newglossaryentry{rating_span}
 {
 	name={rating~span},
-	description={The size of the rating range, calculated as the difference of the maximum and minimum review values.}
+	description={The size of the rating range, calculated as the difference of the maximum and minimum review values}
 }
 \newglossaryentry{i_representation}
 {
@@ -689,12 +684,16 @@ random rater (rates random all the time)
 
 %TODO somewhere in this chapter, discuss how in ecom or other domains its a problem that not many ratings are given, while in fully machine populated it can be mandated to leave a review. then again its a question of who's in sensing distance e.g. in the intersection management case
 
-why there should be claims and reviews scenarios...
-should be scenarios to sim diff behaviors of agents
-why do u think claims and models can model a reputation system
-the idea behind creating this model
+%why there should be claims and reviews scenarios...
+%should be scenarios to sim diff behaviors of agents
+%why do u think claims and models can model a reputation system
+%the idea behind creating this model
 
-approach: how can u evaluate different rep techniques
+%approach: how can u evaluate different rep techniques
+\lettrine{T}{his} chapter describes how reputation environments are modeled to allow comparison of improvement techniques.
+First, the model elements are discussed,
+Then, configurable parts like reputation and improvement methods, and behaviors of participating agents are covered.
+Finally, concepts of the evaluation framework used for simulations are introduced.
 
 
 
@@ -702,7 +701,7 @@ approach: how can u evaluate different rep techniques
 \section{Model}\label{sec:approach_model}
 % --------------------------------------------------------------
 
-\subsection{Claims}
+\subsection{Claims}\label{sec:approach_claims}
 Considering any kind of reputation scheme, it consists of actor agents who make transactions between each other.
 These transactions usually involve the exchange of something, generally referred to as content here.
 Finally, some or all of the transacting agents leave a public feedback of their transaction partner, the content, or just keep their opinion and provide it upon request.
@@ -763,7 +762,7 @@ Online discussion   & Social media post & Popularity, agreed or not \\
 \label{tab:content_examples}
 \end{table}
 
-\subsubsection{Ground Truth}
+\subsubsection{Ground Truth}\label{sec:approach_gr_truth}
 The \gls{gr_truth}, or alternatively called claim quality, is meant to model the objectively true but hidden and not knowable quality of a content.
 This assumes that there is a way to calculate or judge a content's universal quality with the chosen valuation.
 In the case of the autonomous vehicle's estimated time of arrival, the ground truth represents the actual physically measurable length of time the vehicle needed for arrival.
@@ -785,7 +784,7 @@ For modeling purposes it is assumed that it will be known, and it was in fact ge
 Finally, ground truths are hidden from agents, and they have no way of directly accessing this valuation.
 The closest agents may get to it is by the above mentioned measurement of the claim, which is a model of trying out the content and making their own opinion of it.
 
-\subsubsection{Author's Review}
+\subsubsection{Author's Review}\label{sec:approach_author_review}
 An \gls{author_review} is a valuation that models what a claim's author says the quality of the content is.
 It is a sort of self-appraisal, a declaration of what the claimer thinks its claim is worth.
 Modeling the author's opinion is a somewhat unusual approach, since this is usually not explicitly part of reputation systems.
@@ -881,16 +880,12 @@ For this reason, the use of this method was mostly neglected in favor of the oth
 % --------------------------------------------------------------
 \section{Improving Reputation}\label{sec:approach_improvements}
 % --------------------------------------------------------------
-TODO
-% unused figures:
-figure~\ref{fig:improvement_aging}
-figure~\ref{fig:improvement_weights}
 
-idea: aging for reviews
+
 
 \begin{figure}[tbp]
   \begin{center}
-        \includegraphics[width=1\linewidth]	{../images/improvement_aging-crop.pdf}
+        \includegraphics[width=0.85\linewidth]	{../images/improvement_aging-crop.pdf}
     \caption{
     Schematic showing the adaptation of aging as improvement technique.
     Aging maintains a window of time in which recent claims fall.
@@ -901,9 +896,21 @@ idea: aging for reviews
   \end{center}
 \end{figure}
 
+\subsection{Aging}
+
+Aging's purpose is to limit the memory of the reputation system, so as to help follow changes in agent behavior or sentiment.
+Older data is forgotten, so no agent is locked into a reputation they no longer deserve.
+
+Aging is adapted to the system as shown in fig.~\ref{fig:improvement_aging}.
+\emph{Limit} specifies how long data is retained.
+Any claim that is older than the limit is removed, along with all attached reviews.
+
+
+\subsection{Weights}
+
 \begin{figure}[tbp]
   \begin{center}
-        \includegraphics[width=1\linewidth]	{../images/improvement_weights-crop.pdf}
+        \includegraphics[width=0.85\linewidth]	{../images/improvement_weights-crop.pdf}
     \caption{
     Schematic showing the adaptation of weights as improvement technique.
     Whichever method is used to calculate \emph{Agent N}'s reputation, it also takes the weights of the raters into account.
@@ -914,6 +921,44 @@ idea: aging for reviews
     \label{fig:improvement_weights}
   \end{center}
 \end{figure}
+
+Weights aim to give preference to some agents over others when aggregating reviews.
+The purpose of this is to give more weights to opinions of agents who have managed to build a good reputation, and less to those with bad reputation.
+Intuitively, this acts in the opposite direction that aging, because weights preserve the status quo, while aging helps change it.
+
+Figure~\ref{fig:improvement_weights} shows how weights are modeled.
+An agent's reputation serves as its weights, calculated proportionally.
+Reputation calculation methods use weighted average for aggregating reviews.
+
+
+\subsection{Other Selected}
+
+\emph{Outlier filtering} can be modeled by removing reviews which have significantly different valuations than the majority opinion.
+This can be a way to prevent a small number of saboteurs to influence a claim's overall review valuation.
+If the majority opinion of the claim shifts, the removed reviews need to be reconsidered and re-added if they are no longer outliers.
+
+\emph{Anonymous ratings} serve to isolate the content from the content provider to prevent biased rating.
+This is effectively implemented within the model if none of the agents use a strategy that discriminated against specific agents.
+
+\emph{Rating range normalization} aims to even out different rating habits of agents.
+For example, some agents avoid givin minimum and maximum ratings and stay at the middle ranges, others rate strong opinions more willingly.
+Normalization extends the midrange rater's ratings to span the whole rating range.
+This method is only applicable if agents already have a lot of ratings, because enough data is needed to confidently determine the typical rating range.
+
+
+\subsection{Stakes}
+
+Stakes is a new proposed improvement method.
+It consists of claimers publishing a stake along new claims.
+A stake gives how certain claimers are in their valuation of their new claim, i.e. the author's review.
+A high stake signals confidence of the agent in the author review's accuracy, while a low stake notifies others that even the claimer is not sure whether its author review is correct.
+
+Stake is a similar to a self reported weight, with a scope of only the involved claim.
+Other agents and even reputation calculation can use the stake when making decisions.
+For example, a low stake could mean the claimer does not receive much of a reputation penalty if the author review turns out to be inaccurate, while a higher stake incurs an amplified reputation correction.
+
+Since stake requires providing an extra valuation with every claim, it is best suited for algorithmic systems.
+A sensor can provide stakes based on its known uncertainty for example.
 
 
 
@@ -1119,6 +1164,7 @@ Most of these are needed to accomodate unique approaches and fulfill specific re
     \item flexible review values (custom integer ranges)
     \item second-order rating schemes (like stakes)
     \item ability to represent \glspl{claim} in some form
+    \item can define custom evaluation metrics
     \item full simulation of all agents
 \end{itemize}
 
@@ -2284,9 +2330,41 @@ This is beneficial when debugging a specific module.
 % --------------------------------------------------------------
 %Metrics: First define which quantities you will measure and why you chose those.
 
-- reputation
-- avg tot claim inaccuracy
-- also other metrics from my notebook
+Effectiveness is measured as a global, system-wide accuracy, as opposed to an agent-utility approach.
+This is chosen because measuring idividual agent's success makes less sense, since agents can not decide who they transact with.
+
+The main metric for system accuracy is reputation scores compared to claimer's inaccuracy.
+Claimers who publish accurate and reliable author's reviews should have a good reputation, while, inaccurate author's reviews should result in a lower reputation.
+This way, an ideal linear relationship exists between inaccuracy and reputation, where the lowest possible claiming inaccuracy should map to the highest reputation, while the theoretical largest inaccuracy in the worst possible reputation.
+This ideal line is shown as a dashed diagonal in plots of this metric.
+If an agent is above the line, it managed to cheat the system by getting a better reputation than its inaccuracy and honesty would proportionally warrant.
+If under, the agent is punished harder than it should be under straight proportions.
+
+Total claiming inaccuracy is determined by two factors: measurement inaccuracy and distortion.
+Since measurement is not under the agent's control, it is also called the involuntary inaccuracy.
+Distortion is fully each agent's doing, so it is voluntary and also called dishonesty.
+\begin{equation}
+\text{Total Claiming Inaccuracy} = \text{Measurement Inaccuracy} + \text{Dishonesty}
+\end{equation}
+This is computable for a claim $C_A$ made by agent $A$ using the claim's author review and its \gls{gr_truth}.
+\begin{equation}
+\text{Total Claiming Inaccuracy}(C) = \left| Q_{true,C_{A}} - R_{authorA,C_{A}} \right|
+\end{equation}
+Averaging every claim of an agent gives the \emph{Average Total Claiming Inaccuracy} of that agent.
+
+\vspace{6pt}
+
+\emph{Average Inaccuracy of Raters} measures how close regular reviews fall to the ground truths of rated claims.
+It is calculated as
+\begin{equation}
+\frac{\sum_{C\in\text{all claims}}({(\text{average of review on }C) - Q_{true,C})}}{\text{number of all claims}}
+\end{equation}
+
+This metric is most influenced by the setup of agents and their behavior strategies.
+For this reason it can be used less to judge the effectiveness of reputation or improvement schemes, and more to see how the agent population rates.
+When more dishonest or malicious raters are present, this metric will indicate that with a larger average inaccuracy.
+
+
 
 % --------------------------------------------------------------
 \section{Setup}\label{sec:setup}
@@ -2296,14 +2374,400 @@ This is beneficial when debugging a specific module.
 %    Simulation: Run your approach in a simulation framework. Which simulator (version) runs on which hardware (specs)? Which parameters? Why?
 %    Experiment: Measure values from a real implementation. Which devices are used? Conditions? Parameters?
 
-simulation setup -- used settings, scenarios
-describe different simulation bundles (of scenarios) and their rationale
-why they are interesting and what's expected
+Experiments are set up and simulated with Pyrepsys.
+Each one consists of multiple scenarios with one or two selected parameters that are varied.
+Most other parameters are kept the same to allow clear comparison.
+Fixed parameters are
+\begin{itemize}
+	\item rating range: $[1,9]$
+	\item rating resolution: 1
+	\item measurement resolution: 0.5
+	\item reputation strategy: \lstinline{BasedOnAvgDifferenceOfClaimsAndReviewsWithWeight}
+	\item initial reputation: 5
+	\item number of rounds: 80
+	\item seed: \lstinline{pyrepsys_random_seed}
+\end{itemize}
+
+\begin{table}[tbp]
+\centering
+% comment for the old, long table
+%\begin{tabular}{lrrllll}
+\begin{tabular}{@{}lll@{}}
+\toprule
+%\multirow{2}{*}[-0.2em]{\textbf{Base Behavior}} & \multirow{2}{*}[-0.2em]{\textbf{Rate\%}} & \multicolumn{2}{c}{\textbf{Claim}}            & \multirow{2}{*}[-0.2em]{\textbf{\acrshort{ctai}}} & \multicolumn{2}{c}{\textbf{Behavior}}             \\ \cmidrule(lr){3-4} \cmidrule(l){6-7} 
+% &  & \textbf{\%} & \textbf{Range} &  & \textbf{Distort} & \textbf{Rate}  \\ \midrule
+%\texttt{HonestClaimer} & 0.1 & 1 & [0.5,1] & 0.125 & \texttt{DoNothing} & \texttt{DoNothing} \\
+%\texttt{DishonestClaimer} & 0.1 & 1 & [0.5,1] & 0.125 & \texttt{MaxSometimes} 50\% & \texttt{RateFromOwnExperience} \\
+\multirow{2}{*}[-0.2em]{\textbf{Base Behavior}} & \multicolumn{2}{c}{\textbf{Behavior Strategy}} \\ \cmidrule(lr){2-3}
+ & \multicolumn{1}{c}{\textbf{Distort}} & \multicolumn{1}{c}{\textbf{Rate}} \\ \midrule
+\texttt{HonestClaimer} & \texttt{DoNothing} & \texttt{DoNothing} \\
+\texttt{DishonestClaimer} & \texttt{MaxSometimes} (0.5) & \texttt{RateFromOwnExperience} \\
+\texttt{HonestRater} & \texttt{DoNothing} & \texttt{LinearFromClaimerReputation} (7)\\
+\texttt{InfluencedHonestRater} & \texttt{DoNothing} & \texttt{BetweenAuthorReviewAndExperience} \\
+\texttt{MidrangeRater} & \texttt{DoNothing} & \texttt{Flatten} (0.5) \\
+\texttt{MaliciousRater} & \texttt{DoNothing} & \texttt{RateInvertedSlope} \\
+\texttt{HonestClaimerRater} & \texttt{DoNothing} & \texttt{RateFromOwnExperience} \\
+\texttt{DishonestClaimerRater} & \texttt{MaxSometimes} (0.5) & \texttt{LowrateHonestClaimers} \\
+\bottomrule
+\end{tabular}
+\caption{
+	Agent base behaviors used as template in simulations.
+	Values in parenthesis show parameters for behavior strategies that need them.
+	\texttt{MaxSometimes} has \emph{chance} of claiming the highest quality.
+}
+\label{tab:agent_base_behaviors}
+\end{table}
+
+Varied parameters are the improvement techniques and agent population composition.
+Agent base behaviors shown in table~\ref{tab:agent_base_behaviors} are defined as templates.
+Apart from the behavior strategies, the default agent parameters are
+\begin{itemize}
+	\item \gls{ctai}: 0.125
+	\item claim range: [0,1], or [0.5,1] for  \texttt{HonestClaimer} and \texttt{HonestClaimerRater}
+	\item claim probability: 0.8 for claimers, 0 for only raters
+	\item rate probability: 0.8 for raters, 0.1 for only claimers
+\end{itemize}
+
+Experiments are each identified with a letter.
+
+\subsubsection{Experiment A: effect of aging}
+This experiment varies two parameters, both over three possible settings, making nine scenarios total.
+First, improvements are varied as 1) no improvements, 2) aging with limit 25 and 3) aging with limit 10.
+Then, the number of \texttt{MaliciousRater} agents are varied as 1) none 2) 30 and 3) 60.
+\texttt{HonestRater} and \texttt{MidrangeRater} extend the agent population so that there are always 60 raters with these two in equal numbers.
+Lastly, all scenarios include 10 \texttt{HonestClaimer} and 10 \texttt{DishonestClaimer} agents.
+
+\subsubsection{Experiment B: malicious raters}
+In this experiment, the ratio of dishonest raters is increased gradually.
+Since reputation calculation is based on the honesty of claim valuations in the form of author reviews, dishonest raters who otherwise never claim will not get a reputation adjustment.
+
+The experiment has 10 \texttt{HonestClaimer} and 10 \texttt{DishonestClaimer} agents, and a total of 60 rater agents.
+These are made up of 1) none 2) 20 3) 40 and 4) 60 \texttt{MaliciousRater} agents.
+\texttt{HonestRater} and \texttt{MidrangeRater} agents fill the remaining rater spots equally, until all scenarios have 60 raters.
+
+The four versions are simulated with and without the weights improvement enabled, totaling at 8 scenarios.
+
+\subsubsection{Experiment C: dishonest claimers}
+This experiment has three versions, each a sub-experiment.
+The first one (C/I) increases the ratio of dishonest claimers.
+All scenarios have 60 raters, 20 of each type: \texttt{HonestRater}, \texttt{MidrangeRater} and \texttt{InfluencedHonestRater}.
+The \texttt{HonestClaimer} to \texttt{DishonestClaimer} ratio is changed as 1) 10:0 2) 8:2 3) 2:8 and 4) 0:10.
+The weighted and weightless versions are simulated additionally, totaling at 8 scenarios.
+
+Since a third of the agents are influenced by author reviews in their rating decisions, claimers are expected to be able to manipulate these agents into a better rating than the claim's deserved quality.
+However, the other agents are also honest and quite numerous, so combined they are expected to keep the dishonest claimers at bay.
+
+The second (C/II) experiment has the rater types \texttt{HonestRater} and \texttt{MidrangeRater} removed, so only 20 \texttt{InfluencedHonestRater} remain as raters.
+Compared to (C/I), the rater, or consumer agent population becomes more susceptible to influence.
+This means they take author reviews of claims more seriously overall.
+These agents are expected to be more easily manipulated, so dishonest claimers can possibly get a better reputation than before.
+
+The third (C/III) version fixes the ratio of honest and dishonest claimers, 10 agents each type.
+However, the 10 \texttt{DishonestClaimers} make dishonest claims increasingly often: 1) never 2) 50\% 3) 85\% and 4) 100\%.
+This aims to find out whether there is an upper limit to frequency of dishonest claimers still tolerated.
+Similar to (C/II) only 20 \texttt{InfluencedHonestRater} agents take part as raters.
+However, their rate strategy is varied between 1) the usual for this agent type \texttt{RateBetweenAuthorReviewAndExperience} and 2) \texttt{RateFromOwnExperience}.
+This changed the normally influencable raters to make rate decisions purely from their own opinion.
+
+\subsubsection{Experiment D: effect of weights}
+This experiment also has three sub-experiments and it aims to find out the effect of weights as improvement technique.
+Because weights are calculated from reputations, both claimers and raters should get reputation adjusments.
+For this, all agents need to be claimers, including the raters.
+This is often not the case in reputation systems for people, but is common for algorithmic reputation environments, where agents are machines.
+
+(D/I) uses \texttt{HonestClaimerRater} and \texttt{DishonestClaimerRater} agents in the numbers 1) 18:2 2) 14:6 3) 10:10 and 4) 2:18. Improvement techniques are varied as 1) Aging with limit 30 and 2) Aging with limit 30 and Weights.
+
+(D/II) makes honest raters dogmatic, in that they will tendentially give higher reviews for claims that come from good-reputation agents, and lower for claims with lower-reputation authors. 
+This is the \texttt{LinearFromClaimerReputation} rate strategy with limit of 7. 
+Limit gives the point above which reviews are amplified higher, while below it they are lowered.
+Similarly, dishonest agents become selfish saboteurs. 
+They will always give the highest possible author reviews (\texttt{MaxSometimes} with chance 100\%).
+When rating, they will rate everything with the lowest score, using \texttt{LowrateAll}.
+Improvements and honest-dishonest numbers stay the same.
+
+(D/III) changes honest raters from dogmatic to rating based on their own experience.
+Reputation plays no role in their reviews. 
+Everything else stays the same.
+
+\subsubsection{Experiment E: measurement accuracy}
+This experiment is for finding out the influence of measurement accuracy.
+The \gls{ctai} of raters is configured as 1) zero 2) 0.125 3) 0.25 and 4) 0.375.
+A \gls{ctai} of 0.125 increment means 1 full score in \gls{ae_representation} in the rating range [1,9].
+
+Every scenario has 5 \texttt{HonestClaimer} and 5 \texttt{DishonestClaimer} agents, both who are set not to rate at all.
+Raters use the rate strategy \texttt{RateFromOwnExperience} and are created in the amounts 1) 10 and 2) 1.
+The purpose of this is to find out whether more agents are able to combat the bigger inaccuracy better than only a single agent can.
+
+
 
 % --------------------------------------------------------------
 \section{Results}\label{sec:results}
 % --------------------------------------------------------------
 %Results: visualize your results as graphs and compare to the values of related work.
+
+\subsubsection{Experiment A: Effect of Aging}
+
+Figures~\ref{fig:res_a_scatter},~\ref{fig:res_a_reps} and \ref{fig:res_a_rateinaccuracy} show the results of the aging experiment.
+The claiming inaccuracy diagram on figure~\ref{fig:res_a_scatter} shows that more malicious agents pull every agent's reputation down from the ideal line.
+The figure shows the two distinct groups of honest and dishonest claimers.
+Each dot is a claimer agent.
+Honest claimers form the groups on the left in each subfigure.
+They have better reputation than the other group, which are the dishonest claimers.
+
+In this eperiment, the effect of aging brings no improvement for reputation, in fact it makes reputation scores more spread out for groups.
+This is observable on figures~\ref{fig:res_a_scatter} and \ref{fig:res_a_reps}.
+The former shows that agent groups are less and less concentrated with more aging, while figure~\ref{fig:res_a_reps} shows that reputations become more erratic with more aging.
+This can be explained by the smaller amount of data available for averaging and other aggreations with aging.
+Since aging removes old claims and all involved reviews that are older than the configured limit, this data is lost as far as reputation calculation and review averaging goes.
+
+Figure~\ref{fig:res_a_rateinaccuracy} illustrated the rater's inaccuracy. Since raters do not claim, and their rating methods do not need old claims, they are less affected. 
+However, since \texttt{HonestRater} agents use the reputation of rated claim authors, the fluctuation of reputation scores also influence their ratings. 
+This is seen as swings in inaccuracy on the aged scenarios.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/a/AvgTotClaimInaccuracyAndReputationScatter_joined.pdf}
+    \caption{
+    Average Total Claiming Inaccuracy and reputation scatter diagram of experiment A: effect of aging.
+    Aging increases toward the right column, while malicious raters increase toward the bottom row.
+    }
+    \label{fig:res_a_scatter}
+  \end{center}
+\end{figure}
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/a/ReputationsPerRounds_joined.pdf}
+    \caption{
+ 	Progression of agent reputations per rounds in experiment A: effect of aging.
+    Aging increases toward the right column, while malicious raters increase toward the bottom row.
+    }
+    \label{fig:res_a_reps}
+  \end{center}
+\end{figure}
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/a/AvgAccuracyPerRound.pdf}
+    \caption{
+    Averaged cumulative rater inaccuracy per rounds in experiment A: effect of aging.
+    In the legend, first index increases with more aging, the second with more malicious agents.
+    }
+    \label{fig:res_a_rateinaccuracy}
+  \end{center}
+\end{figure}
+
+\subsubsection{Experiment B: Malicious Raters}
+
+Increasing the number of malicious raters results in a similar effect as observed in the previous experiment, only without the interference of aging.
+Figure~\ref{fig:res_b_scatter} shows that malicious raters push the raputation of all claimers equally down.
+
+Honest claimers are smeared towards their ideal reputation levels, as they form a sort of vertical line.
+This means their inaccuracy was the same, still they received different reputations.
+On the bottom row with all the raters malicious, the spread of honest claimer reputations is a little over 2 points.
+
+Because malicious raters never claim, they do not get reputation adjustments and stay on the default of 5 for the whole simulation.
+This means there is no way to filter their ratings, even with weights and a number of honest raters still in the system.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/b/AvgTotClaimInaccuracyAndReputationScatter_joined.pdf}
+    \caption{
+    Average Total Claiming Inaccuracy and reputation scatter diagram of experiment B: malicious raters.
+    Malicious raters increase toward the bottom row.
+    The left column is without any improvements, the right side is with weights enabled.
+    }
+    \label{fig:res_b_scatter}
+  \end{center}
+\end{figure}
+
+\subsubsection{Experiment C: Dishonest Claimers}
+
+C/I results are shown on figures \ref{fig:res_c_scatter} and \ref{fig:res_c_reps}.
+Dishonest claimers are positioned above their exactly ideal reputation, but the difference is insignificant.
+Good-intentioned raters are able to keep order even when all claimers are dishonest.
+Figure~\ref{fig:res_c_reps} shows however, that it takes around 20-30 rounds for reputations to settle.
+Both figures show no improvements on the left columns and weights on the right side.
+There is no difference between the two versions.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/c/AvgTotClaimInaccuracyAndReputationScatter_joined.pdf}
+    \caption{
+    Average Total Claiming Inaccuracy and reputation scatter diagram of experiment C/I: dishonest claimers.
+    The number of dishonest claimers increases downwards.
+    Left column: no improvements, right: weights enabled.
+    }
+    \label{fig:res_c_scatter}
+  \end{center}
+\end{figure}
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/c/ReputationsPerRounds_joined.pdf}
+    \caption{
+ 	Progression of agent reputations per rounds in experiment C/I: dishonest claimers.
+    The number of dishonest claimers increases downwards.
+    Left column: no improvements, right: weights enabled.
+    }
+    \label{fig:res_c_reps}
+  \end{center}
+\end{figure}
+
+Experiment C/II removes all raters that are not influencable, i.e. that are not \texttt{InfluencedHonestRater}.
+It also tests the effect of higher \gls{ctai} for honest claimers and raters both.
+As seen on figures ~\ref{fig:res_c2_scatter}, dishonest claimers are able to get an even better reputation by influencing raters with high author reviews.
+In the right column, honest claimers have more inaccuracy, so they are more spread out horizontally on the total claiming inaccuracy axis.
+
+Rater inaccuracy is also affected by the higher \gls{ctai}, shown on figure~\ref{fig:res_c2_rateinaccuracy}.
+As expected, a higher \gls{ctai} makes reviews more inaccurate.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/c2/AvgTotClaimInaccuracyAndReputationScatter_joined.pdf}
+    \caption{
+    Average Total Claiming Inaccuracy and reputation scatter diagram of experiment C/II: dishonest claimers.
+    The number of dishonest claimers increases downwards.
+    Left column: honest raters and claimers have the default \gls{ctai}, right: \gls{ctai} is tripled for them.
+    }
+    \label{fig:res_c2_scatter}
+  \end{center}
+\end{figure}
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/c2/AvgAccuracyPerRound.pdf}
+    \caption{
+    Averaged cumulative rater inaccuracy per rounds in experiment C/II: dishonest claimers.
+    In the legend, first index means lower \gls{ctai} if 0, higher if 1, applied only to hoenst raters and claimers.
+    The second index increases along with the number of dishonest claimers.
+    }
+    \label{fig:res_c2_rateinaccuracy}
+  \end{center}
+\end{figure}
+
+C/III simulates dishonest claimers that are dishonest increasingly often.
+As observed on firugre~\ref{fig:res_c3_scatter}, dishonest claimers slide rightwards on the subfigures, meaning they make more and more dishonest claims.
+With influencable raters, the dishonest claimers are able to acquire a better reputation.
+In fact, the undeserved reputation gains get relatively larger as more and more dishonest claims are made.
+However, if raters disregard the author's review (right, fig.~\ref{fig:res_c3_scatter}), reputation scores stay on the ideal line regardless of dishonest claims.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/c3/AvgTotClaimInaccuracyAndReputationScatter_joined.pdf}
+    \caption{
+    Average Total Claiming Inaccuracy and reputation scatter diagram of experiment C/III: dishonest claimers.
+    Dishonest claimers make exaggerated maximum quality claims more often towards the bottom row.
+    Left column: raters are influenced by author reviews, right: raters rely on their own experience only.
+    }
+    \label{fig:res_c3_scatter}
+  \end{center}
+\end{figure}
+
+\subsubsection{Experiment D: Effect of Weights}
+
+All agents are both raters and claimers in this experiment, because this is needed for them to have reputation adjusments.
+D/I increases the number of dishonest agents.
+Bad-intentioned raters are no longer malicious, instead they rate honest agents dogmatically with a lower score.
+As expected, honest agent reputations are brought down, seen in fig.~\ref{fig:res_d_scatter}.
+Using weights makes no difference here.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/d/AvgTotClaimInaccuracyAndReputationScatter_joined.pdf}
+    \caption{
+    Average Total Claiming Inaccuracy and reputation scatter diagram of experiment D/I: weights.
+    The ratio of dishonest claimer-raters increases downwards.
+    Both columns have aging with limit 30, right side also has weights.
+    }
+    \label{fig:res_d_scatter}
+  \end{center}
+\end{figure}
+
+D/II makes agents dogmatic and divisive.
+Honest agents give better ratings to good-reputation claimers and worse for bad-reputationed ones.
+Dishonest agents claim dishonest every time.
+Figure~\ref{fig:res_d2_scatter} shows that honest agents are able to recover their good reputation with the help of weights.
+This is a relatively long process, taking 30-60 rounds (fig.~\ref{fig:res_d2_reps}).
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/d2/AvgTotClaimInaccuracyAndReputationScatter_joined.pdf}
+    \caption{
+    Average Total Claiming Inaccuracy and reputation scatter diagram of experiment D/II: weights.
+    The ratio of dishonest claimer-raters increases downwards.
+    Both columns have aging with limit 30, right side also has weights.
+    Honest raters are dogmatic.
+    }
+    \label{fig:res_d2_scatter}
+  \end{center}
+\end{figure}
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/d2/ReputationsPerRounds_joined.pdf}
+    \caption{
+ 	Progression of agent reputations per rounds in experiment D/II: weights.
+    The ratio of dishonest claimer-raters increases downwards.
+    Both columns have aging with limit 30, right side also has weights.
+    Honest agent reputations gradually recover with weights.
+    }
+    \label{fig:res_d2_reps}
+  \end{center}
+\end{figure}
+
+In comparison, D/III results show that the same recovery of honest agent recovery no longer happens when the honest agents are not dogmatic.
+On figure~\ref{fig:res_d3_scatter} all agents fall below the deserved ideal reputation line.
+Weights pushes reputations closer to ideal, and all agents receive this effect.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/d3/AvgTotClaimInaccuracyAndReputationScatter_joined.pdf}
+    \caption{
+    Average Total Claiming Inaccuracy and reputation scatter diagram of experiment D/III: weights.
+    The ratio of dishonest claimer-raters increases downwards.
+    Both columns have aging with limit 30, right side also has weights.
+    Honest agents rate from their own experience.
+    }
+    \label{fig:res_d3_scatter}
+  \end{center}
+\end{figure}
+
+\subsubsection{Experiment E: Measurement Accuracy}
+Increasing the measuremend inaccuracy (\gls{ctai}) of agents is expected to have the effect of more inaccurate ratings, both author and regular.
+This was partially shown in experiment C/II as well.
+Here, inaccuracy is varied even more.
+
+Figure~\ref{fig:res_e_rateinaccuracy} shows that rater inaccuracy generally increases with \gls{ctai}, as expected.
+When 10 agents rate, the average inaccuracy is limited, while a single agent rates much more inaccurately.
+Time makes sense, as the inaccuracies aaverage out for more agents.
+Similar is observed in fig.~\ref{fig:res_e_reps}, where 10 completely inaccurate agents (bottom left) can set the reputations within 30 rounds, while a single agent with the same inaccuracy (bottom right) fails to arrive at the same reputations in 80 rounds.
+Inaccurate raters can find out the reputation of agents accurately when they are in big numbers.
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/e/ReputationsPerRounds_joined.pdf}
+    \caption{
+ 	Progression of agent reputations per rounds in experiment E: measurement accuracy.
+    \gls{ctai} increases downwards.
+    Left: 10 raters, right: only 1 rater.
+    }
+    \label{fig:res_e_reps}
+  \end{center}
+\end{figure}
+
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/e/AvgAccuracyPerRound.pdf}
+    \caption{
+    Averaged cumulative rater inaccuracy per rounds in experiment E: measurement accuracy.
+    In the legend, first index means there are 10 raters if 0, only 1 rater if 1.
+    The second index increases along with \gls{ctai}.
+    More raters can balance measurement inaccuracy.
+    }
+    \label{fig:res_e_rateinaccuracy}
+  \end{center}
+\end{figure}
 
 % --------------------------------------------------------------
 \section{Discussion}\label{sec:discussion}
@@ -2311,9 +2775,64 @@ why they are interesting and what's expected
 %Discussion: Explain where, why, and to which extend you have or have not improved over related work. What does this mean for your initial problem question?
 
 
+\subsubsection{Simulation Framework}
+The created Pyrepsys framework fulfilled expectations, but not without remarks.
+It turned out that the model has weaknesses with claiming and rating, some cases like environments with non-claimer raters are hard to handle.
+A different reputation method and more elaborate agent behavior strategies could improve this.
+
+Pyrepsys does not currently contain agent decision making for which claims agents interact with.
+This is the basis of measuring agent success as metric, as stressed by the Alpha Testbed covered in chapter~\ref{chap:related_work}.
+Such functinality would be possible to implement however.
+
+Another weakness, which is also an advantage, is generality.
+Not committing to specific domains or environments allows working in generics, but this also makes the model less specific.
+When working within a concrete domain, a more niche evaluation framework can model the reputation environment better.
+
+Pyrepsys is able to work without specifics of domains, and this is good when needed.
+So far no universal and cross-domain evaluation frameworks gained widespread acceptance and use, even though researchers introduced multiple previously.
+Simulating different kind of environments was possible and produced many of the expected results.
+The simulator also manages to stay flexible and extendable, so it provides a viable alternative to other previous systems.
 
 
+\subsubsection{Aging}
+Aging was shown to make the reputation system's memory shorter.
+While this was not particularly useful in tested experiments, it can have its uses.
+When agent behaviors or qualities change, a reputation system should recognize this and adjust the agents reputation accordingly.
+Examples for such change of behavior can be a different claiming method, or the agent gets more accurate or honest in claiming, or the other way around.
+This is a realistic, since static behavior is rarely the case, even algorithmic agents can change abruptly with an update for example.
+Aging's leniency to forget agent history makes a reputation system react faster to changes.
 
+When selecting the aging time limit, the goal is to still produce more or less stable aggregations, so that reputation does not become erratic.
+At the same time, the system should still allow changes over some timeframe.
+Setting the aging limit needs to be tested for this in each different environment.
+
+\subsubsection{Weights}
+Weighting was shown to be helpful, but only under very specific configuration.
+The weights implementation simply takes the agent's reputation and gives a proportional weight.
+Since only claimers get reputation, purely rater agents never adjust their starting reputation, and so nor do they get weights.
+When these same agents rate, their reviews will mostly be taken equally, because they all have default weights.
+This was not the case with an agent population representing an algorithmic environment, where most raters are claimers as well.
+Most other cases have this problem in the used model.
+
+Either the weights method or the reputation calculation could change to resolve this.
+If a reputation scheme can give reputation to raters who do not claim, the same simple weights can be used.
+If the weight calculation is different, non-claiming raters should get weights assigned as well.
+
+%a few dishonest can infiltrate, many dishonest can bring down honest reputations and get similar reps themselves
+%note that dishonest agents do not cooperate here. if they were, they would probably be able to do better than anyone else
+
+
+\subsubsection{Reputation Calculation}
+The reputation method was seen to be lacking in cases where non-claiming raters exist.
+This is most often the case, and allows malicious or dihonest behavior for raters.
+To get this reputation method to work on rater side as well, the model would need some kind of second order rating, where reviews are rated as well.
+Such systems exist already, for example online markets sometimes ask if a review was helpful or not.
+
+%In cases where explicit claim quality measurement is possible, an automatic feedback mechanism could compare reviews the later measured with how the claim prediction turned out, and raters that predict well are rewarded
+
+There are many different types of environments in which reputation systems are deployed.
+Each has different circumstances, and it is difficult to find an approach that fits all.
+Trust and reputation research is divided strongly into different domains, and this is a possible reason for that.
 
 
 % CHAPTER ######################################################################
@@ -2325,6 +2844,10 @@ why they are interesting and what's expected
  
 \lettrine{W}{e} successfully ...
 
+% even with many different behavior models, reality can not be accurately represented
+% in conclusion it can be said that accurately modeling reality within a reputation system is hard
+% the difficulty rises even more if the aim is to stay generic
+% without committing to a domain, all the domain-specific circumstances must remain abstracted, and since there are so many cases to cover for many domains, the end result can lose focus
 
 
 

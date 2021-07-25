@@ -1,0 +1,6 @@
+# misc
+savefig.format      : pdf
+savefig.bbox        : tight     # tight or standard
+savefig.pad_inches  : 0.1
+savefig.transparent : False
+svg.fonttype        : none   # none=installed, path=embedd path        
