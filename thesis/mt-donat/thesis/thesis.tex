@@ -293,11 +293,11 @@
 % what can u do w rep systems
 % goal is to improve accuracy bc u also have biased rated etc
 
-\lettrine{T}{rust} and reputation are an inherent part of our biology and social behavior, which help us navigate human-scaled communities.
+\lettrine{T}{rust} and reputation are an inherent part of our biology and social behavior, helping us navigate human-scaled communities.
 With the advent of technologically scaled transactional spaces, the problem of who to trust quickly becomes an issue, as in an online marketplace for example.
 Similar problems also arise in networks partly or fully used by machines, such as in decentralized Internet of Things or autonomous driving.
 
-Cryptographic method can guarantee the identity of agents and the integrity of their communication and actions.
+Cryptographic methods can guarantee the identity of agents and the integrity of their communication and actions.
 They cannot, however, tell if what agents say is true or reliable, or whether they act in good faith or not.
 Trust and reputation systems aim to fulfill this purpose.
 
@@ -306,13 +306,13 @@ Trust and reputation systems aim to fulfill this purpose.
 % --------------------------------------------------------------
 \section{Problem Statement}\label{sec:probstat}
 % --------------------------------------------------------------
-Countless reputation methods and evaluation frameworks for these are published in the literature.
-The problem someone setting up a reputation system faces it the overabundance of methods, and the lack of domain-independent comparison.
+Countless reputation algorithms and reputation system evaluation frameworks are published in the literature.
+The problem someone setting up a reputation system faces is the overabundance of methods, and the lack of domain-independent comparison.
 
 Existing reputation systems already contain building blocks that can be reused in a different system to improve its reputation estimate's accuracy.
 We would like to have a commonly available collection of such improvement techniques, along with their potency of improving reputation methods.
 We also see the need for a generic evaluation framework that can be used to compare improvement techniques and select which methods make sense to use in various applications.
-Currently no such system exists, that is widely accepted.
+Currently no such system exists.
 
 
 
@@ -320,10 +320,10 @@ Currently no such system exists, that is widely accepted.
 \section{Scenario}
 % --------------------------------------------------------------
 
-This work stays general in terms of approaches to reputation domains and improvements.
+We aim to stay general in terms of domains and environments.
 There is however a prioritization of algorithmic environments like Internet of Things, more specifically intersection management in autonomous driving.
 While it serves as a recurring example throughout this thesis, the models and simulations are not at all limited to this specific use case.
-Methods and experiments are intended to be general enough that they apply for other \gls{iot} or \gls{cps} applications as well.
+Methods and experiments are intended to be general enough that they apply for \gls{iot}, \gls{cps}, or any other application as well.
 
 The autonomous driving example assumes a hypothetical algorithm governing intersections, regulating the order vehicles pass crossways.
 Vehicles are assumed to provide an \gls{eta} to the intersection, based on which the passing order is determined.
@@ -525,14 +525,14 @@ Reputation is what is generally said or believed about a person’s or thing’s
 \end{definition}
 
 Trust and reputation systems are designed to use these concepts in order to support decision making.
-A decision can be for example who to transact with, which seller or service provider to choose, whether to accept data from a specific source, etc.
+A decision can be for example who to transact with, which seller or service provider to choose, whether to accept data from a specific source or not, etc.
 The participating actors that make decisions are are called agents, or in specific contexts also users, peers or nodes.
 Agents can be people, machines or algorithms.
 
 Trust management systems calculate trust relationships between individual agents.
 Trust values are most commonly based on experience from previous interactions or third party opinions from other agents, usually called advisors or witnesses.
 
-Reputation systems maintain a public reputation value for each agent, which can be used to assist agent decisions like who to interact with.
+Reputation systems maintain a public reputation value for each agent, which can be used to assist agent decisions.
 A trusted central authority is often in charge of maintaining global reputation values, but there are decentralized methods as well, for example in \gls{p2p} networks\cite{kamvar_eigentrust_2003,kurdi_honestpeer_2015,keshavarz_uastrustchain_2020}.
 
 The focus of this thesis is reputation systems.
@@ -576,7 +576,14 @@ The authors of \cite{ahmed_trust_2019} conducted a survey among trust and reputa
 % --------------------------------------------------------------
 % other name: accuracy, robustnesss, Trueness
 
-Various papers propose methods to make reputation systems more robust against attacks and biased, unfair ratings, and improve the accuracy of their reputation calculation.
+Various papers propose methods to make reputation systems more resistant against attacks and biased or unfair ratings, and improve the accuracy of reputation calculation.
+The work in \cite{zhang_detailed_2008} suggests four capabilities a complete improvement approach should have:
+\begin{itemize}
+\item \emph{majority}: still work if majority is unfair or malicious
+\item \emph{flooding}: function under sudden onset of ratings in a short time
+\item \emph{lack of experience}: still work when agents do not have any prior connections or private experience
+\item \emph{varying}: agent behavior change should be recognized
+\end{itemize}
 
 
 \subsection{Categorization of Methods}
@@ -588,17 +595,17 @@ Such external factors are for example the reputation of the rater, in which case
 %Endogenous could be expanded or generalized to say only the ratings, reviews, feedback, including their value and accompanying text, any data and metadata are analyzed.
 
 \emph{Reactive-proactive} categorization is introduced in \cite{thakur_reputation_2019}.
-A method is reactive if it intends to identify existing unfair feedback.
-Opposed to this, a proactive methods proposes incentives for agents to encourage them to report fair feedback, so as that unfair feedback are prevented before they are given.
+A method is reactive if it identifies existing, already published unfair feedback.
+Opposed to this, a proactive methods proposes incentives for agents to encourage them to leave fair feedback, so that unfair feedback is prevented before given.
 
 The authors of \cite{zhang_detailed_2008} use two other categories apart from endogenous-exogenous: \emph{public-private} and \emph{global-local}.
 These are adopted specifically for e-commerce-type scenarios where local trust (past experiences) and local advisor opinions both play a role.
 
-\emph{Public and private} differentiated between how advisor opinions are judged for trustworthiness.
+\emph{Public and private} are differentiated along how advisor opinions are judged for trustworthiness.
 In private methods, agents evaluate an advisor's opinion based on whether past opinions received by the same advisor turned out to be correct or not.
 Data for evaluation is limited to the specific advisor's interactions with the specific agent in the past.
 In public methods, agents judge advisors based on the advisor's ratings across the whole system in the past.
-Here, all previous opinions of the advisor and their subsequent results are taken into account, not just that which were provided for the agent currently doing the evaluation.
+Here, all previous opinions of the advisor and their subsequent results are taken into account, not just those which were provided for the agent currently doing the evaluation.
 
 \emph{Local} refers to methods where looking for received unfair ratings of an agent is based on all the ratings that agent received, but not other agents.
 For example, if seller typically gets reviews around 4 or 5 out of 5, a 1-rating raises suspicion.
@@ -607,20 +614,12 @@ In \emph{global methods}, advisor or rater trustworthiness is judged using ratin
 
 Although defined for an e-commerce advisor-opinion scenario, these categories can be understood in a more general sense.
 Sellers can be generalized as agents providing content, be it data, service, product or sensor reading, etc.
-For this, they receive a rating in turn.
+They receive a rating in turn.
 Vice versa, buyers are receiving the content and providing the rating.
 Advisor refers to any third party contributing to the final aggregated reputation of a potential transaction partner.
 Opinion is any rating, review or feedback in a more broader sense.
 
 %The public-private and local-global distinction can be understood as two sides of the transaction. In public-private, the rater is judging, 
-
-The work in \cite{zhang_detailed_2008} also suggests four capabilities a complete improvement approach should have:
-\begin{itemize}
-\item \emph{majority}: still work if majority is unfair or malicious
-\item \emph{flooding}: function under sudden onset of ratings in a short time
-\item \emph{lack of experience}: still work when agents do not have any prior connections or private experience
-\item \emph{varying}: agent behavior change should be recognized
-\end{itemize}
 
 %accuracy (better function) vs attack countering
 %they can overlap
@@ -643,8 +642,8 @@ The work in \cite{zhang_detailed_2008} also suggests four capabilities a complet
 
 \subsection{Statistical Filtering Methods}
 
-Many reputation systems are based on statistical methods, and statistical analysis can be used further improve reputation systems.
-Whitby et al. propose a filtering mechanism for unfair opinions for the Beta Reputation System (BRS)\cite{whitby_filtering_2014}.
+Many reputation systems are based on statistical methods, and statistical analysis can be used to further improve reputation systems.
+Whitby et al. proposes a filtering mechanism for unfair opinions for the Beta Reputation System (BRS)\cite{whitby_filtering_2014}.
 This method extends BRS, which is a Bayesian reputation system based on the beta distribution.
 The authors argue that unfair and fair ratings have different statistical patterns, mainly seen as differences to majority opinion.
 Consequently, it is possible to identify and filter unfair ratings with statistical methods.
@@ -670,13 +669,12 @@ BRS is an endogenous approach, taking a single rating and judging it based on ho
 
 The Dirichlet Reputation System is worth mentioning as a multinomial generalization of the Beta Reputation System\cite{josang_dirichlet_2007}.
 Using the Dirichlet distribution instead of the beta distribution allows more than two discrete rating levels.
-It is a method well grounded in Bayesian statistics, and is built around similar concepts to the BRS.
+It is a method well grounded in Bayesian statistics, and is built around concepts similar to that of the BRS.
 Specifically, aging of ratings is also present.
 A similar extension for filtering non-majority outlier opinions like in the BRS was not found for the Dirichlet Reputation System.
 
-The Weighted Majority Algorithm introduced in \cite{yu_detecting_2003}  
-Advisor agents are given a weight to aggregate their opinions with.
-If opinions turn out to be incorrect based on the outcome of the considered transactions, the advisor weight is decreased.
+The Weighted Majority Algorithm introduced in \cite{yu_detecting_2003} gives advisor agents a weight to aggregate their opinions with.
+If an opinion turns out to be incorrect based on the outcome of the involved transaction, the advisor's weight is decreased.
 Constantly wrong advisors are thus filtered out eventually.
 
 %The authors of \cite{zhang_personalized_2006} and \cite{zhang_detailed_2008} take a survey of previous improvement methods, introduce a new method (personalized approach) and compare them, including experimental measurements. The methods compared are the Beta Reputation System, TRAVOS, Personalized Approach, Bayesian Network Approach and Weighted Majority Algorithm.
@@ -685,14 +683,15 @@ Constantly wrong advisors are thus filtered out eventually.
 
 \subsection{Methods Based on Similarity}
 
-Four ideal capabilities of unfair rating handler methods are identified in \cite{zhang_personalized_2006} as
+The authors of \cite{zhang_personalized_2006} list four capabilities of ideal unfair rating handling methods.
+These are
 \begin{itemize}
 \item handle unfairly high ratings
 \item handle unfairly low ratings
 \item deal with behavior changes of agents
 \item handle that agents may have genuinely different opinions on service providers
 \end{itemize}
-The authors of \cite{zhang_personalized_2006} also introduce the Personalized Approach to fulfill especially the last criteria.
+The Personalized Approach is introduced to fulfill the last criteria\cite{zhang_personalized_2006}.
 Apart from each agent having a public global reputation, every one of them stores private opinions of agents they have previously interacted with.
 When an agent looks for opinions on a potential partner, advisor agents provide their opinion.
 To judge the reliability of these opinions, the asking agent compares its private opinion list with that of the advisor.
@@ -700,8 +699,7 @@ If they have formed many similar opinions on the same third party agents, their 
 
 The work in \cite{iltaf_mechanism_2013} proposes a dissimilarity function for detecting deviations in a recommendation set.
 The method assumes that dishonest recommendations are inconsistent with other recommendations and they also have a low occurrence rate.
-
-A similar dissimilarity function is introduced for mobile ad-hoc networks in \cite{zakirullah_detection_2014}.
+A similar dissimilarity function is also introduced for mobile ad-hoc networks in \cite{zakirullah_detection_2014}.
 
 The authors of \cite{dellarocas_immunizing_2000} introduce two trust or reputation system extensions to combat unfair ratings in e-commerce settings:
 \begin{itemize}
@@ -841,10 +839,10 @@ Literature has seen a number of publications that evaluate reputation methods or
 Table~\ref{tab:literature_evaluation_frameworks} lists these attempts, along with their domains.
 This section describes the most notable evaluation and comparison approaches.
 
-The ART testbed is one of the earliest comprehensive evaluation framework published for comparing trust and reputation systems\cite{fullam_specication_2005}.
+The ART testbed is one of the earliest comprehensive evaluation frameworks published for comparing trust and reputation systems\cite{fullam_specication_2005}.
 It simulates a \acrfull{mas} environment of independent agents within an artwork marketplace.
-Multi agent systems refer to any kind of collaboration environments, where intelligent independent agents operate in order to reach their goals.
-Agents in MAS environments typically have to collaborate with each other.
+Multi-agent systems refer to any kind of collaboration environments, where intelligent independent agents operate in order to reach their goals.
+Agents in MAS environments typically have to collaborate with each other in order to reach their goals.
 An agent's goal in the ART testbed is to collect the most utility by the end of the simulation, which serves as the basis of comparison between different agent approaches.
 Thus, results from ART reflect each agent's capability in navigating the marketplace scenario, rather than the overall effect of the reputation system.
 ART also does not directly support testing to what degree reputation methods can discourage or remove malicious intent.
@@ -860,13 +858,13 @@ The authors argue that the way agents decide who they transact with influences e
 ATB supports changing the decision mechanisms of agents independently of the reputation or trust model, thus separating the two.
 Domain independence is another advantage of this framework.
 Custom metrics are possible to implement, although researchers have pointed out that system-level metrics that evaluate system-wide performance are not supported\cite{adamopoulou_simulation_2014}.
-ATB's authors list its inability to accommodate trust models that represent information substantially different from formats used in ATB, or when opinions are computed or shared using special protocols.
+ATB's authors mention its inability to accommodate trust models that represent information substantially different from formats used in ATB, or when opinions are computed or shared using special protocols.
 Additionally, ATB only simulates one single agent in full, called the alpha agent.
-All other agents are a represented by mocks and do not actually use the trust system used.
+All other agents are a represented by mocks and do not actually use the simulated trust system.
 This is a clear disadvantage when a trust or reputation system revolves around social interactions or virtual organization among agents.
 
 The QTM or P2P-Sim simulator focuses on trust and reputation systems deployed in \gls{p2p} file sharing networks.
-QTM is a flexible system that supports custom reputation methods and attack scenarios as well.
+QTM is a flexible system that supports custom reputation methods and attack scenarios.
 A trace file serves as input, which lists in advance which agents request which files, determining the simulation's transactions.
 Evaluation is based on a clearly defined metric called hit rate, calculated as
 \begin{equation}
@@ -878,10 +876,10 @@ Supporting only binary transaction outcomes and feedback values is QTM's major l
 Tested trust or reputation models also need to contain a selection procedure for peer agents to decide who they download their requested files from.
 This is not always part of models.
 
-TRMSim-WSN is a simulator for trust and reputation systems specialized to wireless sensor networks.
+TRMSim-WSN is a simulator for trust and reputation systems specifically tailored for wireless sensor networks\cite{marmol_trmsim-wsn_2009}.
 Highly domain-specific features like routing, energy consumption, radio range, battery and source/sink nodes limit this simulator's cross-domain applicability.
 
-The works in \cite{agate_platform_2018,agate_reputation_2020} introduce an evaluation system for distributed reputation algorithms, called hereafter Agate\&etal18.
+The works in \cite{agate_platform_2018,agate_reputation_2020} (Agate\&etal18) introduce an evaluation system for distributed reputation algorithms.
 This relatively recent (2018-2020) framework aims to support reputation management system design by testing robustness against security attacks.
 The framework stays domain-independent by disregarding communication protocols between agents and the reputation system as well, while enabling custom reputation calculation methods and agent behavior.
 Agents are also allowed to implement their own decision making for selecting transaction partners.
@@ -3192,18 +3190,18 @@ Such systems exist already, for example online markets sometimes ask if a review
  
 \lettrine{W}{e} successfully set up a generic reputation system model and provided a Python implementation of it named Pyrepsys.
 Pyrepsys is the first evaluation framework to support modular reputation improvement methods.
-We collected a selection of promising techniques for improving reputation system accuracy, and building robustness against attack and malicious behavior.
+We collected a selection of promising techniques for improving reputation system accuracy, and building robustness against attacks and malicious behavior.
 Two of these were evaluated with Pyrepsys.
 
-Aging was shown to be useless or possibly even counterproductive when agent behavior never changes.
+In cases were agent behavior never changes, aging was shown to be useless or possibly even counterproductive.
 Due to forgetting older data, it increases the spreads of aggregations like review averages and reputation calculation.
 
 Weighting worked only in specific circumstances, namely when agents are both claimers and raters at the same time, and rating is dogmatic, meaning honest agents rate better reputationed agents with disproportionately better ratings, and vice versa.
-Weights did not bring improvement when most raters never claimed.
+Weights did not bring an improvement when most raters never claimed.
 We attribute this to the used reputation calculation method, which assigns reputation values based on honesty in claiming, so that agents who never claim do not get reputation adjustments.
 
 All in all, accurately modeling reality within a reputation system is hard.
-The diversity of agents in intent, behavior and ability, the many circumstances of domains need to be accounted for.
+The diversity of agents in intent, behavior and ability, and many circumstances of domains need to be accounted for.
 The difficulty rises even more if the aim is to stay generic.
 
 
