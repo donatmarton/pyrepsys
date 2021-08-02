@@ -1,10 +1,3 @@
-\iffalse % TODO
-approach should say
-that it does not model the exact background workings of networks and transaction environments
-e.g. communication, dentralization/decentralized etc
-\fi
-
-
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 %           P R E A M B L E             %
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
@@ -33,7 +26,7 @@ e.g. communication, dentralization/decentralized etc
 
 % thesis information
 % -------------------------------------------------------------------
-\title{Implementation of a Reputation Framework for Evaluation of Reputation Improvement Methods}                          % defines \thetitle
+\title{Implementation and Evaluation of a Reputation Framework to Increase Reputation Accuracy}                          % defines \thetitle
 \author{Márton Donát Nagy}                         % defines \theauthor
 \myemail{mdonat.nagy@tum.de}                 % defines \theemail
 \authorsaddress{Musterstr. 42 \\ 42424 Musterstadt}
@@ -104,7 +97,7 @@ e.g. communication, dentralization/decentralized etc
 \newglossaryentry{scenario}
 {
 	name={scenario},
-	description={Description of a complete simulation environment for Pyrepsys. Specifies the reputation scheme, improvement methods, agents, possible review values etc. See section~\ref{sec:scenario} for details}
+	description={Description of a complete simulation environment for Pyrepsys. Specifies the reputation scheme, improvement methods, agents, possible review values etc. See Section~\ref{sec:scenario} for details}
 }
 \newglossaryentry{claim}
 {
@@ -204,6 +197,9 @@ e.g. communication, dentralization/decentralized etc
 % \acrlong{gcd}, \acrshort{gcd} \acrfull{lcm} \~pl()
 
 
+\newtheorem{definition}{Definition}[chapter]
+
+
 
 % document begin (output starts here)
 % -------------------------------------------------------------------
@@ -253,8 +249,24 @@ e.g. communication, dentralization/decentralized etc
 % abstract
 %Abstract: Short summary of the context, the problem, your approach and its experimental results (numbers!).
 \begin{abstract}
-    This thesis is about ...
-    This thesis shows that ...
+	The advent of technologically scaled transactional spaces and the explosion of user numbers in them raises the problem of who participants should trust.
+	Along human oriented systems like online marketplaces, algorithmic environments are becoming more and more prevalent, where participating agents are autonomous machines.
+	Such domains are the Internet of Things and autonomous driving.
+	
+	Trust and reputation research aims to provide systems to solve the trust problem.
+	The research field is divided as countless approaches have been proposed in various domains.
+	Many approaches repeat certain patterns to increase reputation accuracy and make the system more resistant against malicious attacks.
+	Our goal is to collect and evaluate the usefulness of these building blocks.
+	
+	We propose a generic model for reputation systems, and using it we implement a Python reputation evaluation framework called Pyrepsys.
+	To our knowledge, Pyrepsys is the only evaluation framework to support modular reputation improvement methods.
+
+	We collected promising improvement approaches from literature.
+	From these, we evaluated the use of aging and weights.
+	Experiments showed that aging makes less sense when agent behavior never changes.
+	For weights to work, the reputation calculation needs to give reputation to pure rater agents as well.
+	
+	Finally, we identified further ways to improve the Pyrepsys system.
 \end{abstract}
 
 
@@ -297,8 +309,8 @@ Trust and reputation systems aim to fulfill this purpose.
 Countless reputation methods and evaluation frameworks for these are published in the literature.
 The problem someone setting up a reputation system faces it the overabundance of methods, and the lack of domain-independent comparison.
 
-Existing reputation systems already contain buliding blocks that can be reused in a different system to improve its reputation estimate's accuracy.
-We would like to have a commonly available collection of such improvement techniques, along with their potencies of improving reputation methods.
+Existing reputation systems already contain building blocks that can be reused in a different system to improve its reputation estimate's accuracy.
+We would like to have a commonly available collection of such improvement techniques, along with their potency of improving reputation methods.
 We also see the need for a generic evaluation framework that can be used to compare improvement techniques and select which methods make sense to use in various applications.
 Currently no such system exists, that is widely accepted.
 
@@ -309,7 +321,7 @@ Currently no such system exists, that is widely accepted.
 % --------------------------------------------------------------
 
 This work stays general in terms of approaches to reputation domains and improvements.
-There is however a priorisation of algorithmic environments like Internet of Things, more specifically intersection management in autonomous driving.
+There is however a prioritization of algorithmic environments like Internet of Things, more specifically intersection management in autonomous driving.
 While it serves as a recurring example throughout this thesis, the models and simulations are not at all limited to this specific use case.
 Methods and experiments are intended to be general enough that they apply for other \gls{iot} or \gls{cps} applications as well.
 
@@ -318,8 +330,6 @@ Vehicles are assumed to provide an \gls{eta} to the intersection, based on which
 Vehicle agents may be tempted to report a shorter \gls{eta} to gain an earlier right of way priority.
 The use case for a reputation system is to keep these attempts in check by giving each vehicle agent a reputation.
 
-%TODO describe the hypothetical example scenario of the autonomous driving within intersection management, cars estimating ETA etc. Let know that it will be used throughout the thesis to illustrate concepts and help define goals, the direction solutions, approaches go.
-%on a more broader sense, the work is intended to be general enough that it could be applied for other iot/cps type applications as well
 
 
 
@@ -343,19 +353,18 @@ We will
 \section{Structure of This Document}
 % --------------------------------------------------------------
 
-First, chapter~\ref{chap:sota} provides an outlook into the state of the art in trust and reputation research.
-Chapter~\ref{chap:related_work} is about related reputation methods, improvement techniques and published evaluation frameworks.
-The approach to modeling and comparing reputation improvements are found in chapter~\ref{chap:approach}.
-Then, chapter~\ref{chap:implementation} describes the implementation of the introduced model.
-Results of simulations made with the implemented simulator are shown and discussed in chapter~\ref{chap:evaluation}.
-Finally, chapter~\ref{chap:conclusion} concludes this thesis.
+First, Chapter~\ref{chap:related_work} covers the basics of trust and reputation systems, and explores existing reputation improvement techniques and published evaluation frameworks.
+Chapter~\ref{chap:approach} describes the approach used to model and compare reputation improvements.
+Then, Chapter~\ref{chap:implementation} details the implementation of the introduced model.
+Results of simulations made with the implemented simulator are shown and discussed in Chapter~\ref{chap:evaluation}.
+Finally, Chapter~\ref{chap:conclusion} concludes this thesis.
 
 
 
 %% --------------------------------------------------------------
 %\section{Terminology}
 %% --------------------------------------------------------------
-%% TODO: place this somewhere else, maybe not a full section for it
+
 %describe user, peer, agent, principal, node etc namings
 %in research used according to domain of the paper
 
@@ -379,7 +388,7 @@ Finally, chapter~\ref{chap:conclusion} concludes this thesis.
 %score: review value, claim value, reputation etc. referred generally
 
 
-
+\iffalse
 % CHAPTER ######################################################################
 \chapter{State of the Art}\label{chap:sota}
 % ##############################################################################
@@ -392,12 +401,8 @@ Finally, chapter~\ref{chap:conclusion} concludes this thesis.
 % how much r they used
 % notation of trust...
 
-\lettrine{T}{his} chapter gives an overview of trust and reputation research.
-...TODO intro
+% sota merged with related work
 
-The focus of this thesis lies more at reputation systems.
-Because of this, the rest of this work gives less consideration for components and special cases of trust-based systems.
-intro only for trust
 
 \iffalse
 %TEXT FRAGMENTS 
@@ -410,96 +415,6 @@ Then reputation systems model the societal reputation
 % explain formattings like \emph for classnames and \texttt for modules variables and functions etc
 \fi
 
-
-origins of trust reputation research
-what is trust, trust system
-
-what is reputation, ~ system
-
-difference between the two
-
-trust is understood as a relational value between two actors / agents
-while reputation is a broadly seen and accepted reliability/valuation of someone
-The difference can be characterized by the statements
-
-\begin{enumerate}
-	\item I trust you because of your good reputation.
-	\item I trust you despite of your bad reputation.
-\end{enumerate}
-
-agents also called actors, peers, 
-
-% --------------------------------------------------------------
-\section{Trust Systems}
-% --------------------------------------------------------------
-
-Trust management systems use trust relationships between individual agents to assist or govern agent decision making.
-Trust networks formed by these relationships can be represented as a directed graph.\cite{josang_trust_2006,josang_trust_2007}
-Each vertex is an agent, while edges represent trust relationships.
-Using subjective logic, each edge is assigned an opinion to measure the trust quality.
-Trust is transitive.
-This means if there is an uninterrupted chain of trust between agents who do not directly trust each other, a certain level of trust can still be derived between them.
-Subjective logic defines the \emph{discount} operator to merge consecutive opinions.
-The longer the trust chain used to derive trust, the weaker the derived trust's strength.
-
-Discount is good for consecutive chains, while parallel paths need another operator, called \emph{consensus}.
-For example, the derived trust between Alice and Eric in Figure~\ref{fig:trust-network} can be derived trough considering the two parallel paths of A-B-C and A-D-C.
-
-\begin{figure}[tbp]
-\centerline{\includegraphics[width=0.6\linewidth]{../thirdparty_images/trust_network_josang.png}}
-%\centerline{\includegraphics{pic/trust_network_josang.png}}
-\caption{Simple trust network with different trust relationships. \cite{josang_trust_2006}}
-\label{fig:trust-network}
-\end{figure}
-
-
-
-\subsection{Subjective Logic}
-Subjective logic is an extension of probabilistic logic to enable reasoning with uncertain probabilities\cite{josang_subjective_2016,josang_trust_2006}.
-Probabilistic logic combines logical reasoning with probability calculus.
-Structured arguments can thus be made with degrees of truth in the arguments.
-Subjective logic enables expressing uncertainty about the probability values, so that reasoning with uncertain or incomplete evidence is possible.
-
-A subjective opinion $ \omega_x^A $ forms arguments in subjective logic.
-\emph{A} denotes the opinion owner and \emph{x} is the statement the opinion is about.
-The simplest opinion form is a binomial opinion.
-\begin{equation}
-\omega_x^A = \{b, d, u, a\}
-\end{equation}
-Denoted by \emph{b} is belief mass supporting truth of \emph{x}, \emph{d} is disbelief similarly, \emph{u} is the uncertainty, or the uncommitted belief mass remaining.
-They follow $b + d + u = 1$ and $b, d, u, a \in [0,1]$.
-The base rate \emph{a} represents a general probability without any given belief and disbelief.
-For trust systems, it can be used for new members who do not have any prior history with any other members.
-It is also used by the expectation value of an opinion $E(\omega_x^A)=b+au$.
-
-
-
-
-
-
-
-
-\subsection{Trust Network Analysis with Subjective Logic}
-TNA-SL is a local trust system using graph analysis and subjective logic. \cite{josang_trust_2006} Opinions are formed from historic transaction data and the network is represented as a directed graph. When the trust value between two agents is needed, first all possible directed routes are found between them. Then, the resulting subgraph is transformed into a canonical form using directed series-parallel composition. This is done do remove cycles which can lead to inconsistent calculations in the derived trust's strength. Finally, the derived trust is calculated using consensus and discount operators from subjective logic.
-
-TNA-SL also includes time as a factor in opinion strength, and can express and propagate negative opinions as well. Opinions not only give a trust value (e.g. positive/negative), but also carry a level of confidence. Additionally, Subjective logic is also compatible with statistical methods and so TNA-SL can use any Bayesian-type reputation system as data input. The main disadvantage is the computation overhead from graph analysis and transformation.
-
-
-
-
-
-
-
-
-% --------------------------------------------------------------
-\section{Reputation Systems}
-% --------------------------------------------------------------
-Reputation is commonly seen as a public understanding of an agent's reliability.
-Reputation systems maintain a public reputation value for each agent, which can be used to assist agent decisions like who to interact with.
-A trusted central authority is often in charge of maintaining global reputation values, but there are decentralized methods as well, for example in \gls{p2p} networks\cite{kamvar_eigentrust_2003,kurdi_honestpeer_2015,keshavarz_uastrustchain_2020}.
-
-\subsection{EigenTrust}
-The EigenTrust algorith \cite{kamvar_eigentrust_2003} was born as an answer to malicious or inauthentic files shared in \gls{p2p} file sharing. Every peer is given a global reputation value based on the peer's file sharing history. This value encompasses other peer's normalized local trust of the node, weighted by the opinion giver's own global reputation. Calculation is distributed and iterative. Peers in the network can use the global reputation score to decide who they will fetch data from. In this way, the goal is to reduce the number of unsuccessful transactions and eventually isolate malicious peers.
 
 
 % --------------------------------------------------------------
@@ -516,19 +431,120 @@ vehicular ad hoc networks
 ecommerce
 recommendation systems online stuff like imdb or hotel ratings
 
-Researching trustability has been relevant in various domains for decades. With network opening up and growing, more users and things who do not share history are interacting. As new domains move to be integrated into networks and put online, more areas of life face trustability issues. Online trading or \gls{p2p} file sharing has been around for decades now, while autonomous driving, sensor systems or widespread connected embedded devices are more recent to face the issue of who to trust in a network.
+\fi
 
-Domains face different but still similar challenges. In \gls{p2p} file sharing, clients are constantly changing. Some with malicious intent may want to poison the shared data in the network. Any method to combat this must be completely decentralized as per \gls{p2p} protocols. Online trading has also developed its methods to increase safety or at least a sense of it. Shops and marketplaces extensively use user ratings, reviews and other methods of social proof to facilitate trust and aid the purchase decisions of customers. The marketplaces themselves can serve as a central authority, and such systems are highly centralized since the marketplace is trusted by all participants.
 
-Many approaches come from the original source of trust and reputation: society. 
-The idea is to see what methods people use to establish trust, make decisions, or navigate based on reputation, and imitate or be inspired from these.
+
+% CHAPTER ######################################################################
+\chapter{Background and Related Work}\label{chap:related_work}
+% ##############################################################################
+
+%related work
+% evaluation of related work
+% shortly introduce rep systems
+% discuss suitability
+% decide to pick one or impl own
+
+\lettrine{T}{his} chapter gives an overview of related trust and reputation research.
+First, reputation and trust is introduced, including a quick outlook into usage within the \gls{iot} domain.
+Then, published techniques for reputation system improvement are explored.
+Most of these revolve around detecting and removing unfair ratings, or mitigating certain specific attack scenarios.
+Finally, existing reputation system evaluation frameworks are taken into account.
+
+
+\iffalse
+% this is from my notes, some of our custom techniques too
+there is a case to be made about applying improvement techniques depending on the environment of the reputation system. e.g.
+rating aging makes sense only if behavior are known to change over time. if for sure constant (like machines which receive no updates whatsoever) then it has no point
+frequency of feedback rating given after transaction.. means only something maybe if its not mandated, which in a fully machine network might as well just be
+outlier filtering makes sense only if you know that significant (extreme) differences in transaction experiences are unlikely to the point that such claim becomes suspicious. Once highly subjective experiences come into play, it is wrong to say a nonmajority opinion is unfair. Or in a highly dynamic agent population, where behavior changes often and rapidly, extremity filtering is counterproductive since it introduces reputation lag.
+differentiate based on how many ratings contributed to a final reputation score, i.e. confidence. like if a new entrant gets a default of 4, and another has 4 based on a 1000 ratings, this difference should be noticeable and agents should be able to make decisions based on that
+
+outlier filtering based on something: statistical, entropy, dissimilarity function, similarity
+dis/similarity is also a kind of stereotype-based TR, also collaborative filtering ties in here
+normalizing rating range
+weighing based on rater reputation
+anonymous ratings
+adding local trust
+use random subsets to calculate reputation
+Weighted Majority Algorithm 
+simplifying rating space (some believe that +- or only + or - helps eliminate attacks)
+feedback consistency-like solution -- in intersection, car estimates ETA, later rates its own ETA, and see if others rate the same ETA consistently -- inspired by one mentioned in \cite{azzedin_identifying_2010}
+
+pair ETAs with uncertainty (generally: stake)
+if I can say along with the claim how sure i am in the claim
+or maybe once when I commission a car, I can say how accurate the sensor reading is, so this accuracy rating remains static for a long time
+then if this uncertainty is larger, I have more room to manipulate the ETAs within plausible deniability, but on the other hand the other cars can say my claim is more worthless because I have a large uncertainty range..
+
+also in this part: author reviews
+\fi
+
+
+
+
+
 
 
 % --------------------------------------------------------------
-\section{Trust and Reputation in the Internet of Things}
+\section{Trust and Reputation}
 % --------------------------------------------------------------
 
-Due to the decentralized nature of \gls{iot}, many approaches opt for a more trust-focued approach.
+Researching trustability has been relevant in various domains for decades.
+With network opening up and growing, more users and things who do not share history are interacting.
+As new domains move to be integrated into networks and put online, more areas of life face the trustability problem.
+Online trading or \gls{p2p} file sharing has been around for decades now, while autonomous driving, sensor systems or widespread connected embedded devices are more recent to face the issue of who to trust in a network.
+
+Domains face different, but still similar challenges.
+In \gls{p2p} file sharing, clients are constantly changing.
+Some with malicious intent may want to poison the shared data in the network.\cite{kamvar_eigentrust_2003}
+Any method to combat this must be completely decentralized as per \gls{p2p} protocols.
+Online trading has also developed its methods to increase safety or at least a sense of it.
+Shops and marketplaces extensively use user ratings, reviews and other methods of social proof to facilitate trust and aid the purchase decisions of customers.
+The marketplaces themselves can serve as a central authority, and such systems are highly centralized since the marketplace is trusted by all participants\cite{josang_trust_2007}.
+
+%Many approaches are inspired by the original field of trust and reputation: society.
+%The idea is to see what methods people use to establish trust, make decisions, or navigate based on reputation, and imitate or be inspired from these.
+
+We all have an innate understanding of trust, usually connected to reliability.
+Trust can have two forms: reliability trust and decision trust\cite{josang_trust_2007,josang_survey_2017}.
+Reliability trust is defined by Gambetta in \cite{gambetta_can_2000} and paraphrased by Jøsang et al. in \cite{josang_survey_2017} as
+\begin{definition}[Reliability trust]
+Trust is the subjective probability by which an individual, A, expects that another individual, B, performs a given action on which its welfare depends.
+\end{definition}
+
+As for decision trust, Jøsang et al. gives a definition in \cite{josang_survey_2017} as
+\begin{definition}[Decision trust]
+Trust is the extent to which one party is willing to depend on something or somebody in a given situation with a feeling of relative security, even though negative consequences are possible.
+\end{definition}
+
+Both definitions show that trust is a directed relational property between two individuals.
+On the other hand, reputation is generally understood as a common and public judgment of an individual's reliability.
+More broadly, Jøsang et al. gives the definition from the Concise Oxford dictionary as
+\begin{definition}[Reputation]
+Reputation is what is generally said or believed about a person’s or thing’s character or standing.
+\end{definition}
+
+Trust and reputation systems are designed to use these concepts in order to support decision making.
+A decision can be for example who to transact with, which seller or service provider to choose, whether to accept data from a specific source, etc.
+The participating actors that make decisions are are called agents, or in specific contexts also users, peers or nodes.
+Agents can be people, machines or algorithms.
+
+Trust management systems calculate trust relationships between individual agents.
+Trust values are most commonly based on experience from previous interactions or third party opinions from other agents, usually called advisors or witnesses.
+
+Reputation systems maintain a public reputation value for each agent, which can be used to assist agent decisions like who to interact with.
+A trusted central authority is often in charge of maintaining global reputation values, but there are decentralized methods as well, for example in \gls{p2p} networks\cite{kamvar_eigentrust_2003,kurdi_honestpeer_2015,keshavarz_uastrustchain_2020}.
+
+The focus of this thesis is reputation systems.
+Because of this, the rest of this work gives less consideration for the components and special cases of trust-based systems.
+
+
+
+% --------------------------------------------------------------
+\subsection{Trust and Reputation in the Internet of Things}
+% --------------------------------------------------------------
+
+Due to the decentralized nature of \gls{iot}, many approaches opt for a more trust-focused approach.
 MARINE is a trust model for vehicular ad-hoc networks (VANET) with two stages of evaluating trustworthiness\cite{ahmad_marine_2020}.
 First, previous interactions and recommendations from neighboring vehicles are considered.
 Then, data from the vehicle under evaluation is checked for
@@ -549,56 +565,10 @@ Prior experience and other advisor node's opinions are both used to calculate tr
 The work in \cite{ganeriwal_reputation-based_2008} introduces a reputation-based method for sensor networks.
 Nodes privately store a reputation-like value from a subset of other nodes in the network, which is based on prior experiences of the nodes.
 Together with opinions from other nodes, this forms the basis of trust decisions.
-The system is distrubuted, so no central authority is required.
+The system is distributed, so no central authority is required.
 
 The authors of \cite{ahmed_trust_2019} conducted a survey among trust and reputation method in the field of \gls{iot}, also exploring basic concepts, taxonomy and commonly considered attacks.
 
-
-
-
-% CHAPTER ######################################################################
-\chapter{Related Work}\label{chap:related_work}
-% ##############################################################################
-
-%related work
-% evaluation of related work
-% shortly introduce rep systems
-% discuss suitability
-% decide to pick one or impl own
-
-\lettrine{T}{his} chapter collects related work in literature.
-First, improvement techniques are discussed.
-Then the existing reputation system evaluation frameworks are taken into account.
-
-
-
-
-\iffalse
-% this is from my notes, some of our custom techniques too
-there is a case to be made about applying improvement techniques depending on the environment of the reputation system. e.g.
-rating aging makes sense only if behavior are known to change over time. if for sure constant (like machines which receive no updates whatsoever) then it has no point
-frequency of feedback rating given after transaction.. means only something maybe if its not mandated, which in a fully machine network might as well just be
-outlier filtering makes sense only if you know that significant (extreme) differences in transaction experiences are unlikely to the point that such claim becomes suspicious. Once highly subjective experiences come into play, it is wrong to say a nonmajority opinion is unfair. Or in a highly dynamic agent population, where behavior changes often and rapidly, extremity filtering is contraproductive since it introduces reputation lag.
-differenciate based on how many ratings contributed to a final reputation score, i.e. confidence. like if a new entrant gets a default of 4, and another has 4 based on a 1000 ratings, this difference should be noticeable and agents should be able to make decisions based on that
-
-outlier filtering based on something: statistical, entropy, dissimilarity function, similarity
-dis/similarity is also a kind of stereotype-based TR, also collaborative filtering ties in here
-normalizing rating range
-weighing based on rater reputation
-anonymous ratings
-adding local trust
-use random subsets to calculate reputation
-Weighted Majority Algorithm 
-simplifying rating space (some believe that +- or only + or - helps eliminate attacks)
-feedback consistency-like solution -- in intersection, car estimates ETA, later rates its own ETA, and see if others rate the same ETA consistently -- inspired by one menitoned in \cite{azzedin_identifying_2010}
-
-pair ETAs with uncertainty (generally: stake)
-if I can say along with the claim how sure i am in the claim
-or maybe once when I commission a car, I can say how accurate the sensor reading is, so this accuracy rating remains static for a long time
-then if this uncertainty is larger, I have more room to manipulate the ETAs within plausible deniability, but on the other hand the other cars can say my claim is more worthless because I have a large uncertainty range..
-
-also in this part: author reviews
-\fi
 
 
 % --------------------------------------------------------------
@@ -615,11 +585,11 @@ Whitby et al. group methods to identify and remove unfair ratings into two categ
 Endogenous refers to methods where only the rating values are analyzed for statistical anomalies.
 Exogenous methods consider factors other than the ratings themselves for detecting unfair ratings.
 Such external factors are for example the reputation of the rater, in which case the assumption is that low-reputation users are more likely to give unfair ratings.
-%Endogenous could be expanded or generalized to say only the ratings, reviews, feedbacks, including their value and accompanying text, any data and metadata are analyzed.
+%Endogenous could be expanded or generalized to say only the ratings, reviews, feedback, including their value and accompanying text, any data and metadata are analyzed.
 
 \emph{Reactive-proactive} categorization is introduced in \cite{thakur_reputation_2019}.
-A method is reactive if it intends to identify existing unfair feedbacks.
-Opposed to this, a proactive methods proposes incentives for agents to encourage them to report fair feedbacks, so as that unfair feedbacks are prevented before they are given.
+A method is reactive if it intends to identify existing unfair feedback.
+Opposed to this, a proactive methods proposes incentives for agents to encourage them to report fair feedback, so as that unfair feedback are prevented before they are given.
 
 The authors of \cite{zhang_detailed_2008} use two other categories apart from endogenous-exogenous: \emph{public-private} and \emph{global-local}.
 These are adopted specifically for e-commerce-type scenarios where local trust (past experiences) and local advisor opinions both play a role.
@@ -661,26 +631,26 @@ The work in \cite{zhang_detailed_2008} also suggests four capabilities a complet
 
 %based on general idea
 
-%other cateogry: what is rated
+%other category: what is rated
 %agents 
 %content
 %links
 %could call this rating dimension aka who/what is rated exactly
 %can represent as graph (vertices, edges, directed boxes as content)
-%discuss special cases, e.g. in e-com, rating the very same physical products between different sellers, an extra rating dimension is neede for service quality (packaging, mayb its white/gray label, shipping time, customer service interaction's quality etc... this is different than the product rating and also diff from the agent rating itself
+%discuss special cases, e.g. in e-com, rating the very same physical products between different sellers, an extra rating dimension is needed for service quality (packaging, mayb its white/gray label, shipping time, customer service interaction's quality etc... this is different than the product rating and also diff from the agent rating itself
 %also accuracy rating
 
 
 \subsection{Statistical Filtering Methods}
 
-Many reputation systems are based on statistical methods, and statictical analysis can be used further improve reputation systems.
+Many reputation systems are based on statistical methods, and statistical analysis can be used further improve reputation systems.
 Whitby et al. propose a filtering mechanism for unfair opinions for the Beta Reputation System (BRS)\cite{whitby_filtering_2014}.
-This method extends BRS, which is a bayesian reputation system based on the beta distribution.
+This method extends BRS, which is a Bayesian reputation system based on the beta distribution.
 The authors argue that unfair and fair ratings have different statistical patterns, mainly seen as differences to majority opinion.
 Consequently, it is possible to identify and filter unfair ratings with statistical methods.
-The basus of filtering like this is the assumption that the majority of the users are honest and accurate.
+The basis of filtering like this is the assumption that the majority of the users are honest and accurate.
 
-TRAVOS is also a bayesian trust and reputation method based on the beta probability distribution\cite{teacy_travos_2006}.
+TRAVOS is also a Bayesian trust and reputation method based on the beta probability distribution\cite{teacy_travos_2006}.
 It uses both experience-based local trust and global reputation, depending on whether past experience with a particular transaction partner is available or not.
 If a potential transaction partner is not already well known, the system relies on global reputation reported by third party advisors.
 Deception from advisors is countered by evaluating the perceived accuracy of their past opinions.
@@ -690,17 +660,17 @@ Then as a second step, the opinions likely to be inaccurate are altered so as to
 This is done through decreasing the parameters of the distribution which represents the advisor's opinion. An opinion modified in this manner will influence the expected value of the final reputation distribution to a lesser degree.
 
 The Beta Reputation System and TRAVOS are very similar.
-Both are bayesian statistical methods using the beta probability distribution.
-However, BRS does not differentiate between direct observarions and advisor recommendations.
+Both are Bayesian statistical methods using the beta probability distribution.
+However, BRS does not differentiate between direct observations and advisor recommendations.
 Additionally, the two methods handle inaccurate (unfair or malicious) ratings differently.
 TRAVOS is an exogenous approach, scrutinizing each individual advisor based on the perceived accuracy of their past opinions.
 BRS is an endogenous approach, taking a single rating and judging it based on how far it is from the mainstream opinion.
 
 %There is the question of what to do with opinions caught in the filter. Completely disregard, lower weight, or temporarily disregard...
 
-The Dirichlet Reputation System is worth mentioning as a multinomial generalisation of the Beta Reputation System\cite{josang_dirichlet_2007}.
-Using the dirichlet distribution instead of the beta distribution allows more than two discrete rating levels.
-It is a method well grounded in bayesian statistics, and is built around similar concepts to the BRS.
+The Dirichlet Reputation System is worth mentioning as a multinomial generalization of the Beta Reputation System\cite{josang_dirichlet_2007}.
+Using the Dirichlet distribution instead of the beta distribution allows more than two discrete rating levels.
+It is a method well grounded in Bayesian statistics, and is built around similar concepts to the BRS.
 Specifically, aging of ratings is also present.
 A similar extension for filtering non-majority outlier opinions like in the BRS was not found for the Dirichlet Reputation System.
 
@@ -710,7 +680,7 @@ If opinions turn out to be incorrect based on the outcome of the considered tran
 Constantly wrong advisors are thus filtered out eventually.
 
 %The authors of \cite{zhang_personalized_2006} and \cite{zhang_detailed_2008} take a survey of previous improvement methods, introduce a new method (personalized approach) and compare them, including experimental measurements. The methods compared are the Beta Reputation System, TRAVOS, Personalized Approach, Bayesian Network Approach and Weighted Majority Algorithm.
-%\cite{zhang_detailed_2008} does an ad hoc comparison of accuracy improvement / unfairness filtering methods.
+%\cite{zhang_detailed_2008} does an ad-hoc comparison of accuracy improvement / unfairness filtering methods.
 
 
 \subsection{Methods Based on Similarity}
@@ -729,7 +699,7 @@ To judge the reliability of these opinions, the asking agent compares its privat
 If they have formed many similar opinions on the same third party agents, their preference is assumed to be similar and the opinion from that advisor is assumed more relevant.
 
 The work in \cite{iltaf_mechanism_2013} proposes a dissimilarity function for detecting deviations in a recommendation set.
-The method assumes that dishonest recommendations are inconsistent with other recommendations and they also have a low occurence rate.
+The method assumes that dishonest recommendations are inconsistent with other recommendations and they also have a low occurrence rate.
 
 A similar dissimilarity function is introduced for mobile ad-hoc networks in \cite{zakirullah_detection_2014}.
 
@@ -739,7 +709,7 @@ The authors of \cite{dellarocas_immunizing_2000} introduce two trust or reputati
 \item cluster filtering to reduce the effect of unfairly high ratings and positive discrimination
 \end{itemize}
 Cluster filtering uses collaborative filtering techniques to identify the nearest neighbors of agents, based on similarities in commonly rated other agents.
-The goal is to identify conspiratory collectives who give unfairly positive ratings to increase a specific provider's reputation.
+The goal is to identify conspirational collectives who give unfairly positive ratings to increase a specific provider's reputation.
 
 The method proposed in \cite{zupancic_qade_2015} looks for similar agents and consider these as trustworthy sources of information for each other.
 Agents compare their trust values with trust values of similar agents.
@@ -769,17 +739,17 @@ The steps are
 %using trust rating in MANETs and 
 %WMA and belief function.
 
-The feedback consistency method is descibed in \cite{azzedin_identifying_2010}.
-Both participants transactions leave rating for the transaction.
-The two feedbacks are consistent if they evaluate the transaction with the same outcome, whether successful or not.
+The feedback consistency method is described in \cite{azzedin_identifying_2010}.
+Both of the transaction participants leave ratings on the transaction.
+The ratings are considered consistent if they evaluate the transaction with the same outcome, whether successful or not.
 An inconsistency is assumed to mean one of the transaction partners is not honest.
-When an agent reaches a certain threshold with its ratio of inconsistent vs. consistent feedback, the agent is suspected of leaving false feedback and feedbacks fromsuch agents are discounted.
+When an agent reaches a certain threshold with its ratio of inconsistent vs. consistent feedback, the agent is suspected of leaving false feedback, and feedback from such agents are discounted.
 
 The Context-Aware Approach aims to improve unfair rating detection by analyzing selected factors of the environment the detection algorithm is deployed in, and selecting the most suitable detection approach from a set of methods\cite{wan_context-aware_2012}.
 
 Some approaches provide incentives for honest behavior to prevent or mitigate unfair ratings\cite{thakur_reputation_2019, jurca_minimum_2006}.
 
-The method propsed in \cite{liu_reputation_2015} recovers the temporary damage of sellers who were given a lower rating by a buyer by mistake, and the buyer later willingly corrected this.
+The method proposed in \cite{liu_reputation_2015} recovers the temporary damage of sellers who were given a lower rating by a buyer by mistake, and the buyer later willingly corrected this.
 The seller's reputation is temporarily inflated to revert reputation damage.
 
 First hand trust observations and global reputation are combined in some works\cite{boudec_robust_2003,huynh_handling_2005}.
@@ -796,7 +766,7 @@ Each agent's typical rating scale is determined and the different scales are nor
 
 
 
-%TODO this part obv not here, rather in approach
+% this part obv not here, rather in approach
 %explicit inclusion of private experience as a system component
 %possibility of maintaining a trust network and getting recommendations (opinions) from them as advisors
 
@@ -819,7 +789,7 @@ Each agent's typical rating scale is determined and the different scales are nor
 %Accuracy's further interpretation is a sort of "trueness" value. This implies that an objectively true and absolutely accurate rating of a user's experience exists.
 %This is then different from the feedback the user gives into the system.
 %The user may or may not be aware of this "true rating." If not aware, maybe bias, subjectively very unpleasant experience. Some call this inherent bias. E.g. e-com the product is perfect but shipping time was bad and gives a 1-star rating. 
-%(There is a philosophycal aspect to this, as this is saying "you experienced this a 1/5 but we say it really was a 4/5" and what right or objective measure exists to permit this.)
+%(There is a philosophical aspect to this, as this is saying "you experienced this a 1/5 but we say it really was a 4/5" and what right or objective measure exists to permit this.)
 %If the user is aware of the "true quality," giving a doctored rating out of malicious intent is still a possibility. 
 %In any case, the result is that the given rating differs from a hidden, "objectively true" rating. This situation is called an "unfair" rating by Josang.
 
@@ -868,7 +838,7 @@ Youssef\&etal17\cite{youssef_towards_2017} & \glspl{mas} \\
 
 
 Literature has seen a number of publications that evaluate reputation methods or create freestanding evaluation frameworks for this purpose.
-Table~\ref{tab:literature_evaluation_frameworks} lists these attemptsalong with their domains.
+Table~\ref{tab:literature_evaluation_frameworks} lists these attempts, along with their domains.
 This section describes the most notable evaluation and comparison approaches.
 
 The ART testbed is one of the earliest comprehensive evaluation framework published for comparing trust and reputation systems\cite{fullam_specication_2005}.
@@ -905,7 +875,7 @@ Evaluation is based on a clearly defined metric called hit rate, calculated as
 Implementing custom metrics is not supported by default.
 As the QTM authors say, shared files can either be valid or invalid, and binary feedback is expected after each file sharing transaction.
 Supporting only binary transaction outcomes and feedback values is QTM's major limitation.
-Tested trust or reputation models also need to containt a selection procedure for peer agents to decide who they download their requested files from.
+Tested trust or reputation models also need to contain a selection procedure for peer agents to decide who they download their requested files from.
 This is not always part of models.
 
 TRMSim-WSN is a simulator for trust and reputation systems specialized to wireless sensor networks.
@@ -916,7 +886,7 @@ This relatively recent (2018-2020) framework aims to support reputation manageme
 The framework stays domain-independent by disregarding communication protocols between agents and the reputation system as well, while enabling custom reputation calculation methods and agent behavior.
 Agents are also allowed to implement their own decision making for selecting transaction partners.
 
-The framework Youssef\&etal17 presents a \gls{mas} scenario in which students with different skills must complete their homeworks\cite{youssef_towards_2017}.
+The framework Youssef\&etal17 presents a \gls{mas} scenario in which students with different skills must complete their homework\cite{youssef_towards_2017}.
 The work Janiszewski17 introduces a set of theoretical metrics that can be used to evaluate different reputation systems\cite{janiszewski_towards_2017}.
 
 
@@ -955,7 +925,7 @@ The work Janiszewski17 introduces a set of theoretical metrics that can be used 
 %    completely new ideas, while saying xyz requirements r not fulfilled by previous ones
 
 
-%TODO somewhere in this chapter, discuss how in ecom or other domains its a problem that not many ratings are given, while in fully machine populated it can be mandated to leave a review. then again its a question of who's in sensing distance e.g. in the intersection management case
+%somewhere in this chapter, discuss how in ecom or other domains its a problem that not many ratings are given, while in fully machine populated it can be mandated to leave a review. then again its a question of who's in sensing distance e.g. in the intersection management case
 
 %why there should be claims and reviews scenarios...
 %should be scenarios to sim diff behaviors of agents
@@ -968,31 +938,71 @@ First, the model elements are discussed.
 Then, configurable parts like reputation and improvement methods, and behaviors of participating agents are covered.
 Finally, concepts of the evaluation framework used for simulations are introduced.
 
+Table~\ref{tab:model_notations} provides a reference for notations introduced throughout this chapter.
+
+\begin{table}[tbp]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{Notation}        & \textbf{Meaning} \\ \midrule
+$A$ & all agents of a scenario \\
+$a_m$ & the $m^{th}$ agent, $a_m\in A$ \\
+$C^r_{i,m}$ & the claim with index $i$, made by agent $a_m$ in round $r$\\
+$Q_{meas,m,i}$ & quality of claim $C_i$ as measured (seen) by agent $a_m$ \\
+$Q_{true,i}$ & ground truth of claim $C_i$ \\
+$R_{m,i}$ & a review of claim $C_i$, the review is by agent $a_m$ \\
+$R_{author,m,i}$ & the author review of $C_{i,m}$, made by agent $a_m$ \\
+\bottomrule
+\end{tabular}
+\caption{
+    Reference of notations used in the introduced model.
+    When the information carried by a subscript is not relevant in the mentioned context, that is omitted from the notation for clarity.
+}
+\label{tab:model_notations}
+\end{table}
+
 
 
 % --------------------------------------------------------------
-\section{Model}\label{sec:approach_model}
+\section{Transactions and Content}\label{sec:approach_content}
 % --------------------------------------------------------------
+In the following of the thesis we assume that a reputation system consists of a set of \emph{agents} $ A = \{a_1, a_2, ... a_n\} $, which engage in transactions with each other over time.
+Transactions can be data transfer, a purchase, service usage, etc.
+One of the transaction partners fills the role of a \emph{provider}, while the other is a \emph{consumer}.
 
-\subsection{Claims}\label{sec:approach_claims}
-Considering any kind of reputation scheme, it consists of actor agents who make transactions between each other.
-These transactions usually involve the exchange of something, generally referred to as content here.
-Finally, some or all of the transacting agents leave a public feedback of their transaction partner, the content, or just keep their opinion and provide it upon request.
-
-Claims\footnote{The claim name comes from its old use. Formerly, the author review was called claim value. It was said the agent "claims that the quality of its content is \emph{xyz}"} are models of the content that is the subject of exchange.
-Content can represent any kind of product, service or information someone provides for others to consume or use.
-It can be a book, a hotel room, files shared on a \acrlong{p2p} network, an online comment or any contractual agreement.
+Transactions involve the delivery or exchange of something, like products, service provision or any kind of data.
+Concrete examples are a book, a hotel room, files shared on a \acrlong{p2p} network, an online comment, a contractual agreement.
 It can also be sensor data or an algorithmic result like a self-driving car's estimated time of arrival to the next intersection.
 
+We refer to these objects of exchange as \emph{content} from here on.
+Because the model aims to stay domain-independent, we elected to 
+\begin{itemize}
+\item not explicitly define the specifics of transactions
+\item not model the content
+\item not model content-exchange processes or protocols
+\end{itemize}
+
+
+
+% --------------------------------------------------------------
+\section{Claims}\label{sec:approach_claims}
+% --------------------------------------------------------------
+%In reputation systems, transacting agents may leave a public feedback of their transaction partner or of the received content, or they may just record their opinion and provide it later upon request.
+
+Before agents commit to a transaction, they have a preliminary understanding of what content exchange would take place.
+Claims
+\footnote{The claim name comes from its old use. Formerly, the author review was called claim value. It was said the agent "claims that the quality of its content is \emph{xyz}"}
+model the promoses of content providers.
+Claims are denoted as $ C_{i,m} $, where $i$ is the claim's identifier index, and agent $a_m$ is the claim's author.
 Conceptually, a claim is made up by the following components.
 \begin{enumerate}
-	\item representation of the content's quality, named \gls{gr_truth} or claim quality
-	\item an author that made the claim
+	\item representation of the provided content's quality, named \gls{gr_truth} or claim quality
+	\item the author agent that made the claim
 	\item an \gls{author_review}
 	\item the time from which the claim is available (published)
 \end{enumerate}
 
-As seen from this, claims do not explicitly contain anything about what the modeled content is.
+Claims do not explicitly contain anything about the content they represent, because as discussed previously, content is not modeled in order to stay domain-independent.
 Content is only implied with the claim, and only its quality is represented.
 More broadly, claims do not contain anything about what the context of the reputation scheme is.
 The following is all assumed:
@@ -1002,7 +1012,14 @@ The following is all assumed:
 	\item an environment in which the content is produced and consumed
 \end{enumerate}
 
-\subsubsection{Quality Valuation}
+Claiming (Figure~\ref{fig:claim_rate_process}, above) is the process of making (publishing) new claims.
+It start with a new claim $C_{i,m}$ without any reviews, containing a \gls{gr_truth}.
+The claimer agent $a_m$ measures this hidden quality and distorts it, resulting in a value representing the claimer's opinion of his own claim.
+This is attached as an \gls{author_review} $R_{author,m,i}$ to the claim to be published.
+Subsequent sections in this chapter discuss the contepts of ground truth, distortion and reviews.
+
+
+\subsection{Quality Valuation}
 Quality valuations or estimations model a quantitative valuation of the quality or goodness of the content.
 What this means can differ between domains.
 Table~\ref{tab:content_examples} lists examples for contents and their possible valuations.
@@ -1015,7 +1032,6 @@ Three kinds of valuation are modeled, distinguished by the source of the valuati
 	\item author's review
 	\item regular review
 \end{itemize}
-
 
 \begin{table}[tbp]
 \centering
@@ -1035,8 +1051,9 @@ Online discussion   & Social media post & Popularity, agreed or not \\
 \label{tab:content_examples}
 \end{table}
 
-\subsubsection{Ground Truth}\label{sec:approach_gr_truth}
-The \gls{gr_truth}, or alternatively called claim quality, is meant to model the objectively true but hidden and not knowable quality of a content.
+
+\subsection{Ground Truth}\label{sec:approach_gr_truth}
+The \gls{gr_truth}, or alternatively called claim quality, denoted by $ Q_{true,i} $ is meant to model the objectively true but hidden and not knowable quality of a content behind the claim $ C_{i,m} $.
 This assumes that there is a way to calculate or judge a content's universal quality with the chosen valuation.
 In the case of the autonomous vehicle's estimated time of arrival, the ground truth represents the actual physically measurable length of time the vehicle needed for arrival.
 Of course, accurate and objective judgment is often not possible.
@@ -1045,73 +1062,114 @@ For example, the enjoyment of books, or the validity of a social media post is h
 Still, ground truth is a useful tool for modeling reputation schemes.
 A baseline truth is often needed for evaluating the performance of the reputation scheme, or in the case of this work, improvement techniques.
 Additionally, such a claim quality can be used as a starting point when modeling how other agents see the content.
-This is used in Pyrepsys as well, the method is called measuring claims and is discussed in section~\ref{sec:approach_measure_claim}.
+This method is called measuring claims and is discussed in Section~\ref{sec:approach_measure_claim}.
 
 Ground truth is an inherent quality in every claim.
 When an agent claims, the new claim will contain a ground truth value that is not controlled or influenced by the claimer at all.
-Certainly, agents have some control over what content they produce and there are other means of modeling that.
 In this model, a ground truth is seen as a kind of circumstance, one that would only show as time progresses.
 For example, when the autonomous vehicle makes an estimate for a time of arrival, the real and accurate time taken to arrive is not yet known.
 For modeling purposes it is assumed that it will be known, and it was in fact generated as ground truth at the time the claim was made.
 
 Finally, ground truths are hidden from agents, and they have no way of directly accessing this valuation.
-The closest agents may get to it is by the above mentioned measurement of the claim, which is a model of trying out the content and making their own opinion of it.
+The closest estimation of the ground truth value that agents can obtain is through the above-mentioned measuring process, which is a model of trying out the content and forming an opinion of it.
 
-\subsubsection{Author's Review}\label{sec:approach_author_review}
-An \gls{author_review} is a valuation that models what a claim's author says the quality of the content is.
-It is a sort of self-appraisal, a declaration of what the claimer thinks its claim is worth.
+
+\subsection{Author's Review}\label{sec:approach_author_review}
+An \gls{author_review} $ R_{author,m,i} $ is a valuation modeling what the agent $a_m$ who is author of claim $C_{i,m}$ says the quality of the content is.
+It is a self-appraisal, a declaration of what the claimer thinks its claim is worth.
 Modeling the author's opinion is a somewhat unusual approach, since this is usually not explicitly part of reputation systems.
+The benefit of having author reviews is that reputation calculation methods or agent decision making can use it.
+When this is not needed, other parts of the model would simply disregard author's reviews.
 
-Because of this, author reviews can be interpreted in multiple ways.
+Author reviews can be interpreted in multiple ways.
 When the reputation scheme uses an explicit value which agents publish along their claims, it is exactly that, an explicit self-assessment of provided content.
-Otherwise, it can imply some kind of unspoken, but still advertised positioning of the claim.
+Otherwise, it can imply an unspoken, but still advertised positioning of the claim.
 This can be a marketing message for example, or an expectation that a specific director's movies are usually good.
 These give no explicit valuations tied to contents, but some kind of positioning can still be implied from the image, history, expectations, etc.
 
-The benefit of having author reviews is that reputation calculation methods or agent decision making can use it.
-As such, an additional mechanism can be part of the model.
-When this is not needed, other parts of the model would simply disregard author's reviews.
+
+\subsection{Measuring Claims}\label{sec:approach_measure_claim}
+Measuring claims is the term used for when an agent assesses the quality of a claim.
+This models when a consumer upon receiving a content, tries it out and leaves feedback based on first-hand experience.
+Additionally, an agent can also measure its own claim.
+%Measuring a claim is the representation of trying out a product or content and making an opinion of what its quality could be.
+
+The measured quality $Q_{meas,m,i}$ denotes agent $a_m$'s assessment of claim $C_{i,n}$.
+With the model's assumption on the existence of a ground truth, measuring a claim can be seen as an agent trying to guess this hidden quality valuation.
+Agents are modeled here with various levels of expertise, which affects how close or how reliably they can measure the ground truth.
+Know-how, experience, expertise or inside knowledge are among the possible factors playing a role.
+The model's implementation uses \acrlong{ctai} for this, which is a parameter of agents representing the maximum inaccuracy they can make when measuring.
+
+As discussed, making a new claim has two main stages: measuring the ground truth and distorting.
+The measurement serves as input for distortion.
+Distortion models conscious actions, honesty or willing manipulation.
+Measuring claims is also a sort of distortion, albeit not under the control of the agent.
+While distortion is \emph{intent}, measurement represents \emph{competence}.
 
 
-\subsection{Reviews}\label{sec:approach_reviews}
-Regular reviews model the feedback on products from agents that are on the consumer end of transactions.
-The agents leaving reviews are called raters.
+
+% --------------------------------------------------------------
+\section{Regular Reviews}\label{sec:approach_reviews}
+% --------------------------------------------------------------
+Regular reviews (or simply reviews) model the feedback on products from agents that are on the consumer end of transactions.
+A review $R_{m,i}$ is the opinion of agent $a_m$ on claim $C_{i,n}$, where $m \neq n$.
+Every review implies that a transaction took place, and content was exchanged.
+The agent $a_m$ who leaves the review is in the consumer role, and is called \emph{rater}.
+
 A fundamental assumption of the model is that raters leave feedback on the content, not the content's provider.
-This means that claims are the subject of reviews, not the claimers.
-
+This means that the subject of reviews are claims, not the claimers.
 A rater leaving a review on a claim represents what that rater thinks the content quality is.
-Another interpretation is that a review means what the rater thinks the claim's author review should have been.
+Another interpretation is that a review is what the rater thinks the rated claim's author review should have been.
 In essence, what the rater would publish as author's review, were that rater the author of that claim.
 Both interpretations have the same outcome.
-
 
 
 
 % --------------------------------------------------------------
 \section{Reputation Calculation}\label{sec:approach_reputation_calculation}
 % --------------------------------------------------------------
-Two reputation calculation methods were designed for evaluation.
-Both of them are based on relatively simple averaging.
+Two reputation calculation methods were designed for evaluation, both of them based on relatively simple averaging.
 One drawback of using custom methods is they are not directly comparable with any other related reputation system.
 Another issue is both methods assign reputation to claiming agents only.
 Consumers who only rate and never claim, do not get a reputation.
 
-They compensate with the benefits of simplicity.
+The two methods compensate with the benefits of simplicity.
 Unlike with more complex methods, it is possible to easily follow what happens.
 Averaging is also a very common-sense approach.
 Many people would expect something like this when seeing a score-based reputation system, although this is rarely the case.
 Finally, both methods can support weights, one of the improvement techniques used.
 
-\subsection{Difference of Author and Regular Reviews}
+\subsection{Difference of Author Reviews and Regular Reviews}\label{sec:approac_repcalc_basedondifference}
 This method makes use of the unique author's review system.
 It exploits that both the author and consumers make reviews of claims.
-To get an agent's reputation, each of its published claims has its reviews averaged, and the difference between this average and the author's review calculated.
-Once ready for all of an agent's claims, the differences are averaged.
+Assume an agent $a_m$ has made a series of claims $\delta=\{C_{i,m}, C_{i+1,m},...C_{i+N-1,m}\}$, that is $N$ number of claims in total.
+To get the reputation of agent $a_m$,, each of its published claims $\delta$ has its reviews averaged, and the difference between this average and the author's review is calculated (\ref{eq:basedondiffrep1}). Once ready for all of an agent's claims, the differences themselves are averaged as in (\ref{eq:basedondiffrep2}).
+\begin{equation} \label{eq:basedondiffrep1}
+\begin{aligned}
+\mathrm{difference}(C_{i,m})&=\left|\frac{\sum_{n \in A} R_{n,i}}{\text{number of reviews }R_{n,i}}-R_{author,m,i}\right| \\
+\text{where}&~ n\neq m
+\end{aligned}
+\end{equation}
+\begin{equation} \label{eq:basedondiffrep2}
+\mathrm{average~difference}(a_m)=\frac{\sum_{i\in\delta}\mathrm{difference}(C_{i,m})}{\text{number of claims in }\delta}
+\end{equation}
+
 The maximum possible difference is a property of the reputation scheme, known as the difference between the lowest and highest possible review valuation.
 
-Finally, the agent's reputation is calculated based on the percentual relationship of the average of differences and the theoretical maximum difference.
+Finally, the agent's reputation is calculated based on the percentual relationship of the average of differences and the theoretical maximum difference (\ref{eq:basedondiffrep3}).
+\begin{equation} \label{eq:basedondiffrep3}
+\begin{aligned}
+\tau &=\frac{(\mathrm{max~difference})-\mathrm{average~difference}(a_m)}{\mathrm{max~difference}} \\
+\mathrm{reputation}(a_m)&=\tau*(\text{reputation range})+\text{min reputation} \\
+\text{where}&~ \mathrm{max~difference}=(\text{max reputation})-(\text{min reputation}) \\
+&~ \text{reputation range}=(\text{max reputation})-(\text{min reputation})
+\end{aligned}
+\end{equation}
+% diff_percent = (max_difference - avg_diff) / max_difference
+% reputation = min_reputation + (max_reputation - min_reputation) * diff_percent
+
 If an agent's author reviews of its own claims would perfectly align with the reviews they received, the agent's reputation becomes the maximum possible.
-Similarly, if the difference is at the top limit, e.g. an agent's author reviews are at the maximum rating and all reviews are at minimum, the reputation becomes the lowest possible.
+Similarly, if the difference is at the highest possible, e.g. when an agent's author reviews are all at the maximum rating and all reviews are at minimum, the reputation becomes the lowest possible.
 In between it is straight proportional.
 
 Basically honesty of claimers is rewarded, while dishonesty is punished through reputation.
@@ -1122,39 +1180,58 @@ In the end, an agent's reputation informs others how reliable that agent's autho
 
 
 \subsection{Simple Review Average}
-This method simply collects every review on all claims an agent has.
+Here, reputation is the average of received reviews.
+The method simply collects every review on all claims an agent has.
 The average of these received reviews becomes the agent's reputation.
 Collecting and averaging is repeated separately for all agents.
+As such, the raputation of agent $a_m$ is given as
+\begin{equation}
+\begin{aligned}
+\mathrm{reputation}(a_{m})&=\frac{\sum_{i \in \omega} R_{n,i}}{\text{number of reviews }R_{n,i}} \\
+\text{where}&~ n\neq m \\
+&~ \omega=\text{all claims by agent }a_m
+\end{aligned}
+\end{equation}
 
 The specialty in simple averaging of reviews is in the different interpretation of reviews.
 Section~\ref{sec:approach_reviews} discussed previously how reviews are meant to give feedback on claims, not on the claimer agents.
 Simple review averaging turns this around and makes reviews behave as rating the claimers themselves.
 
 This is best seen through an example.
-A claimer publishes a claim, which has a low ground truth.
-Accordingly, the claimer's author review of the claim is also low, because the claimer is an honest agent.
-If other agents then rate this claim, and they rate based on the quality of the content represented by it, they would leave mostly low reviews.
-Now, if reputation is just the average of review values, this claimer's reputation would become low.
-Even though the claimer was honest in declaring its own content as of low quality.
+Let the rating range be [1,9], i.e. for all reviews $\forall R: 1\leq R \leq 9$ and all quality variations $\forall Q: 1\leq R \leq 9$.
+An honest claimer $a_m$ publishes a claim $C_{i,m}$, which has a low ground truth of $Q_{true,i}=2.5$.
+Accordingly, let the claimer's author review of the claim is also low, because the claimer is an honest agent.
+Let the author review be $R_{author,m,i}=2$.
+If some other agents $a_n, a_o, a_p$ then rate this claim, and they rate based on the quality of the content represented by it, they would leave mostly low reviews.
+Their reviews could be
+\begin{equation}
+\begin{aligned}
+R_{n,i} &= 2 \\
+R_{o,i} &= 1 \\
+R_{p,i} &= 3 \\
+\end{aligned}
+\end{equation}
+Assuming $a_m$ has no other claims and no other agents have given ratings apart from the three above, the reputation of the claimer $a_m$ becomes
+\begin{equation}
+\mathrm{reputation}(a_{m})=\frac{R_{n,i}+R_{o,i}+R_{p,i}}{\text{number of reviews}} = \frac{2+1+3}{3} = 2
+\end{equation}
+Even though the claimer was honest in declaring its own content as of low quality, the resulting reputation is still low.
 Here, the reputation signals that the claimer provides content that is low in quality.
-This is a property of the claimer then.
 
 The other case is when raters review the claimer itself, how good their transaction experience was, whether it went according to expectation, etc.
 So raters consuming a content behind the above claim fully expect it to be of low quality, because the author's review also warned them.
 Assuming the transaction goes well, raters leave a good (high) review.
 This results in a higher reputation for the claimer.
-Reputation signals again if claimers are honest.
+In this case, reputation signals if claimers are honest.
 
-As seen, this method changes what reviews and reputation mean away from the default intended meaning.
-For this reason, the use of this method was mostly neglected in favor of the other one.
+As seen, Simple Review Averaging changes what reviews and reputation mean away from their default intended meaning.
+For this reason, the use of Simple Review Averaging was mostly neglected in favor of the other reputation calculation method described in Section~\ref{sec:approac_repcalc_basedondifference}.
 
 
 
 % --------------------------------------------------------------
 \section{Improving Reputation}\label{sec:approach_improvements}
 % --------------------------------------------------------------
-
-
 
 \begin{figure}[tbp]
   \begin{center}
@@ -1173,10 +1250,19 @@ For this reason, the use of this method was mostly neglected in favor of the oth
 
 Aging's purpose is to limit the memory of the reputation system, so as to help follow changes in agent behavior or sentiment.
 Older data is forgotten, so no agent is locked into a reputation they no longer deserve.
+The \emph{Limit} parameter specifies how long data is retained.
+Generally, \emph{Limit} can be any unit of time measurement.
+The proposed implementation from Chapter~\ref{chap:implementation} divides time into rounds, and the aging limit gives a number of rounds, so it is assumed to be a natural number $\mathbb{N}$.
 
-Aging is adapted to the system as shown in Figure~\ref{fig:improvement_aging}.
-\emph{Limit} specifies how long data is retained.
-Any claim that is older than the limit is removed, along with all attached reviews.
+The schematic function of aging is shown in Figure~\ref{fig:improvement_aging}.
+If the current round $r_{\mathrm{now}}$ indicates the present time, then for any claim $C^r_{m,i}$ made in round $r$, aging is:
+\begin{equation}
+    \begin{cases}
+		\text{remove }C_{m,i} & r_{\mathrm{now}} - r > \mathrm{Limit} \\
+		\text{still count }C_{m,i} & \text{otherwise}
+    \end{cases}
+\end{equation}
+Removing a claim also removes all attached reviews on that claim.
 
 
 \subsection{Weights}
@@ -1204,7 +1290,21 @@ An agent's reputation serves as its weights, calculated proportionally.
 Reputation calculation methods use weighted average for aggregating reviews.
 
 
-\subsection{Other Selected}
+\subsection{Stakes}
+
+We propose stakes as a new improvement method, consisting of claimers publishing a stake along their new claims.
+A stake gives how certain claimers are in their valuation of their new claim, i.e. the author's review.
+A high stake signals confidence of the agent in the author review's accuracy, while a low stake notifies others that even the claimer is not sure whether its author review is correct.
+
+Stake is a similar to a self reported weight, with a scope of only the involved claim.
+Other agents and even reputation calculation can use the stake when making decisions.
+For example, a low stake could mean the claimer does not receive much of a reputation penalty if the author review turns out to be inaccurate, while a higher stake incurs an amplified reputation correction.
+
+Since stake requires providing an extra valuation with every claim, it is best suited for algorithmic systems.
+A sensor can provide stakes based on its known uncertainty for example.
+
+
+\subsection{Other Selected Methods}
 
 \emph{Outlier filtering} can be modeled by removing reviews which have significantly different valuations than the majority opinion.
 This can be a way to prevent a small number of saboteurs to influence a claim's overall review valuation.
@@ -1219,19 +1319,7 @@ Normalization extends the midrange rater's ratings to span the whole rating rang
 This method is only applicable if agents already have a lot of ratings, because enough data is needed to confidently determine the typical rating range.
 
 
-\subsection{Stakes}
 
-Stakes is a new proposed improvement method.
-It consists of claimers publishing a stake along new claims.
-A stake gives how certain claimers are in their valuation of their new claim, i.e. the author's review.
-A high stake signals confidence of the agent in the author review's accuracy, while a low stake notifies others that even the claimer is not sure whether its author review is correct.
-
-Stake is a similar to a self reported weight, with a scope of only the involved claim.
-Other agents and even reputation calculation can use the stake when making decisions.
-For example, a low stake could mean the claimer does not receive much of a reputation penalty if the author review turns out to be inaccurate, while a higher stake incurs an amplified reputation correction.
-
-Since stake requires providing an extra valuation with every claim, it is best suited for algorithmic systems.
-A sensor can provide stakes based on its known uncertainty for example.
 
 
 
@@ -1240,19 +1328,19 @@ A sensor can provide stakes based on its known uncertainty for example.
 % --------------------------------------------------------------
 % other name: Attack Strategies
 
-TODO agent notation
 Distortion models the conscious and willing efforts of claimers to influence other's perception of their content quality.
-It fits in the model as part of making new claims, seen in Figure~\ref{fig:claim_rate_process}.
-When an agent $a_i$ makes a new claim $C_{a_{1}}$, that agent has some valuation of what the claim's quality is.
-This is called the measured quality $Q_{m,A,C_{A}}$ as per section~\ref{sec:approach_measure_claim}.
-The claimer agent $A$ needs to make an author's review $R_{author A, C_{A}}$ about its new claim $C_A$.
+This is one vector for agents to attack and exploit the reputation system, namely from the provider's side.
+With this concept, the model allows the setup of more elaborate attack scenarios.
+
+Distortion fits in the model as part of making new claims, seen in Figure~\ref{fig:claim_rate_process}.
+When an agent $a_m$ makes a new claim $C_{i,m}$, that agent has some valuation of what the claim's quality is.
+This is called the measured quality $Q_{meas,m,i}$ as per Section~\ref{sec:approach_measure_claim}.
+The claimer agent $A$ needs to make an author's review $R_{author,m,i}$ about its new claim $C_{i,m}$.
 Distortion basically defines how the agent comes up with the author review from the known the measured quality of the claim.
 \begin{equation}
-%\mathrm{distort_{A}}(Q_{m,A,C_{A}}) = R_{author A, C_{A}}
-\mathrm{distort}_{a_1}(Q_{m,a_{1},C_{a_{1}}}) = R_{author A, C_{A}}
+\mathrm{distort}_{a_m}(Q_{meas,m,i}) = R_{author,m,i}
 \end{equation}
 
-Distortion is one vector for agents to attack and exploit the reputation system, namely from the provider's side.
 The most honest approach is to do no distortion at all.
 Here, the author's review contains exactly the claimer's valuation of the claim quality.
 Less honest agents can either state a higher or lower value than their own estimate.
@@ -1265,24 +1353,33 @@ To what extent and how often they do it depends on the distortion method they us
 % --------------------------------------------------------------
 \section{Rating}\label{sec:approach_rating_strategies}
 % --------------------------------------------------------------
+\begin{figure}[tbp]
+  \begin{center}
+        \includegraphics[width=1\linewidth]	{../images/claim_rate_process-crop.pdf}
+    \caption{
+    Schematic representation of claiming (above) and rating (below) processes, with the involved claims and reviews.
+    }
+    \label{fig:claim_rate_process}
+  \end{center}
+\end{figure}
 
 Rating models the feedback agents leave on content they have used.
-When an Agent $A$ rates a claim $C_B$ made by another agent $B$, a regular review $R_{A,C_{B}}$ is produced.
+When an Agent $a_m$ rates a claim $C_{i,n}$ made by another agent $a_n$, a regular review $R_{m,i}$ is produced.
 
 \begin{equation}
-\mathrm{rate_{A}}(C_B) = R_{A, C_{B}}
+\mathrm{rate_{a_m}}(C_{i,n}) = R_{m,i}
 \end{equation}
 
 Rating is analogous to distortion in that both end up producing a kind of review.
 The difference is that rating produces regular reviews on published claims, while distortion is used for author reviews.
 
-Apart from this, rating may use a much larger amount of input data, everything that is part of or connected to the rated claim $C_B$.
-This includes not only the measured quality, but also the other reviews of $C_B$, data of the author agent $B$ like $B$'s reputation, other claims of $B$ and their review and so on.
+Apart from this, rating may use a much larger amount of input data, everything that is part of or connected to the rated claim $C_{i,n}$.
+This includes not only the measured quality, but also the other reviews of the $C_{i,n}$, data of the claim author agent $a_{n}$ like $a_{n}$'s reputation, other claims of $a_{n}$ and their review, and so on.
 This allows modeling elaborate methods of feedback behavior.
 
 Such amount of data is often not reasonable to utilize at once.
 Therefore, models of rating usually select one valuation related to the claim, and then apply some manipulation to this value.
-This input represents some numeric quality of the claim, like the author review, the quality as measured by the rater agent $A$, the average of other reviews, etc.
+This input represents some numeric quality of the claim, like the author review, the quality as measured by the rater agent $a_m$, the average of other reviews, etc.
 Comparing how well these perform can be a task of its own.
 No specific value is assumed while discussing methods below.
 The general notation $X$ is used instead.
@@ -1297,12 +1394,15 @@ Simple rating methods are characterized by using only one or a few input values 
 The modeled ones are shown in Figure~\ref{fig:simple_rate_strategies}.
 Every transfer function can have parameters and an input $X$.
 
-The two commonly considered attacked methods \emph{promotion} and \emph{slandering} can be modeled with linear or breakpointed linear methods, as in equations \ref{eq:rate_linear} and \ref{eq:rate_linear_brpoint}. Breakpointed can go both ways, setting a low or a high limit for a constant value before or after that respectively. Parameters: $a$, $b$, \emph{direction}, \emph{breakpoint} and \emph{breakpoint value}.
+The two commonly considered attack methods are \emph{promotion} and \emph{slandering}\cite{hoffman_survey_2009}.
+They are modeled with linear or breakpointed linear methods, as in equations \ref{eq:rate_linear} and \ref{eq:rate_linear_brpoint}.
+Linear breakpointed can work both ways, setting either a constant low or a high limit for ratings before or after the breakpoint, respectively.
+Parameters: $a$, $b$, \emph{direction}, \emph{breakpoint} and \emph{breakpoint value}.
 \begin{equation}\label{eq:rate_linear}
-\mathrm{rate_{linear}}(C_B) = aX+b
+\mathrm{rate_{linear}}(C_{i,n}) = aX+b
 \end{equation}
 \begin{equation}\label{eq:rate_linear_brpoint}
-\mathrm{rate_{breakpointed}}(C_B) = 
+\mathrm{rate_{breakpointed}}(C_{i,n}) = 
     \begin{cases}
       aX+b & \text{if $X$ within \emph{breakpoint}} \\
       \text{\emph{breakpoint value}} & \text{otherwise}\\
@@ -1312,29 +1412,30 @@ The two commonly considered attacked methods \emph{promotion} and \emph{slanderi
 Second order polynomial ratings described by (\ref{eq:rate_so}) are included from \cite{yu_detecting_2003}, where they are called exaggerated positive and negative.
 Parameters: $a$, $b$, $c$ and \emph{direction}, the latter influencing if the polynomial is added or subtracted.
 \begin{equation}\label{eq:rate_so}
-\mathrm{rate_{second order}}(C_B) = X \pm (aX^2+bX+c)
+\mathrm{rate_{second order}}(C_{i,n}) = X \pm (aX^2+bX+c)
 \end{equation}
 
-Invert rating is also adapted from the above cited work.
+Invert rating is also adapted from \cite{yu_detecting_2003}.
 \begin{equation}\label{eq:rate_invert}
-\mathrm{rate_{invert}}(C_B) = -X + \mathrm{max}(X) + \mathrm{min}(X)
+\mathrm{rate_{invert}}(C_{i,n}) = -X + \mathrm{max}(X) + \mathrm{min}(X)
 \end{equation}
 
 Flattening was introduced to model the often-seen behavior of people avoiding strong opinions, tending toward the safe middle values.
-It reduces the more extreme values towards the middle range.
+This is based on a well-established observation in psychology and sociology, and is called the central tendency bias\cite{kalton_effects_1980,lee_outlier_2004}.
+Flattening reduces the more extreme values towards the middle range.
 The strength of flattening is given by parameter $a < 1$.
 
 \begin{equation}\label{eq:rate_flatten}
 \begin{aligned}
-&\mathrm{rate_{flatten}}(C_B) = a(X-mid)+mid \\
+&\mathrm{rate_{flatten}}(C_{i,n}) = a(X-mid)+mid \\
 \mathrm{where~}&mid = 0.5\big(\mathrm{max}(X) - \mathrm{min}(X) \big) + \mathrm{min}(X)
 \end{aligned}
 \end{equation}
 
-Flattening can be seen as conservative rating.
-The opposite of flattening is when the transfer function amplifies toward extremes.
-Flatten rating in (\ref{eq:rate_flatten}) can do this with a multiplier $a > 1$.
-This can be a model for agents that mostly have strong opinions, either very high or very low.
+Flattening can be seen as conservative or reserved rating.
+The opposite of flattening is extreme rating, when an agent tends to give more extreme ratings, around the edges of the rating range.
+This method uses the same transfer function as in (\ref{eq:rate_flatten}), but with a multiplier $a > 1$ that amplifies toward extremes.
+Extreme rating can model agents that mostly have strong opinions, either very high or very low, a behavior that has also been observed in online rating systems\cite{schoenmueller_extreme_2018}.
 
 Finally, the simplest of all rating methods is when nothing is done.
 This means some quality $X$ of the claim is returned without altering.
@@ -1348,7 +1449,7 @@ An example is the method that simply repeated the author's review of the rated c
     The dashed line is the input without transformation.
     It can be any single value from the rated claim, for example its author review, or measured quality.
     Rating methods show example parametrizations, these can of course change.
-    Both the input and ratings are selected to be within $[1,9]$.
+    Both the input and ratings are selected to be within the integer interval $[1,9]$.
     }
     \label{fig:simple_rate_strategies}
   \end{center}
@@ -1363,7 +1464,7 @@ The malicious rating may carry more weight due to the rater's otherwise good rep
 The method is modeled as per (\ref{eq:rate_random_error}).
 Parameters: \emph{chance}.
 \begin{equation}\label{eq:rate_random_error}
-\mathrm{rate_{random~error}}(C_B) = 
+\mathrm{rate_{random~error}}(C_{i,n}) = 
 \begin{cases}
 random & \text{if $chance$ is taken by coincidence} \\
 X & \text{otherwise}
@@ -1373,13 +1474,13 @@ X & \text{otherwise}
 Various other random ratings can be used to model actors who want to weak havoc or are completely ignorant.
 Random, lower half, and higher half random all give a random value within the whole or part of the rating range.
 \begin{equation}\label{eq:rate_random}
-\mathrm{rate_{random}}(C_B) = \text{random value in $\big[\mathrm{min}(X), \mathrm{max}(X)\big]$}
+\mathrm{rate_{random}}(C_{i,n}) = \text{random value in $\big[\mathrm{min}(X), \mathrm{max}(X)\big]$}
 \end{equation}
 \begin{equation}\label{eq:rate_random_higher_half}
-\mathrm{rate_{random~higher~half}}(C_B) = \text{random value in $\left[\frac{\mathrm{min}(X)}{2}, \mathrm{max}(X)\right]$}
+\mathrm{rate_{random~higher~half}}(C_{i,n}) = \text{random value in $\left[\frac{\mathrm{min}(X)}{2}, \mathrm{max}(X)\right]$}
 \end{equation}
 \begin{equation}\label{eq:rate_random_lower_half}
-\mathrm{rate_{random~lower~half}}(C_B) = \text{random value in $\left[\mathrm{min}(X), \frac{\mathrm{max}(X)}{2}\right]$}
+\mathrm{rate_{random~lower~half}}(C_{i,n}) = \text{random value in $\left[\mathrm{min}(X), \frac{\mathrm{max}(X)}{2}\right]$}
 \end{equation}
 
 
@@ -1398,123 +1499,20 @@ As also mentioned before, a collective can build up the reputation of its member
 
 \subsection{Experience-Based Rate Methods}
 Experience-based rating is when a consumer judges a content based on personal experience with it.
-An agent's own experience is modeled by measuring claims, discussed in section~\ref{sec:approach_measure_claim}.
-When an agent $A$ measures the claim $C_B$ made by agent $B$, it results in the measured quality $Q_{m,A,C_{B}}$.
+An agent's own experience is modeled by measuring claims, discussed in Section~\ref{sec:approach_measure_claim}.
+When an agent $a_m$ measures the claim $C_{i,n}$ made by agent $a_n$, it results in the measured quality $Q_{meas,m,i}$.
 
-Technically any of the discussed rate methods can be experience-based, if $X$ is chosen as $Q_{m,A,C_{B}}$.
+Technically any of the discussed rate methods can be experience-based, if $X$ is chosen as $Q_{meas,m,i}$.
 Still, explicitly defining such a rate method is worth it because rating from own opinion is common.
 \begin{equation}\label{eq:rate_own_experience}
-\mathrm{rate_{own~experience}}(C_B) = Q_{m,A,C_{B}}
+\mathrm{rate_{own~experience}}(C_{i,n}) = Q_{meas,m,i}
 \end{equation}
 
 
 
 % --------------------------------------------------------------
-\section{Evaluation}\label{sec:approach_evaluation_framework}
+\section{Resolution}\label{sec:approach_resolution}
 % --------------------------------------------------------------
-% aka. Simulation System
-% putting together all the above
-
-%check how to implement these
-%can use existing eval frameworks? or need own one in python
-%if latter, what components
-%a diagram can be good also for the presentation
-
-There have been many reputation evaluation frameworks made in the past, as surveyed in chapter~\ref{chap:related_work}.
-The first approach was to find one of these suitable for use, for which a few general requirements were applied.
-These are:
-\begin{itemize}
-    \item available source code
-    \item domain-independence
-    \item preferably widely accepted
-    \item extensibility and ease of modification
-    \item flexibility with simulation parameters and components
-    \item preferably some common reputation schemes already implemented
-\end{itemize}
-
-Most of these are needed to accommodate unique approaches and fulfill specific requirements, such as:
-\begin{itemize}
-    \item the use of one or more reputation improvement methods
-	\item ability to implement custom reputation schemes
-    \item flexible review values (custom integer ranges)
-    \item second-order rating schemes (like stakes)
-    \item ability to represent \glspl{claim} in some form
-    \item can define custom evaluation metrics
-    \item full simulation of all agents
-\end{itemize}
-
-None of the examined evaluation frameworks satisfied all needs.
-Overall requirements and unique approaches warranted the inception of a new reputation simulation framework.
-
-Because of this, a custom system was designed to simulate, compare and evaluate selected reputation schemes under various environmental conditions.
-This section gives a conceptual introduction, including components and core features.
-For a description of the concrete Python implementation, see Chapter~\ref{chap:implementation}.
-
-
-
-\subsection{Scenarios}\label{sec:scenario}
-A \gls{scenario} is the description of a complete reputation environment including the reputation schemes and agents with various behaviors.
-All parameters that are needed during simulation are part of the scenario.
-Some of the most important are:
-\begin{itemize}
-	\item how reputation values are calculated
-	\item which reputation improvement methods are applied
-	\item the size of the agent population
-	\item how agents behave during simulation
-	\item how long the simulation goes (i.e. how many rounds)
-	\item the possible rating and reputation values (e.g. binary, integers 1 to 5)
-	\item what seed is used to generate random numbers
-	\item what graph and data exports metrics should be created
-\end{itemize}
-
-In this way, a scenario encapsulates all that is in a single simulation.
-This helps organize combinations of simulation parameters, and compare them.
-For example, when the goal is to see what effect malicious agents have, one could draft separate scenarios with varying percentage of malicious agents ranging from 0\% to 100\% in each.
-
-
-\subsection{Measuring Claims}\label{sec:approach_measure_claim}
-Measuring claims is the term used for when an agent assesses the quality of a claim.
-This models when a consumer upon receiving a content, tries it out and leaves feedback based on first-hand experience.
-Additionally, an agent can also measure its own claim.
-%Measuring a claim is the representation of trying out a product or content and making an opinion of what its quality could be.
-
-The measured quality $Q_{m,A,C_{B}}$ denotes agent $A$'s assessment of claim $C_B$.
-With the model's assumption on the existence of a ground truth, measuring a claim can be seen as an agent trying to guess this hidden quality valuation.
-Agents are modeled here with various levels of expertise, which affects how close or how reliably they can measure the ground truth.
-Know-how, experience, expertise or inside knowledge are among the possible factors playing a role.
-This can vary between implementations.
-Pyrepsys uses \acrlong{ctai} for this.
-It is a parameter of agents representing the maximum inaccuracy they can make when measuring.
-
-As discussed in section~\ref{sec:appr_claim_rate_process}, making a new claim has two main stages: measuring the ground truth and distorting.
-The measurement serves as input for distortion.
-Distortion models conscious actions, honesty or willing manipulation.
-Measuring claims is also a sort of distortion, albeit not under the control of the agent.
-While distortion is \emph{intent}, measurement represents \emph{competence}.
-
-
-\subsection{Claiming and Rating}\label{sec:appr_claim_rate_process}
-Claiming (Figure~\ref{fig:claim_rate_process}, above) spawns a new claim $C_A$ without any reviews, containing a \gls{gr_truth}.
-The claimer agent $A$ measures this hidden quality and distorts it, resulting in a value representing the claimer's opinion of his own claim.
-This is attached as an \gls{author_review} $R_{authorA,C_{A}}$ to the claim to be published.
-
-Rating (Figure~\ref{fig:claim_rate_process}, below) takes an existing published claim $C_A$ by agent $A$.
-The rater agent $B$ takes all data relevant to claim $C_A$ and produces a \gls{review} $R_{B,C_{A}}$.
-This is then appended to the other reviews on claim $C_A$.
-
-\begin{figure}[tbp]
-  \begin{center}
-        \includegraphics[width=1\linewidth]	{../images/claim_rate_process-crop.pdf}
-    \caption{
-    Schematic representation of claiming (above) and rating (below) processes, with the involved claims and reviews.
-    }
-    \label{fig:claim_rate_process}
-  \end{center}
-\end{figure}
-
-
-
-\subsection{Resolution}\label{sec:approach_resolution}
 Resolution determines what values are allowed in various parts of the model.
 For example, if reviews are constrained by a resolution of 1, and minimum and maximum values are 1 and 9, then the result of ratings can be integers from 1 to 9, i.e. $\forall R$: $R\in\mathbb{Z}$ and $1 \le R \le 9$.
 
@@ -1553,6 +1551,73 @@ Designing multiple versions of each with different resolutions unreasonable, hen
 
 
 
+% --------------------------------------------------------------
+\section{Scenarios}\label{sec:scenario}
+% --------------------------------------------------------------
+A \gls{scenario} is the description of a complete reputation environment including the reputation schemes and agents with various behaviors.
+All parameters that are needed during simulation are part of the scenario.
+Some of the most important are:
+\begin{itemize}
+	\item how reputation values are calculated
+	\item which reputation improvement methods are applied
+	\item the size of the agent population
+	\item how agents behave during simulation
+	\item how long the simulation goes (i.e. how many rounds)
+	\item the possible rating and reputation values (e.g. binary, integers 1 to 5)
+	\item what seed is used to generate random numbers
+	\item what graph and data exports metrics should be created
+\end{itemize}
+
+In this way, a scenario encapsulates all that is in a single simulation.
+This helps organize combinations of simulation parameters, and compare them.
+For example, when the goal is to see what effect malicious agents have, one could draft separate scenarios with varying percentage of malicious agents ranging from 0\% to 100\% in each.
+For a complete list of parameters with details, see Appendix~\ref{appendix:scenarios}.
+
+
+
+% --------------------------------------------------------------
+\section{Custom Evaluation Framework}\label{sec:approach_evaluation_framework}
+% --------------------------------------------------------------
+% aka. Simulation System
+% putting together all the above
+
+%check how to implement these
+%can use existing eval frameworks? or need own one in python
+%if latter, what components
+%a diagram can be good also for the presentation
+
+There have been many reputation evaluation frameworks made in the past, as surveyed in Chapter~\ref{chap:related_work}.
+The first approach was to find one of these suitable for use, for which a few general requirements were applied.
+These are:
+\begin{itemize}
+    \item available source code
+    \item domain-independence
+    \item preferably widely accepted
+    \item extensibility and ease of modification
+    \item flexibility with simulation parameters and components
+    \item preferably some common reputation schemes already implemented
+\end{itemize}
+
+Most of these are needed to accommodate unique approaches and fulfill specific requirements, such as:
+\begin{itemize}
+    \item the use of one or more reputation improvement methods
+	\item ability to implement custom reputation schemes
+    \item flexible review values (custom integer ranges)
+    \item second-order rating schemes (like stakes)
+    \item ability to represent \glspl{claim} in some form
+    \item can define custom evaluation metrics
+    \item full simulation of all agents
+\end{itemize}
+
+None of the examined evaluation frameworks satisfied all needs.
+Overall requirements and unique approaches warranted the inception of a new reputation simulation framework.
+
+Because of this, a custom system was designed to simulate, compare and evaluate selected reputation schemes under various environmental conditions.
+The evaluation framework uses the model described throughout this chapter so far.
+The next chapter details the concrete Python implementation of the system.
+
+
+
 
 % CHAPTER ######################################################################
 \chapter{Implementation}\label{chap:implementation}
@@ -1561,7 +1626,7 @@ Designing multiple versions of each with different resolutions unreasonable, hen
 
 \lettrine{S}{imulations} are done with a custom-made python simulation framework named Pyrepsys.
 This chapter gives the implementation-specific details of Pyrepsys. 
-For a conceptual description, see Section~\ref{sec:approach_evaluation_framework}.
+For a conceptual description, see Chapter~\ref{chap:approach}.
 
 Pyrepsys is a one-stop solution for simulating, comparing and evaluating reputation schemes.
 Simulation of scenarios is performed on a round-by-round basis.
@@ -1579,40 +1644,37 @@ A scenario configuration creator can be used to make a batch of scenarios with v
 Extensive automated self-testing can verify the integrity of the simulation framework if any changes are made.
 Finally, profiling and benchmarking tests are provided to identify simulation bottlenecks and measure performance.
 
-Additional references for using Pyrepsys are provided outside this chapter.
-For a description of the Pyrepsys command-line interface, refer to Appendix~\ref{appendix:cli_invocation}.
-A complete list and explanation of possible scenario configuration parameters are found in Appendix~\ref{appendix:scenarios}.
+%Additional references for using Pyrepsys are provided outside this chapter.
+%For a description of the Pyrepsys command-line interface, refer to Appendix~\ref{appendix:cli_invocation}.
+%For a complete list and explanation of possible scenario configuration parameters are found in Appendix~\ref{appendix:scenarios}.
 % Finally, information regarding the scenario creator 
 
-% TODO: prerequisites, dependencies, tested versions, environment
-% TODO: reference table~\ref{tab:pyrepsys_modules}
-% TODO: also describe concrete implementations of behavior and reputation strategies, improvement handlers ?
+% prerequisites, dependencies, tested versions, environment
 
 \begin{table}[tbp]
 \centering
-\begin{tabular}{@{}lll@{}}
+\begin{tabular}{@{}lp{0.45\linewidth}p{0.25\linewidth}@{}}
 \toprule
-\textbf{Module} & \textbf{Notable Classes} & \textbf{Responsibility}    \\ \midrule
-agent               & \emph{Agent}, \emph{Claim}, \emph{Review} &Define agents with the simulation data structure \\
-behavior            &  &Submodule. Define agent rate and distort strategies \\
-config              & \emph{Configurator} &Scenario configuration related. Read, parse, provide configs. Prepare other classes. \\
-errors              &  &Custom exceptions \\
-helper\_types        & \emph{SimulationEvent}, \emph{ResolutionDomain}, \emph{LocalConfig}& Accessory type definitions \\
-helpers             &  &Accessory function definitions. Resolution handling, Internal-Agent-Exposed conversion \\
-instantiator        & \emph{Instantiator} & Creation of metric, reputation strategy, behavior strategy and improvement handler instances \\
-main                &  &Program entry point, preparation of logging and directories, coordination of simulation \\
-metrics             &  &Submodule. Defines data export and graph drawer metrics \\
-paths               &  &Directory paths \\
-reputation          &  &Submodule. Define improvement handler and reputation strategy classes \\
-results\_processor   & \emph{ResultsProcessor} &Containment and coordination of metrics \\
-scenario\_creator    &  &scenario creator utility \\
-scenario\_simulator  & \emph{ScenarioSimulator} &Simulate one single scenario. Aka System \\
+\textbf{Module} & \textbf{Responsibility} & \textbf{Notable Classes}    \\ \midrule
+agent               & Define agents with the simulation data structure & \emph{Agent}, \emph{Claim}, \emph{Review} \\
+behavior            & Submodule. Define agent rate and distort strategies & \\ 
+config              & Scenario configuration related. Read, parse, provide configs. Prepare other classes. & \emph{Configurator}\\
+errors              & Custom exceptions & \\
+helper\_types       & Accessory type definitions & \mbox{\emph{SimulationEvent}}, \mbox{\emph{ResolutionDomain}}, \mbox{\emph{LocalConfig}} \\
+helpers             & Accessory function definitions. Resolution handling, Internal-Agent-Exposed conversion & \\
+instantiator        & Creation of metric, reputation strategy, behavior strategy and improvement handler instances & \emph{Instantiator} \\
+main                & Program entry point, preparation of logging and directories, coordination of simulation & \\
+metrics             & Submodule. Defines data export and graph drawer metrics & \\
+paths               & Directory paths & \\
+reputation          & Submodule. Define improvement handler and reputation strategy classes & \\
+results\_processor  &Containment and coordination of metrics & \emph{ResultsProcessor} \\
+scenario\_creator   &Scenario creator utility & \\
+scenario\_simulator &Simulate one single scenario. Aka System & \emph{ScenarioSimulator} \\
 \bottomrule
 \end{tabular}
 \caption{
 	Modules making up Pyrepsys.
 	Modules \texttt{behavior}, \texttt{reputation} and \texttt{metrics} form submodules.
-	TODO FIX THE TABLE PARTS ARE OUT OF THE WORLD
 }
 \label{tab:pyrepsys_modules}
 \end{table}
@@ -1635,10 +1697,10 @@ The number of rounds is part of the scenario configuration.
 Each round consists of four distinct phases:
 
 \begin{enumerate}
-	\item claiming
-	\item rating new claims
-	\item applying reputation improvements
-	\item reputation calculation
+	\item Claiming
+	\item Rating new claims
+	\item Applying reputation improvements
+	\item Reputation calculation
 \end{enumerate}
 
 \subsection{Claiming}
@@ -1658,10 +1720,10 @@ The ground truth is not directly accessible for the agent.
 It can however be measured, which is the second step of the claiming process.
 Measurement results in the \gls{measured_claim_score}, which represents an approximation of the claim's true quality.
 How good this approximation is, depends on the agent's ability to assess claims.
-Further details of measuring claims is described in section~\ref{sec:approach_measure_claim}.
+Further details of measuring claims is described in Section~\ref{sec:approach_measure_claim}.
 
 With the measured truth, the agent executes its \gls{distort_strategy}.
-It essentially applies one of the distortion methods found in section~\ref{sec:distort_strategies}.
+It essentially applies one of the distortion methods found in Section~\ref{sec:distort_strategies}.
 The resulting value is the \gls{distorted_claim_quality}.
 
 At this point the agent checks whether the distorted quality falls in the agent's \gls{claim_range}.
@@ -1696,10 +1758,10 @@ The claiming process is illustrated on Figure~\ref{fig:claim_rate_process}.
 Rating stage is when agents can rate claims published in the current round.
 Each new claim made in the previous section is put up for rating.
 For each of these claims, every agent other than the claimer is given an opportunity to rate it.
-The maximum possible number of \glspl{review} made during one round is show in Equation~\ref{eq:max_reviews}.
+The maximum possible number of \glspl{review} made during one round is
 
 \begin{equation}\label{eq:max_reviews}
-	\mathrm{max}(N^r_{reviews}) = N^r_{claims} (N_{agents}-1)
+	(N^r_{reviews}) \le N^r_{claims} (N_{agents}-1)
 \end{equation}
 Where $ N^r_{claims} $ and $ N^r_{reviews} $ are the number of claims and reviews made in the current round $r$.
 $ N_{agents} $ is the number of agents in the current scenario.
@@ -1726,11 +1788,10 @@ The same agent can possibly make a review in the same round again, but only when
 \subsection{Applying Improvements}
 
 Improvements are the third main step of rounds.
-At this phase, all claims and reviews of the current round have been published.
-These were added to their appropriate places into the data structure formed by the list of agents.
-As discussed in detail in section~\ref{sec:impl_data}, it contains all simulation data from the current scenario.
-This is passed to the selected improvement methods by the \emph{ScenarioSimulator} for processing.
-All modifications are done on this mutable list of agents.
+At this point, all claims and reviews of the current round have been published.
+As discussed in detail in Section~\ref{sec:impl_data}, claim and review data is saved into a data structure formed by the list of agents.
+This list is passed to the selected improvement methods by the \emph{ScenarioSimulator} for processing.
+All modifications are made on this mutable list of agents.
 
 Improvement methods are implemented as separate handler classes.
 These handlers form a handler chain as per the \emph{chain of responsibility} software design pattern.
@@ -1763,7 +1824,7 @@ As such, there is a clear distinction between data and methods related to improv
 	\emph{Configurator} creates instances of the required improvement handlers via the \emph{Instantiator} and sets the handler chain's entry point in \emph{ScenarioSimulator}.
 	When improvements are due, \emph{ScenarioSimulator} calls the first handler with the agents data, which includes all claims and reviews.
 	\emph{LocalConfig} provides custom configuration for each individual improvement handler.
-	This is discussed in section~\ref{sec:local_config} in detail.
+	This is discussed in Section~\ref{sec:local_config} in detail.
     }
     \label{fig:improvement_handlers}
   \end{center}
@@ -1799,7 +1860,7 @@ implemented with the strategy pattern
 	\emph{Configurator} creates an instance of the selected reputation strategy via the \emph{Instantiator} and gives it to \emph{ScenarioSimulator}.
 	At reputation calculation, \emph{ScenarioSimulator} calls its reputation strategy object with the agents data, which includes all claims and reviews.
 	\emph{LocalConfig} provides custom configuration for strategy instances.
-	This is discussed in section~\ref{sec:local_config} in detail.
+	This is discussed in Section~\ref{sec:local_config} in detail.
     }
     \label{fig:reputation_strategy}
   \end{center}
@@ -1814,7 +1875,7 @@ implemented with the strategy pattern
 \subsection{Behavior Strategies}
 Behavior strategies serve as the implementation of agent's rating or distortion methods.
 The \emph{behavior} subpackage contains related classes.
-Both rating and distortion strategies are implemented very similarly to reputation strategies as described in section~\ref{sec:impl_reputation_calculation}.
+Both rating and distortion strategies are implemented very similarly to reputation strategies as described in Section~\ref{sec:impl_reputation_calculation}.
 
 The involved classes are shown in the UML diagram in Figure~\ref{fig:behavior_strategies}.
 Both behavior strategy types share a common abstract ancestor called \emph{BehaviorStrategy}.
@@ -1846,7 +1907,7 @@ Agents then call upon their behavior strategies during simulation through the \t
 	Concrete strategies are descendants of these two classes.
 	\emph{Configurator} creates behavior concrete strategy instances via the \emph{Instantiator} and sets them on the agent using it.
 	When rating or distorting, the agent calls \lstinline{execute()} on the appropriate behavior strategy.
-	\emph{LocalConfig} provides custom configuration for strategy instances, discussed in section~\ref{sec:local_config} in detail.
+	\emph{LocalConfig} provides custom configuration for strategy instances, discussed in Section~\ref{sec:local_config} in detail.
     }
     \label{fig:behavior_strategies}
   \end{center}
@@ -2106,7 +2167,7 @@ Precise & 1, 1.1 ... 4.9, 5 & {[}1,5{]}                & 0.1         & 0, 0.025 
 
 Resolution settings control what exact values are allowed for select variables during simulation.
 This section discusses implementation details.
-See section~\ref{sec:approach_resolution} for conceptual discussion of resolutions.
+See Section~\ref{sec:approach_resolution} for conceptual discussion of resolutions.
 
 \subsubsection{Domains and Conversion Points}
 Pyrepsys defines two resolution domains.
@@ -2185,7 +2246,7 @@ Because of this, the resolution ladders are kept locally in \lstinline{helpers}.
 To allow (re-)calculation of the resolution steps every time the scenario configuration changes, \emph{Configurator} must let the \lstinline{helpers} module know when this happens.
 This is solved with callbacks from \emph{Configurator}.
 The function for calculating resolution ladders is registered with \emph{Configurator}, which calls it every time the scenario configuration is updated.
-For more discussion on configuration updated callbacks, see section~\ref{sec:config_update_callbacks}.
+For more discussion on configuration updated callbacks, see Section~\ref{sec:config_update_callbacks}.
 
 \begin{figure}[tbp]
   \begin{center}
@@ -2295,8 +2356,8 @@ Defining scenarios with this two-level configuration system is simpler.
 Usually only one or at most a few parameters are varied between scenarios to see the isolated effect of the changes.
 Here, the default scenario should contain the baseline values for scenario parameters, fully defined.
 Then, each specific simulated scenario can be partially defined only containing parameters that differ from the default configuration.
-Pyrepsys provides a scenario creator utility, which uses the same approach to create scenarios with combinations of given parameter values.
-See appendix~\ref{appendix:sc} for documentation.
+Pyrepsys also provides a scenario creator utility, which uses the same approach to create scenarios with combinations of given parameter values.
+%See appendix~\ref{appendix:sc} for documentation.
 
 \subsection{Reading Scenario Files}
 Reading configuration from scenario files to memory is done by the \emph{Configurator} class.
@@ -2368,7 +2429,7 @@ Other parts of Pyrepsys can use this to be notified of changes in configuration.
 The method to register the callback functions is \lstinline{register_config_updated_callback()}.
 Every time a new scenario file was read and parsed, \emph{Configurator} executes all registered callbacks.
 Update callbacks are used by the local config cache in \texttt{helpers} and the resolution step ladder creator method.
-Refer to section~\ref{sec:impl_create_steps} for why resolution handling is solved this way.
+Refer to Section~\ref{sec:impl_create_steps} for why resolution handling is solved this way.
 
 
 \subsection{Setting Up Simulations}
@@ -2388,7 +2449,7 @@ The scenario simulator's setup is divided into three parts: improvement handlers
 \subsubsection{Reputation Strategy and Improvement Handlers}
 Reputation strategy and improvements have a similar setup.
 First, the params storing them are requested.
-Then, a method called \lstinline{_unpack_extended_config_entry()} parses parameters that are extended with local configuration described in section~\ref{sec:local_config}.
+Then, a method called \lstinline{_unpack_extended_config_entry()} parses parameters that are extended with local configuration described in Section~\ref{sec:local_config}.
 \emph{Instantiator} is used to create reputation and improvement handler object instances.
 The instances receive their local config is any was set for them, and they are assigned to the \emph{ScenarioSimulator}.
 For the improvement handlers, the improvement chain is tied together in order of appearance in the scenario file, and the scenario simulator only receives the first handler.
@@ -2531,7 +2592,7 @@ Adding new metrics is as easy as with any other behavior or reputation strategy,
 	\emph{ScenarioSimulator} and the \lstinline{main} package trigger events on the results processor.
 	Metrics are notified of events that interest them.
 	\emph{LocalConfig} provides custom configuration for each individual metric.
-	This is discussed in section~\ref{sec:local_config}.
+	This is discussed in Section~\ref{sec:local_config}.
     }
     \label{fig:reproc_metrics}
   \end{center}
@@ -2599,6 +2660,10 @@ This is beneficial when debugging a specific module.
 \chapter{Evaluation} \label{chap:evaluation}
 % ##############################################################################
 
+\lettrine{T}{his} chapter presents experiments performed with Pyrepsys.
+First, the used metrics are introduced.
+Then, the various experiment are described, first the parameters and expectation, then the results of simulations.
+Finally, a discussion formulates takeaways from the conducted simulations.
 
 % --------------------------------------------------------------
 \section{Metrics}\label{sec:metrics}
@@ -2767,7 +2832,7 @@ Everything else stays the same.
 \subsubsection{Experiment E: measurement accuracy}
 This experiment is for finding out the influence of measurement accuracy.
 The \gls{ctai} of raters is configured as 1) zero 2) 0.125 3) 0.25 and 4) 0.375.
-A \gls{ctai} of 0.125 increment means 1 full score in \gls{ae_representation} in the rating range [1,9].
+A \gls{ctai} of 0.125 increment means 1 full score in \gls{ae_representation} in the integer rating range [1,9].
 
 Every scenario has 5 \texttt{HonestClaimer} and 5 \texttt{DishonestClaimer} agents, both who are set not to rate at all.
 Raters use the rate strategy \texttt{RateFromOwnExperience} and are created in the amounts 1) 10 and 2) 1.
@@ -2779,6 +2844,40 @@ The purpose of this is to find out whether more agents are able to combat the bi
 \section{Results}\label{sec:results}
 % --------------------------------------------------------------
 %Results: visualize your results as graphs and compare to the values of related work.
+
+\begin{figure}[]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/a/AvgTotClaimInaccuracyAndReputationScatter_joined.pdf}
+    \caption{
+    Average Total Claiming Inaccuracy and reputation scatter diagram of experiment A: effect of aging.
+    Aging increases toward the right column, while malicious raters increase toward the bottom row.
+    }
+    \label{fig:res_a_scatter}
+  \end{center}
+\end{figure}
+
+\begin{figure}[]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/a/ReputationsPerRounds_joined.pdf}
+    \caption{
+ 	Progression of agent reputations per rounds in experiment A: effect of aging.
+    Aging increases toward the right column, while malicious raters increase toward the bottom row.
+    }
+    \label{fig:res_a_reps}
+  \end{center}
+\end{figure}
+
+\begin{figure}[]
+  \begin{center}
+        \includegraphics[width=0.75\linewidth]	{../results/a/AvgAccuracyPerRound.pdf}
+    \caption{
+    Averaged cumulative rater inaccuracy per rounds in experiment A: effect of aging.
+    In the legend, first index increases with more aging, the second with more malicious agents.
+    }
+    \label{fig:res_a_rateinaccuracy}
+  \end{center}
+\end{figure}
+
 
 \subsubsection{Experiment A: Effect of Aging}
 
@@ -2799,52 +2898,9 @@ Figure~\ref{fig:res_a_rateinaccuracy} illustrated the rater's inaccuracy. Since 
 However, since \texttt{HonestRater} agents use the reputation of rated claim authors, the fluctuation of reputation scores also influence their ratings. 
 This is seen as swings in inaccuracy on the aged scenarios.
 
-\begin{figure}[tbp]
-  \begin{center}
-        \includegraphics[width=0.75\linewidth]	{../results/a/AvgTotClaimInaccuracyAndReputationScatter_joined.pdf}
-    \caption{
-    Average Total Claiming Inaccuracy and reputation scatter diagram of experiment A: effect of aging.
-    Aging increases toward the right column, while malicious raters increase toward the bottom row.
-    }
-    \label{fig:res_a_scatter}
-  \end{center}
-\end{figure}
-
-\begin{figure}[tbp]
-  \begin{center}
-        \includegraphics[width=0.75\linewidth]	{../results/a/ReputationsPerRounds_joined.pdf}
-    \caption{
- 	Progression of agent reputations per rounds in experiment A: effect of aging.
-    Aging increases toward the right column, while malicious raters increase toward the bottom row.
-    }
-    \label{fig:res_a_reps}
-  \end{center}
-\end{figure}
-
-\begin{figure}[tbp]
-  \begin{center}
-        \includegraphics[width=0.75\linewidth]	{../results/a/AvgAccuracyPerRound.pdf}
-    \caption{
-    Averaged cumulative rater inaccuracy per rounds in experiment A: effect of aging.
-    In the legend, first index increases with more aging, the second with more malicious agents.
-    }
-    \label{fig:res_a_rateinaccuracy}
-  \end{center}
-\end{figure}
-
 \subsubsection{Experiment B: Malicious Raters}
 
-Increasing the number of malicious raters results in a similar effect as observed in the previous experiment, only without the interference of aging.
-Figure~\ref{fig:res_b_scatter} shows that malicious raters push the reputation of all claimers equally down.
-
-Honest claimers are smeared towards their ideal reputation levels, as they form a sort of vertical line.
-This means their inaccuracy was the same, still they received different reputations.
-On the bottom row with all the raters malicious, the spread of honest claimer reputations is a little over 2 points.
-
-Because malicious raters never claim, they do not get reputation adjustments and stay on the default of 5 for the whole simulation.
-This means there is no way to filter their ratings, even with weights and a number of honest raters still in the system.
-
-\begin{figure}[tbp]
+\begin{figure}[]
   \begin{center}
         \includegraphics[width=0.75\linewidth]	{../results/b/AvgTotClaimInaccuracyAndReputationScatter_joined.pdf}
     \caption{
@@ -2856,14 +2912,17 @@ This means there is no way to filter their ratings, even with weights and a numb
   \end{center}
 \end{figure}
 
-\subsubsection{Experiment C: Dishonest Claimers}
+Increasing the number of malicious raters results in a similar effect as observed in the previous experiment, only without the interference of aging.
+Figure~\ref{fig:res_b_scatter} shows that malicious raters push the reputation of all claimers equally down.
 
-C/I results are shown on figures \ref{fig:res_c_scatter} and \ref{fig:res_c_reps}.
-Dishonest claimers are positioned above their exactly ideal reputation, but the difference is insignificant.
-Good-intentioned raters are able to keep order even when all claimers are dishonest.
-Figure~\ref{fig:res_c_reps} shows however, that it takes around 20-30 rounds for reputations to settle.
-Both figures show no improvements on the left columns and weights on the right side.
-There is no difference between the two versions.
+Honest claimers are smeared towards their ideal reputation levels, as they form a sort of vertical line.
+This means their inaccuracy was the same, still they received different reputations.
+On the bottom row with all the raters malicious, the spread of honest claimer reputations is a little over 2 points.
+
+Because malicious raters never claim, they do not get reputation adjustments and stay on the default of 5 for the whole simulation.
+This means there is no way to filter their ratings, even with weights and a number of honest raters still in the system.
+
+\subsubsection{Experiment C: Dishonest Claimers}
 
 \begin{figure}[tbp]
   \begin{center}
@@ -2889,13 +2948,12 @@ There is no difference between the two versions.
   \end{center}
 \end{figure}
 
-Experiment C/II removes all raters that are not influenceable, i.e. that are not \texttt{InfluencedHonestRater}.
-It also tests the effect of higher \gls{ctai} for honest claimers and raters both.
-As seen on figures ~\ref{fig:res_c2_scatter}, dishonest claimers are able to get an even better reputation by influencing raters with high author reviews.
-In the right column, honest claimers have more inaccuracy, so they are more spread out horizontally on the total claiming inaccuracy axis.
-
-Rater inaccuracy is also affected by the higher \gls{ctai}, shown on Figure~\ref{fig:res_c2_rateinaccuracy}.
-As expected, a higher \gls{ctai} makes reviews more inaccurate.
+C/I results are shown on figures \ref{fig:res_c_scatter} and \ref{fig:res_c_reps}.
+Dishonest claimers are positioned above their exactly ideal reputation, but the difference is insignificant.
+Good-intentioned raters are able to keep order even when all claimers are dishonest.
+Figure~\ref{fig:res_c_reps} shows however, that it takes around 20-30 rounds for reputations to settle.
+Both figures show no improvements on the left columns and weights on the right side.
+There is no difference between the two versions.
 
 \begin{figure}[tbp]
   \begin{center}
@@ -2921,11 +2979,13 @@ As expected, a higher \gls{ctai} makes reviews more inaccurate.
   \end{center}
 \end{figure}
 
-C/III simulates dishonest claimers that are dishonest increasingly often.
-As observed on Figure~\ref{fig:res_c3_scatter}, dishonest claimers slide rightwards on the subfigures, meaning they make more and more dishonest claims.
-With influenceable raters, the dishonest claimers are able to acquire a better reputation.
-In fact, the undeserved reputation gains get relatively larger as more and more dishonest claims are made.
-However, if raters disregard the author's review (right, Figure~\ref{fig:res_c3_scatter}), reputation scores stay on the ideal line regardless of dishonest claims.
+Experiment C/II removes all raters that are not influenceable, i.e. that are not \texttt{InfluencedHonestRater}.
+It also tests the effect of higher \gls{ctai} for honest claimers and raters both.
+As seen on figures ~\ref{fig:res_c2_scatter}, dishonest claimers are able to get an even better reputation by influencing raters with high author reviews.
+In the right column, honest claimers have more inaccuracy, so they are more spread out horizontally on the total claiming inaccuracy axis.
+
+Rater inaccuracy is also affected by the higher \gls{ctai}, shown on Figure~\ref{fig:res_c2_rateinaccuracy}.
+As expected, a higher \gls{ctai} makes reviews more inaccurate.
 
 \begin{figure}[tbp]
   \begin{center}
@@ -2939,13 +2999,13 @@ However, if raters disregard the author's review (right, Figure~\ref{fig:res_c3_
   \end{center}
 \end{figure}
 
-\subsubsection{Experiment D: Effect of Weights}
+C/III simulates dishonest claimers that are dishonest increasingly often.
+As observed on Figure~\ref{fig:res_c3_scatter}, dishonest claimers slide rightwards on the subfigures, meaning they make more and more dishonest claims.
+With influenceable raters, the dishonest claimers are able to acquire a better reputation.
+In fact, the undeserved reputation gains get relatively larger as more and more dishonest claims are made.
+However, if raters disregard the author's review (right, Figure~\ref{fig:res_c3_scatter}), reputation scores stay on the ideal line regardless of dishonest claims.
 
-All agents are both raters and claimers in this experiment, because this is needed for them to have reputation adjustments.
-D/I increases the number of dishonest agents.
-Bad-intentioned raters are no longer malicious, instead they rate honest agents dogmatically with a lower score.
-As expected, honest agent reputations are brought down, seen in Figure~\ref{fig:res_d_scatter}.
-Using weights makes no difference here.
+\subsubsection{Experiment D: Effect of Weights}
 
 \begin{figure}[tbp]
   \begin{center}
@@ -2959,11 +3019,11 @@ Using weights makes no difference here.
   \end{center}
 \end{figure}
 
-D/II makes agents dogmatic and divisive.
-Honest agents give better ratings to good reputation claimers and worse for bad reputation ones.
-Dishonest agents claim dishonest every time.
-Figure~\ref{fig:res_d2_scatter} shows that honest agents are able to recover their good reputation with the help of weights.
-This is a relatively long process, taking 30-60 rounds (Figure~\ref{fig:res_d2_reps}).
+All agents are both raters and claimers in this experiment, because this is needed for them to have reputation adjustments.
+D/I increases the number of dishonest agents.
+Bad-intentioned raters are no longer malicious, instead they rate honest agents dogmatically with a lower score.
+As expected, honest agent reputations are brought down, seen in Figure~\ref{fig:res_d_scatter}.
+Using weights makes no difference here.
 
 \begin{figure}[tbp]
   \begin{center}
@@ -2991,9 +3051,11 @@ This is a relatively long process, taking 30-60 rounds (Figure~\ref{fig:res_d2_r
   \end{center}
 \end{figure}
 
-In comparison, D/III results show that the same recovery of honest agent recovery no longer happens when the honest agents are not dogmatic.
-On Figure~\ref{fig:res_d3_scatter} all agents fall below the deserved ideal reputation line.
-Weights pushes reputations closer to ideal, and all agents receive this effect.
+D/II makes agents dogmatic and divisive.
+Honest agents give better ratings to good reputation claimers and worse for bad reputation ones.
+Dishonest agents claim dishonest every time.
+Figure~\ref{fig:res_d2_scatter} shows that honest agents are able to recover their good reputation with the help of weights.
+This is a relatively long process, taking 30-60 rounds (Figure~\ref{fig:res_d2_reps}).
 
 \begin{figure}[tbp]
   \begin{center}
@@ -3008,16 +3070,11 @@ Weights pushes reputations closer to ideal, and all agents receive this effect.
   \end{center}
 \end{figure}
 
-\subsubsection{Experiment E: Measurement Accuracy}
-Increasing the measurement inaccuracy (\gls{ctai}) of agents is expected to have the effect of more inaccurate ratings, both author and regular.
-This was partially shown in experiment C/II as well.
-Here, inaccuracy is varied even more.
+In comparison, D/III results show that the same recovery of honest agent recovery no longer happens when the honest agents are not dogmatic.
+On Figure~\ref{fig:res_d3_scatter} all agents fall below the deserved ideal reputation line.
+Weights pushes reputations closer to ideal, and all agents receive this effect.
 
-Figure~\ref{fig:res_e_rateinaccuracy} shows that rater inaccuracy generally increases with \gls{ctai}, as expected.
-When 10 agents rate, the average inaccuracy is limited, while a single agent rates much more inaccurately.
-Time makes sense, as the inaccuracies average out for more agents.
-Similar is observed in Figure~\ref{fig:res_e_reps}, where 10 completely inaccurate agents (bottom left) can set the reputations within 30 rounds, while a single agent with the same inaccuracy (bottom right) fails to arrive at the same reputations in 80 rounds.
-Inaccurate raters can find out the reputation of agents accurately when they are in big numbers.
+\subsubsection{Experiment E: Measurement Accuracy}
 
 \begin{figure}[tbp]
   \begin{center}
@@ -3044,6 +3101,18 @@ Inaccurate raters can find out the reputation of agents accurately when they are
   \end{center}
 \end{figure}
 
+Increasing the measurement inaccuracy (\gls{ctai}) of agents is expected to have the effect of more inaccurate ratings, both author and regular.
+This was partially shown in experiment C/II as well.
+Here, inaccuracy is varied even more.
+
+Figure~\ref{fig:res_e_rateinaccuracy} shows that rater inaccuracy generally increases with \gls{ctai}, as expected.
+When 10 agents rate, the average inaccuracy is limited, while a single agent rates much more inaccurately.
+Time makes sense, as the inaccuracies average out for more agents.
+Similar is observed in Figure~\ref{fig:res_e_reps}, where 10 completely inaccurate agents (bottom left) can set the reputations within 30 rounds, while a single agent with the same inaccuracy (bottom right) fails to arrive at the same reputations in 80 rounds.
+Inaccurate raters can find out the reputation of agents accurately when they are in big numbers.
+
+
+
 % --------------------------------------------------------------
 \section{Discussion}\label{sec:discussion}
 % --------------------------------------------------------------
@@ -3052,16 +3121,14 @@ Inaccurate raters can find out the reputation of agents accurately when they are
 
 \subsubsection{Simulation Framework}
 The created Pyrepsys framework fulfilled expectations, but not without remarks.
-It turned out that the model has weaknesses with claiming and rating, some cases like environments with non-claimer raters are hard to handle.
-A different reputation method and more elaborate agent behavior strategies could improve this.
-
-Pyrepsys does not currently contain agent decision making for which claims agents interact with.
-This is the basis of measuring agent success as metric, as stressed by the Alpha Testbed covered in chapter~\ref{chap:related_work}.
-Such functionality would be possible to implement however.
+Pyrepsys does not currently model agent decision making, for example there is no way for agents to decide who they interact with.
+This is the basis of measuring agent success as metric, as stressed by the Alpha Testbed covered in Chapter~\ref{chap:related_work}.
+However, such functionality would be possible to implement.
 
 Another weakness, which is also an advantage, is generality.
-Not committing to specific domains or environments allows working in generics, but this also makes the model less specific.
-When working within a concrete domain, a more niche evaluation framework can model the reputation environment better.
+When working within a concrete domain, a more niche evaluation framework can model the reputation environment better, especially when the domain's main differentiator is on the communication protocol or network level.
+For example, wireless sensor networks use reputation system to decide routing, and routing outcomes feed back to reputation (or trust) scores.
+The TRMSim-WSN simulator was build specifically for this purpose, to simulate reputation or trust-based routing\cite{marmol_trmsim-wsn_2009}.
 
 Pyrepsys is able to work without specifics of domains, and this is good when needed.
 So far no universal and cross-domain evaluation frameworks gained widespread acceptance and use, even though researchers introduced multiple previously.
@@ -3071,13 +3138,13 @@ The simulator also manages to stay flexible and extendable, so it provides a via
 
 \subsubsection{Aging}
 Aging was shown to make the reputation system's memory shorter.
-While this was not particularly useful in tested experiments, it can have its uses.
+While this was not particularly useful in tested experiments with static behaviors, it can have its uses.
 When agent behaviors or qualities change, a reputation system should recognize this and adjust the agents reputation accordingly.
-Examples for such change of behavior can be a different claiming method, or the agent gets more accurate or honest in claiming, or the other way around.
+Examples for such change of behavior can be switching to a different claiming method, or the agent gets more accurate or honest over time, or the other way around.
 This is a realistic, since static behavior is rarely the case, even algorithmic agents can change abruptly with an update for example.
-Aging's leniency to forget agent history makes a reputation system react faster to changes.
+Aging's leniency to forget agent history could make a reputation system react faster to changes.
 
-When selecting the aging time limit, the goal is to still produce more or less stable aggregations, so that reputation does not become erratic.
+When selecting the aging time limit, the goal is to still produce more or less stable aggregations, so that reputation does not become erratic, as happened on Figure~\ref{fig:res_a_reps}.
 At the same time, the system should still allow changes over some time frame.
 Setting the aging limit needs to be tested for this in each different environment.
 
@@ -3086,6 +3153,7 @@ Weighting was shown to be helpful, but only under very specific configuration.
 The weights implementation simply takes the agent's reputation and gives a proportional weight.
 Since only claimers get reputation, purely rater agents never adjust their starting reputation, and so nor do they get weights.
 When these same agents rate, their reviews will mostly be taken equally, because they all have default weights.
+
 This was not the case with an agent population representing an algorithmic environment, where most raters are claimers as well.
 Most other cases have this problem in the used model.
 
@@ -3098,16 +3166,19 @@ If the weight calculation is different, non-claiming raters should get weights a
 
 
 \subsubsection{Reputation Calculation}
-The reputation method was seen to be lacking in cases where non-claiming raters exist.
-This is most often the case, and allows malicious or dishonest behavior for raters.
-To get this reputation method to work on rater side as well, the model would need some kind of second order rating, where reviews are rated as well.
+\lstinline{BasedOnAvgDifferenceOfClaimsAndReviewsWithWeight}, the reputation calculation method used, was unable to handle scenarios with a high percentage of raters who never claim.
+Such strict consumers are often seen in human-used reputation systems, where most users never enter the system as producers.
+The lack of reputation assignment for consumer-only raters enables malicious or dishonest behavior for them, because there is no basis to filter, weight, etc. their reviews.
+
+This could be remedied with a different reputation method and more elaborate agent behavior strategies.
+If a method assigns reputation to agents based on their reviews as well, pure raters can no longer evade reputation penalties or rewards.
+
+Alternatively, to get the already used reputation calculation method to work on rater side as well, the model would need some kind of second order rating, where reviews are rated as well.
 Such systems exist already, for example online markets sometimes ask if a review was helpful or not.
 
 %In cases where explicit claim quality measurement is possible, an automatic feedback mechanism could compare reviews the later measured with how the claim prediction turned out, and raters that predict well are rewarded
 
-There are many different types of environments in which reputation systems are deployed.
-Each has different circumstances, and it is difficult to find an approach that fits all.
-Trust and reputation research is divided strongly into different domains, and this is a possible reason for that.
+
 
 
 % CHAPTER ######################################################################
@@ -3117,12 +3188,23 @@ Trust and reputation research is divided strongly into different domains, and th
 %    Remind the readers what they have read and why it was significant. Don’t give new explanations, just the facts.
 %    Repeat the most important result (number!) and what it means for the problem.
  
-\lettrine{W}{e} successfully ...
+%* At the end of this chapter or in the conclusion chapter there should be a final summary of all observed effects and their implications.
+ 
+\lettrine{W}{e} successfully set up a generic reputation system model and provided a Python implementation of it named Pyrepsys.
+Pyrepsys is the first evaluation framework to support modular reputation improvement methods.
+We collected a selection of promising techniques for improving reputation system accuracy, and building robustness against attack and malicious behavior.
+Two of these were evaluated with Pyrepsys.
 
-% even with many different behavior models, reality can not be accurately represented
-% in conclusion it can be said that accurately modeling reality within a reputation system is hard
-% the difficulty rises even more if the aim is to stay generic
-% without committing to a domain, all the domain-specific circumstances must remain abstracted, and since there are so many cases to cover for many domains, the end result can lose focus
+Aging was shown to be useless or possibly even counterproductive when agent behavior never changes.
+Due to forgetting older data, it increases the spreads of aggregations like review averages and reputation calculation.
+
+Weighting worked only in specific circumstances, namely when agents are both claimers and raters at the same time, and rating is dogmatic, meaning honest agents rate better reputationed agents with disproportionately better ratings, and vice versa.
+Weights did not bring improvement when most raters never claimed.
+We attribute this to the used reputation calculation method, which assigns reputation values based on honesty in claiming, so that agents who never claim do not get reputation adjustments.
+
+All in all, accurately modeling reality within a reputation system is hard.
+The diversity of agents in intent, behavior and ability, the many circumstances of domains need to be accounted for.
+The difficulty rises even more if the aim is to stay generic.
 
 
 
@@ -3130,25 +3212,100 @@ Trust and reputation research is divided strongly into different domains, and th
 \section{Outlook}\label{sec:outlook}
 % --------------------------------------------------------------
 
-But we still need to ...
+Many opportunities remain both in the introduced model and implementation, and in trust and reputation research.
 
+The Pyrepsys model and implementation can be continued by
+\begin{itemize}
+	\item Evaluating more improvement methods
+	\item Including complex threats and attack methods
+	\item Implementing known reputation calculation methods
+	\item Exploring dynamic agent behavior and agent collaborations
+\end{itemize}
 
+As for trust and reputation systems, researchers have been aiming to create a generic and widely accepted evaluation framework for decades now, with only partial and intermittent successes.
+Reputation systems are deployed in many different environments, each environment with its own circumstances.
+Because of this, it is difficult to find an approach that fits all.
+Nonetheless, as more and more people and devices join networks, the need for reputation systems will increase, necessitating ways to compare different approaches.
 
 
 
 
 \begin{appendix}
+
+% CHAPTER ######################################################################
 \chapter{Scenario Configuration Options}\label{appendix:scenarios}
-TODO comprehensive list of all scenario parameters
+% ##############################################################################
 
-\chapter{Command Line Interface and Invocation}\label{appendix:cli_invocation}
-TODO extensive CLI description
+Table~\ref{tab:all_scenario_options} lists top-level scenario parameters.
+Agent-specific parameters are listed in Table~\ref{tab:all_agent_options}.
 
-\chapter{Scenario Creator}\label{appendix:sc}
-TODO SC desc
+\begin{table}[p]
+\centering
+\begin{tabular}{@{}lp{0.175\linewidth}p{0.4\linewidth}@{}}
+\toprule
+\textbf{Parameter} & \textbf{Type} & \textbf{Function}    \\ \midrule
+\texttt{reputation\_strategy} & string \mbox{(classname)} & Reputation calculation method \\
+\texttt{improvement\_handlers} & list of strings \mbox{(classnames)} & Active improvement techniques \\
+\texttt{seed} & any or null & Seed for random number generation \\
+\texttt{agent\_base\_behaviors} & agent definition & Agent type templates \\
+\texttt{agents} & agent definition & Concrete agents in the scenario \\
+\texttt{metrics} & list of strings \mbox{(classnames)} & Active metrics \\
+\texttt{MIN\_RATING} & float & Bottom of the rating and reputation range \\
+\texttt{MAX\_RATING} & float & Top of the rating and reputation range \\
+\texttt{INITIAL\_REPUTATION} & float & Starting reputation for agents \\
+\texttt{SIM\_ROUND\_MAX} & integer $>0$ & Number of rounds to simulate \\
+\texttt{MEASURED\_CLAIM\_RESOLUTION} & float & Resolution of measured qualities \\
+\texttt{REVIEW\_RESOLUTION} & float & Resolution of published reviews \\
+\bottomrule
+\end{tabular}
+\caption{
+	All top-level scenario configuration options in Pyrepsys.
+}
+\label{tab:all_scenario_options}
+\end{table}
+
+\begin{table}[p]
+\centering
+\begin{tabular}{@{}lp{0.25\linewidth}p{0.25\linewidth}@{}}
+\toprule
+\textbf{Parameter} & \textbf{Type} & \textbf{Function}    \\ \midrule
+\texttt{distort\_strategy} & string \mbox{(classname)} & Distortion strategy \\
+\texttt{rate\_strategy} & string \mbox{(classname)} & Rating strategy \\
+\texttt{claim\_range} & list of two floats & Min. and max. quality the agent publishes claims with  \\
+\texttt{claim\_probability} & float $\in [0,1]$ & Chance of claiming in a round \\
+\texttt{rate\_probability} & float $\in [0,1]$ & Chance of leaving a review \\
+\texttt{claim\_truth\_assessment\_inaccuracy} & float $\in [0,1]$ & \gls{ctai} (measurement inaccuracy) \\
+\texttt{amount} & integer $>0$& Create this many concrete agents of the given type \\
+\texttt{name} & string & Name of an agent base behavior. \\
+
+\bottomrule
+\end{tabular}
+\caption{
+	All agent configuration options in Pyrepsys.
+}
+\label{tab:all_agent_options}
+\end{table}
+
+
+
+
+% CHAPTER ######################################################################
+%\chapter{Command Line Interface and Invocation}\label{appendix:cli_invocation}
+% ##############################################################################
+
+
+
+
+% CHAPTER ######################################################################
+%\chapter{Scenario Creator}\label{appendix:sc}
+% ##############################################################################
 
 \end{appendix}
 
+
+
+
+% ##############################################################################
 
 % Abbreviations
 %	\printglossary[type=\acronymtype,title=Abbreviations]
