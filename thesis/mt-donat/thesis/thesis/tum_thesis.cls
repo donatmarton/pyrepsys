@@ -258,7 +258,7 @@
 	\vfill
 	\begin{tabular}{@{}l@{\hspace{1cm}}l}%
 	\bfseries{Advisor} & \parbox[t]{9cm}{\theadvisor}\\[1.3em]
-	\bfseries{Co-Advisor} &  \parbox[t]{9cm}{{\thecoadvisor}}\\[1.3em]
+	%\bfseries{Co-Advisor} &  \parbox[t]{9cm}{{\thecoadvisor}}\\[1.3em]
 	\bfseries{Author} & \parbox[t]{9cm}{{\@author\\ \theauthorsaddress}} \\
 	\end{tabular}\\[2em]
 	Submitted on \thesubmitdate
