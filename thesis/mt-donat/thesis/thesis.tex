@@ -81,7 +81,7 @@
 
 % abbreviations / acronyms
 % -------------------------------------------------------------------
-\newacronym{ctai}{CTAI}{Claim Truth Assessment Inaccuracy}
+\newacronym{ctai}{CTAI}{claim truth assessment inaccuracy}
 %\newacronym[shortplural={BLKs},longplural={Belastungskollektive}]{BLK}{BLK}{Belastungskollektiv}
 \newacronym{trsys}{TR System}{trust and reputation system}
 \newacronym{rs}{RS}{reputation system}
@@ -265,8 +265,6 @@
 	From these, we evaluated the use of aging and weights.
 	Experiments showed that aging makes less sense when agent behavior never changes.
 	For weights to work, the reputation calculation needs to give reputation to pure rater agents as well.
-	
-	Finally, we identified further ways to improve the Pyrepsys system.
 \end{abstract}
 
 
@@ -1141,7 +1139,7 @@ Finally, both methods can support weights, one of the improvement techniques use
 This method makes use of the unique author's review system.
 It exploits that both the author and consumers make reviews of claims.
 Assume an agent $a_m$ has made a series of claims $\delta=\{C_{i,m}, C_{i+1,m},...C_{i+N-1,m}\}$, that is $N$ number of claims in total.
-To get the reputation of agent $a_m$,, each of its published claims $\delta$ has its reviews averaged, and the difference between this average and the author's review is calculated (\ref{eq:basedondiffrep1}). Once ready for all of an agent's claims, the differences themselves are averaged as in (\ref{eq:basedondiffrep2}).
+To get the reputation of agent $a_m$, each of its published claims $\delta$ has its reviews averaged, and the difference between this average and the author's review is calculated (\ref{eq:basedondiffrep1}). Once ready for all of an agent's claims, the differences themselves are averaged as in (\ref{eq:basedondiffrep2}).
 \begin{equation} \label{eq:basedondiffrep1}
 \begin{aligned}
 \mathrm{difference}(C_{i,m})&=\left|\frac{\sum_{n \in A} R_{n,i}}{\text{number of reviews }R_{n,i}}-R_{author,m,i}\right| \\
@@ -3079,7 +3077,7 @@ Weights pushes reputations closer to ideal, and all agents receive this effect.
         \includegraphics[width=0.75\linewidth]	{../results/e/ReputationsPerRounds_joined.pdf}
     \caption{
  	Progression of agent reputations per rounds in experiment E: measurement accuracy.
-    \gls{ctai} increases downwards.
+    \Gls{ctai} increases downwards.
     Left: 10 raters, right: only 1 rater.
     }
     \label{fig:res_e_reps}
